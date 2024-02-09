@@ -2,4 +2,4 @@ from django.apps import AppConfig
 
 
 class EvaluacionesConfig(AppConfig):
-    name = 'Evaluaciones'
+    name = 'evaluaciones'

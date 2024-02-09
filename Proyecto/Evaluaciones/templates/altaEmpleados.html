@@ -1,0 +1,292 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Dashboard</title>
+    {% comment %} <link rel="stylesheet" type="text/css" href="{% static 'css/barraNavegacion.css' %}" /> {% endcomment %}
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <Style>
+      body {
+        background-color: #fff;
+      }
+      
+      html {
+        height: 100%;
+        width: 100%;
+      }
+      
+      .panel {
+        padding: 15px;
+        margin-left: max(10%, 250px);
+        padding: 0 15px;
+        padding-top: 15px;
+        padding-bottom: 15px;
+        height: 100%;
+        text-align: justify;
+        background: white;
+        background-color: #fff;
+      }
+      
+      .interior {
+        background-color: #d9d9d6;
+        padding: 20px;
+        border-radius: 10px;
+      }
+      
+      .classAltaEmpleado {
+        margin-left: 20px;
+        padding: 30px;
+        margin-left: max(10%, 200px);
+        padding: 0 30px;
+        height: 100%;
+        text-align: justify;
+        background: white;
+      }
+      
+      .lateral {
+        background: #12284c;
+        color: white;
+        width: 250px;
+        padding: 20px;
+        padding-top: 30px;
+        height: 100%;
+        border-radius: 10px;
+        box-sizing: border-box;
+        height: 100%;
+        display: inline-block;
+        position: fixed;
+        flex: 0 0 auto;
+      }
+      
+      .lateral ul {
+        list-style-type: none;
+        padding: 0;
+      }
+      
+      .lateral ul li {
+        margin-bottom: 10px;
+      }
+      
+      .lateral ul .opcion {
+        border-right: 15px;
+      }
+      
+      .lateral ul li a {
+        color: #ffffff;
+        font-family: "Arial", sans-serif
+        font-size: 24px;
+        letter-spacing: 0px;
+        line-height: 1;
+      }
+      
+      .lateral ul .opcion a {
+        color: #ffffff;
+        font-family: "Arial", sans-serif
+        font-size: 24px;
+        letter-spacing: 0px;
+        line-height: 1;
+        margin-left: 40px;
+      }
+      
+      .lateral ul .cerrarCesion {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        padding: 10px; /* Ajusta el espaciado según sea necesario */
+        background-color: #12284c; /* Agrega un color de fondo */
+        text-align: center; /* Centra el texto */
+      }
+      
+      .lateral ul li a:hover {
+        text-decoration: underline;
+      }
+      .interior .titulo {
+        margin-bottom: 20px;
+        text-align: right;
+        font-family: "Arial", sans-serif
+        font-size: 9px;
+        letter-spacing: 0px;
+        line-height: 1;
+        border-radius: 5px;
+      }
+      
+      .interior .titulo h1 {
+        background-color: #12284c;
+        display: inline-block; /* Hace que el h1 tenga un tamaño de bloque y ocupe solo el ancho necesario */
+        padding: 10px; /* Ajusta el espacio alrededor del texto */
+        border-radius: 5px; /* Puedes agregar bordes redondeados al h1 */
+        color: white;
+      }
+      
+      .panel .ocultar {
+        margin-bottom: 20px;
+        text-align: right;
+        background-color: #b3d3d6;
+        font-family: "Arial", sans-serif
+        font-size: 0px;
+        letter-spacing: 0px;
+        line-height: 1;
+        border-radius: 5px;
+        color: #b3d3d6;
+      }
+      
+      .separacion {
+        margin-bottom: 20px;
+        background-color: #00953a;
+        height: 5px;
+      }
+
+      .btn-enviar {
+        background-color: #12284c; 
+        color: white;
+        border-color: #12284c; 
+    }
+
+    .btn-enviar:hover {
+      background-color: #00953a;
+      border-color: #00953a;
+  }
+
+    </Style>
+  </head>
+
+  <body>
+    <div id="lateral" class="lateral">
+      <ul>
+        <li>
+          <a href="{% url 'dashboard' %}">Panel</a>
+        </li>
+        <br />
+
+        <div class="separacion"></div>
+        <br />
+        <li class="opcion">
+          {% if request.user.is_authenticated %}
+            <a href="">{{ user.first_name }}</a>
+          {% else %}
+            <a href="">No usuario</a>
+          {% endif %}
+        </li>
+        <li class="opcion">
+          <a href="#">Autoevaluación</a>
+        </li>
+        <li class="opcion">
+          <a href="#">Mis evaluaciones</a>
+        </li>
+        <li class="opcion">
+          <a href="#">Por evaluar</a>
+        </li>
+
+        <br />
+
+        <div class="separacion"></div>
+        <br />
+        <li class="opcion">
+          <a href="{% url 'listaEmpleados' %}">Empleados</a>
+        </li>
+        <li class="opcion">
+          <a href="#">Evaluaciones</a>
+        </li>
+        <li class="opcion">
+          <a href="#">Informes</a>
+        </li>
+        <br />
+
+        <div class="separacion"></div>
+        <br />
+        <li class="cerrarSesion">
+          {% if request.user.is_authenticated %}
+            <a href="{% url 'salir' %}">Cerrar sesión</a>
+          {% else %}
+            <a href="{% url 'login' %}">Iniciar sesión</a>
+          {% endif %}
+        </li>
+      </ul>
+    </div>
+
+    <div id="panel" class="panel">
+      <div class="interior">
+        <div id="titulo" class="titulo">
+          <h1>Agregar empleados</h1>
+        </div>
+        <form class="formularioAltaEmpelado row g-3" id="formularioAltaEmpelado" action="{% url 'guardarEmpleado' %}" method="post">
+          {% csrf_token %}
+
+          <div class="col-md-4">
+            <label class="form-label" for="id">ID</label><br />
+            <input required class="form-control" type="text" disabled /><br />
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label" for="no_emp">No. Empleado</label><br />
+            <input required class="form-control" type="text"  id="no_emp" name="no_emp" /><br />
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label" for="estatus">Estatus</label><br />
+              <select required class="form-control" id="estatus" name="estatus">
+                  <option value="1" selected>Activo</option>
+                  <option value="0" >Inactivo</option>
+              </select><br/>
+          </div>
+
+          <div class="col-md-6">
+            <label for="correo" class="form-label">Correo</label><br />
+            <input type="email" required id="correo" class="form-control" name="correo" value="{{ empleado.correo }}" /><br />
+          </div>
+
+          <div class="col-md-6">
+            <label for="inputPassword4" class="form-label">Contraseña</label><br />
+            <input type="password" required class="form-control" id="password" name="password"/><br />
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label" for="nombre">Nombre</label><br />
+            <input class="form-control" required type="text" id="nombre" name="nombre"/><br />
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label" for="apellido_paterno">Apellido Paterno</label><br />
+            <input class="form-control" required  type="text" id="apellido_paterno" name="apellido_paterno"/><br />
+          </div> 
+          
+          <div class="col-md-4">
+            <label class="form-label" for="apellido_materno">Apellido Materno</label><br />
+            <input class="form-control" required type="text" id="apellido_materno" name="apellido_materno"/><br />
+          </div>
+
+          <div class="col-md-6">
+            <label for="puesto">Puesto</label><br />
+            <select required class="form-control" id="puesto" name="puesto">
+              {% for puesto in puestos %}
+              <option value="{{ puesto.id }}" selected>
+                  {{ puesto.nombre }} {{ puesto.departamento }}
+              </option>
+              {% endfor %}
+            </select><br />
+          </div>
+          
+          <div class="col-md-6">
+            <label for="rango">Rango</label><br />
+            <select required class="form-control" id="rango" name="rango">
+              {% for rango in rangos %}
+              <option value="{{ rango.id }}" selected>
+                  {{ rango.nombre }}
+              </option>
+              {% endfor %}
+            </select><br />
+          </div>   
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+
+
+          <div class="col-12">
+            <input type="submit" value="Enviar" class="btn btn-primary btn-enviar" />
+          </div>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

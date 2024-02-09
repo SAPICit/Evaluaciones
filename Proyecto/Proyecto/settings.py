@@ -20,12 +20,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '8yr63p+7t-xnwxyp83m-i5o8d^tx96qh@=rd^6hky3&f7!c$3e'
+SECRET_KEY = 's!4q!h#_)u30k5*#5y@#mjrd=h(qe28!f44i%+=se4@bdky)#9'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'Evaluaciones',
+    'evaluaciones',
 ]
 
 MIDDLEWARE = [
@@ -77,7 +77,7 @@ WSGI_APPLICATION = 'Proyecto.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'sql_server.pyodbc',
-        'NAME': 'Evaluaciones_pruebas',
+        'NAME': 'PRUEBAS_Evaluaciones',
         'USER': 'Tesch',
         'PASSWORD': 'B1Admin',
         'HOST': '192.168.1.250',
@@ -121,10 +121,15 @@ USE_L10N = True
 
 USE_TZ = True
 
+LOGIN_REDIRECT_URL = 'dashboard'
+LOGOUT_REDIRECT_URL = '/'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+AUTH_USER_MODEL = 'evaluaciones.Usuarios'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
 

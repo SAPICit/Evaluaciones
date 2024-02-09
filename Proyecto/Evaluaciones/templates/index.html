@@ -6,6 +6,20 @@
 </head>
 <body>
     <h1>Probando otro puerto</h1>
-    <a href="imagenes">Enlace a imagenes</a>
+    <a href="imagenes">Enlace a imagenes2</a>
+    <a href="dashboard">Enlace a dashboard</a>
+    <a href="altaEmpleados">Enlace a empleados</a>
+
+   {% csrf_token %}
+        <div class="form-group">
+            <label for="username">Nombre:</label>
+            <input type="text" class="form-control" id="username" name="username">
+        </div>
+        <div class="form-group">
+            <label for="password"> Contraseña:</label>
+            <input type="password" class="form-control" id="password" name="password">
+        </div>
+        <button type="submit" class="btn btn-primary">Ingresar</button>
+
 </body>
 </html>

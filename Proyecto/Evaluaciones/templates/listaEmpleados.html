@@ -1,0 +1,347 @@
+{% load static %}
+<!DOCTYPE html>
+<html class="ht" id="ht">
+  <head>
+    <title>Empleados</title>
+    {% comment %} <link rel="stylesheet" type="text/css" href="{% static 'css/barraNavegacion.css' %}" /> {% endcomment %}
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <Style>
+      body {
+        background-color: #fff;
+      }
+      
+      html {
+        height: 100%;
+        width: 100%;
+      }
+      
+      .empleados {
+        margin-right: 20px;
+      }
+      
+      .panel {
+        padding: 15px;
+        margin-left: max(10%, 250px);
+        padding: 0 15px;
+        padding-top: 15px;
+        padding-bottom: 15px;
+        height: 100%;
+        text-align: justify;
+        background: white;
+        background-color: #fff;
+      }
+      
+      .interior {
+        background-color: #d9d9d6;
+        padding-left: 20px;
+        padding-bottom: 20px;
+        padding-top: 20px;
+        border-radius: 10px;
+      }
+      
+      .classAltaEmpleado {
+        margin-left: 20px;
+        padding: 30px;
+        margin-left: max(10%, 200px);
+        padding: 0 30px;
+        height: 100%;
+        text-align: justify;
+        background: white;
+      }
+      
+      .lateral {
+        background: #12284c;
+        color: white;
+        width: 250px;
+        padding: 20px;
+        padding-top: 30px;
+        height: 100%;
+        border-radius: 10px;
+        box-sizing: border-box;
+        height: 100%;
+        display: inline-block;
+        position: fixed;
+        flex: 0 0 auto;
+      }
+      
+      .lateral ul {
+        list-style-type: none;
+        padding: 0;
+      }
+      
+      .lateral ul li {
+        margin-bottom: 10px;
+      }
+      
+      .lateral ul .opcion {
+        border-right: 15px;
+      }
+      
+      .lateral ul li a {
+        color: #ffffff;
+        font-family: "Arial", sans-serif
+        font-size: 24px;
+        letter-spacing: 0px;
+        line-height: 1;
+      }
+      
+      .lateral ul .opcion a {
+        color: #ffffff;
+        font-family: "Arial", sans-serif
+        font-size: 24px;
+        letter-spacing: 0px;
+        line-height: 1;
+        margin-left: 40px;
+      }
+      
+      .lateral ul .cerrarCesion {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        padding: 10px; /* Ajusta el espaciado según sea necesario */
+        background-color: #12284c; /* Agrega un color de fondo */
+        text-align: center; /* Centra el texto */
+      }
+      
+      .lateral ul li a:hover {
+        text-decoration: underline;
+      }
+      
+      .interior .titulo {
+        margin-bottom: 20px;
+        text-align: right;
+        font-family: "Arial", sans-serif
+        font-size: 9px;
+        letter-spacing: 0px;
+        line-height: 1;
+        border-radius: 5px;
+      }
+      
+      .interior .titulo h1 {
+        background-color: #12284c;
+        display: inline-block;
+        padding: 10px; 
+        border-radius: 5px; 
+        color: white;
+      }
+      
+      .panel .ocultar {
+        margin-bottom: 20px;
+        text-align: right;
+        background-color: #b3d3d6;
+        font-family: 'Courier New', ' Courier', ' monospace';
+        font-size: 0px;
+        letter-spacing: 0px;
+        line-height: 1;
+        border-radius: 5px;
+        color: #b3d3d6;
+      }
+      
+      .botones {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-top: 20px;
+        margin-right: 20px;
+      }
+      
+      .altaEmpleado {
+        flex-grow: 1;
+      }
+      
+      .editarEliminarEmpleado {
+        display: flex;
+      }
+      
+      .editarEmpleado,
+      .eliminarEmpleado {
+        margin-left: 10px;
+      }
+      
+      .separacion {
+        margin-bottom: 20px;
+        background-color: #00953a;
+        height: 5px;
+      }
+
+      .tabla-contenedor {
+        width: auto;
+        overflow-y: auto;
+        overflow-x: auto;
+        max-height: 500px;
+        max-width: 100%;
+      }
+
+      .table{
+
+        width: 100%;
+    white-space: nowrap;
+        
+      }
+
+      .table th {
+        width: 10%;
+    }
+      
+
+    </Style>
+  </head>
+
+  <body>
+    <div id="lateral" class="lateral">
+      <ul>
+        <li>
+          <a href="{% url 'dashboard' %}">Panel</a>
+        </li>
+        <br />
+
+        <div class="separacion"></div>
+        <br />
+        <li class="opcion">
+          {% if request.user.is_authenticated %}
+            <a href="">{{ user.first_name }}</a>
+          {% else %}
+            <a href="">No usuario</a>
+          {% endif %}
+        </li>
+        <li class="opcion">
+          <a href="#">Autoevaluación</a>
+        </li>
+        <li class="opcion">
+          <a href="#">Mis evaluaciones</a>
+        </li>
+        <li class="opcion">
+          <a href="#">Por evaluar</a>
+        </li>
+
+        <br />
+
+        <div class="separacion"></div>
+        <br />
+        <li class="opcion">
+          <a href="{% url 'listaEmpleados' %}">Empleados</a>
+        </li>
+        <li class="opcion">
+          <a href="#">Evaluaciones</a>
+        </li>
+        <li class="opcion">
+          <a href="#">Informes</a>
+        </li>
+        <br />
+
+        <div class="separacion"></div>
+        <br />
+        <li class="cerrarSesion">
+          {% if request.user.is_authenticated %}
+            <a href="{% url 'salir' %}">Cerrar sesión</a>
+          {% else %}
+            <a href="{% url 'login' %}">Iniciar sesión</a>
+          {% endif %}
+        </li>
+      </ul>
+    </div>
+
+    <div id="panel" class="panel">
+      <div class="interior">
+        <div id="titulo" class="titulo">
+          <h1>Empleados</h1>
+        </div>
+
+        <br />
+
+        <div id="empleados" class="empleados">
+          <div class="">
+            <table class="table tabla-contenedor table-success table-striped table-responsive">
+              <tr>
+                <th scope="col">Id</th>
+                <th scope="col">No. Empleado</th>
+                <th scope="col">Nombre</th>
+                <th scope="col">Apellido</th>
+                <th scope="col">Correo</th>
+                <th scope="col">Contraseña</th>
+                <th scope="col">Puesto</th>
+                <th scope="col">Departamento</th>
+                <th scope="col">Rango</th>
+                <th scope="col">Seleccionar</th>
+              </tr>
+              {% if empleados %}
+                {% for empleado in empleados %}
+                  <tr>
+                    <td scope="row">{{ empleado.id }}</td>
+                    <td>{{ empleado.no_emp }}</td>
+                    <td>{{ empleado.nombre }}</td>
+                    <td>{{ empleado.apellido_paterno }}</td>
+                    <td>{{ empleado.correo }}</td>
+                    <td>{{ empleado.password }}</td>
+                    <td>{{ empleado.puesto.nombre }}</td>
+                    <td>{{ empleado.puesto.departamento }}</td>
+                    <td>{{ empleado.rango.nombre }}</td>
+                    <td>
+                      <input type="radio" name="empleado_seleccionado" value="{{ empleado.no_emp }}" onchange="habilitarBotones()" />
+                    </td>
+                  </tr>
+                {% endfor %}
+              {% else %}
+                <tr>
+                  <td colspan="8">No hay empleados</td>
+                </tr>
+              {% endif %}
+            </table>
+          </div>
+        </div>
+
+        <div class="botones">
+          <div id="altaEmpleado" class="altaEmpleado">
+            <a href="{% url 'altaEmpleados' %}" class="btn btn-primary">Alta empleado</a>
+          </div>
+          <div id="editarEliminarEmpleado" class="editarEliminarEmpleado">
+            <div id="editarEmpleado" class="editarEmpleado">
+              <button onclick="editarEmpleado()" class="btn btn-success editarBtn" disabled="disabled">Editar empleado</button>
+            </div>
+            <div id="eliminarEmpleado" class="eliminarEmpleado">
+              <button onclick="eliminarEmpleado()" class="btn btn-danger eliminarBtn" disabled="disabled">Eliminar empleado</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function habilitarBotones() {
+        var radiosSeleccionados = document.querySelectorAll('input[name="empleado_seleccionado"]:checked');
+        var editarBtn = document.querySelector('.editarBtn');
+        var eliminarBtn = document.querySelector('.eliminarBtn');
+    
+        if (radiosSeleccionados.length > 0) {
+          editarBtn.disabled = false;
+          eliminarBtn.disabled = false;
+        } else {
+          editarBtn.disabled = true;
+          eliminarBtn.disabled = true;
+        }
+      }
+
+      function editarEmpleado(){
+        var empleadoSeleccionado = document.querySelector('input[name="empleado_seleccionado"]:checked');
+        console.log(empleadoSeleccionado.value)
+        var idEmpleado = empleadoSeleccionado.value;
+        window.location.href = '/editarEmpleado/' + idEmpleado + '/';
+      }
+
+      function eliminarEmpleado(){
+        var empleadoSeleccionado = document.querySelector('input[name="empleado_seleccionado"]:checked');
+        if(empleadoSeleccionado){
+          var idEmpleado = empleadoSeleccionado.value;
+          window.location.href = '/eliminarEmpleado/' + idEmpleado + '/';
+        }
+      }
+
+      var radioButtons = document.querySelectorAll('input[name="empleado_seleccionado"]');
+      radioButtons.forEach(function (radio) {
+        radio.addEventListener('change', habilitarBotones);
+      });
+
+      habilitarBotones();
+    </script>
+  </body>
+</html>

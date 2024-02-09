@@ -1,5 +1,11 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import AbstractUser, Group, Permission
+
+class Usuarios(AbstractUser):
+    email = models.EmailField('email address', unique=True)
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username']
 
 
 class Puestos (models.Model):
@@ -126,6 +132,8 @@ class ComentariosIndividuales (models.Model):
 
     def __str__(self):
         return  str(self.fecha) + ' - ' + str(self.empleadoComentario) + ' - ' + str(self.comentario)
+
+
 
 
 
