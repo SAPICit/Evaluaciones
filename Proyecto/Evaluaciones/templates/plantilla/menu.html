@@ -1,0 +1,63 @@
+{% load static %}
+<body>
+  <div id="lateral" class="lateral">
+    <ul>
+      <li class="opcionImg">
+        <img src={% static 'img/usuario.png' %} alt="Imagen" width="35px" height="35px">
+        {% if request.user.is_authenticated %}
+          <a href="">{{ user.first_name }} {{user.last_name}}</a>
+        {% else %}
+          <a href="">No usuario</a>
+        {% endif %}
+      </li>
+      <br />
+
+      <div class="separacion"></div>
+        <li class="opcionImg">
+            <img src={% static 'img/tareas.png' %} alt="Imagen" width="35px" height="35px">
+            <a href="{% url 'dashboard' %}">Panel</a>
+        </li>
+      <li class="opcion">
+        
+      </li>
+      <li class="opcion">
+        <a href="#">Autoevaluación</a>
+      </li>
+      <li class="opcion">
+        <a href="#">Mis evaluaciones</a>
+      </li>
+      <li class="opcion">
+        <a href="#">Por evaluar</a>
+      </li>
+
+      <br />
+
+      <div class="separacion"></div>
+      <li class="opcionImg">
+        <img src={% static 'img/usuarios.png' %} alt="Imagen" width="35px" height="35px">
+        <a href="{% url 'listaEmpleados' %}">Empleados</a>
+      <li/>
+      <li class="opcion">
+        
+      </li>
+      <li class="opcion">
+        <a href="{% url 'evaluaciones' %}">Evaluaciones</a>
+      </li>
+      <li class="opcion">
+        <a href="#">Informes</a>
+      </li>
+      <br />
+
+      <div class="separacion"></div>
+      <br />
+      <li class="cerrarSesion">
+        {% if request.user.is_authenticated %}
+        <a href="{% url 'salir' %}">Cerrar sesión</a>
+        <img src={% static 'img/salida.png' %} alt="Imagen" width="35px" height="35px">
+        {% else %}
+          <a href="{% url 'login' %}">Iniciar sesión</a>
+        {% endif %}
+      </li>
+    </ul>
+  </div>
+

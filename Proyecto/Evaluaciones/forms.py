@@ -21,6 +21,7 @@ class crearEmpleado(forms.Form):
     rango_id = forms.ModelChoiceField(queryset=Rangos.objects.all(), label='Rango', required=True, widget=forms.Select(attrs={'class':'form-control'}))
 
 
+
 class formularioEditarEmpleado(forms.ModelForm):
     class Meta:
         model = Empleados

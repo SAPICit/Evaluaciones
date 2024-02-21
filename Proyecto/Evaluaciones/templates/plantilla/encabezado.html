@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en" >
+  <head>
+    <title>Dashboard</title>
+    {% comment %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/barraNavegacion.css' %}" />
+{% endcomment %}
+<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+ <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+ 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+<Style>
+      body {
+        background-color: #fff;
+      }
+      
+      html {
+        height: 100%;
+      }
+      
+      .panel {
+        padding: 15px;
+        margin-left: max(10%, 250px);
+        padding: 0 15px;
+        padding-top: 15px;
+        padding-bottom: 15px;
+        height: 100%;
+        text-align: justify;
+        background: white;
+        background-color: #fff;
+      }
+      
+      .interior {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 10px;
+      }
+
+      .interiorG {
+        background-color: #d9d9d6;
+        padding-left: 20px;
+        padding-bottom: 20px;
+        padding-top: 20px;
+        border-radius: 10px;
+      }
+      
+      .classAltaEmpleado {
+        margin-left: 20px;
+        padding: 30px;
+        margin-left: max(10%, 200px);
+        padding: 0 30px;
+        height: 100%;
+        text-align: justify;
+        background: white;
+      }
+      
+      .lateral {
+        background: #12284c;
+        color: white;
+        width: 250px;
+        padding: 20px;
+        padding-top: 30px;
+        height: 100%;
+        border-radius: 10px;
+        box-sizing: border-box;
+        height: 100%;
+        display: inline-block;
+        position: fixed;
+        flex: 0 0 auto;
+      }
+      
+      .lateral ul {
+        list-style-type: none;
+        padding: 0;
+      }
+      
+      .lateral ul li {
+        margin-bottom: 10px;
+      }
+      
+      .lateral ul .opcion {
+        border-right: 15px;
+      }
+      
+      .lateral ul li a {
+        color: #ffffff;
+        font-family: "Arial", sans-serif
+        font-size: 24px;
+        letter-spacing: 0px;
+        line-height: 1;
+      }
+      
+      .lateral ul .opcion a {
+        color: #ffffff;
+        font-family: "Arial", sans-serif
+        font-size: 24px;
+        letter-spacing: 0px;
+        line-height: 1;
+        margin-left: 50px;
+      }
+
+      .lateral ul .opcionImg a {
+        color: #ffffff;
+        font-family: "Arial", sans-serif
+        font-size: 24px;
+        letter-spacing: 0px;
+        line-height: 1;
+        margin-left: 10px;
+      }
+      
+      .lateral ul .cerrarSesion {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding-bottom: 10px; /* Ajusta el espaciado según sea necesario */
+        padding-right: 25px;
+        background-color: #12284c; /* Agrega un color de fondo */
+        text-align: right; /* Centra el texto */
+    }
+    
+      .interiorG .titulo {
+        margin-bottom: 20px;
+        text-align: right;
+        font-family: "Arial", sans-serif
+        font-size: 9px;
+        letter-spacing: 0px;
+        line-height: 1;
+        border-radius: 5px;
+      }
+      
+      .interiorG .titulo h1 {
+        background-color: #12284c;
+        display: inline-block;
+        padding: 10px; 
+        border-radius: 5px; 
+        color: white;
+      }
+      
+
+      .lateral ul li a:hover {
+        text-decoration: underline;
+      }
+
+      .panel .ocultar {
+        margin-bottom: 20px;
+        text-align: right;
+        background-color: #b3d3d6;
+        font-family: "Arial", sans-serif;
+        font-size: 0px;
+        letter-spacing: 0px;
+        line-height: 1;
+        border-radius: 5px;
+        color: #b3d3d6;
+      }
+      
+      .separacion {
+        margin-bottom: 20px;
+        background-color: #00953a;
+        height: 5px;
+      }
+
+      .contenedor {
+        padding: 20px;
+    }
+    
+    .meses, .general, .individual {
+        background-color: #d9d9d6;
+        color: #000;
+        width: calc(33.33% - 20px);
+        height: 250px;
+        border-radius: 10px;
+        margin: 10px;
+        display: inline-block;
+        font-family: Arial, sans-serif;
+        font-size: 20px; 
+    }
+
+    .individual {
+      color: #000;
+        width: calc(33.33% - 20px);
+        height: 250px;
+        border-radius: 10px;
+        margin: 10px;
+        display: inline-block;
+        font-family: Arial, sans-serif;
+        font-size: 20px; 
+    }
+    
+    .split {
+        display: flex;
+        flex-direction: column; 
+        justify-content: space-between;
+        height: 100%;
+    }
+    
+    .split-half {
+        height: 50%;
+        margin: 0;
+    }
+    
+    h3 {
+        padding: 10px;
+        font-family: Arial, sans-serif;
+        font-size: 20px; 
+    }
+    
+    .primeraFila, .segundaFila, .terceraFila {
+        text-align: center; 
+    }
+    
+    .botones {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-top: 20px;
+        margin-right: 20px;
+      }
+      
+      .altaEmpleado {
+        flex-grow: 1;
+      }
+      
+      .editarEliminarEmpleado {
+        display: flex;
+      }
+      
+      .editarEmpleado,
+      .eliminarEmpleado {
+        margin-left: 10px;
+      }
+
+      .tabla-contenedor {
+        width: auto;
+        overflow-y: auto;
+        overflow-x: auto;
+        max-height: 500px;
+        max-width: 99%;
+        text-align: center;
+      }
+
+      .table{
+
+        width: 100%;
+        white-space: nowrap;
+        margin-height: 15px;
+      }
+
+      .table th {
+        width: 10%;
+    }
+      
+    .btn-enviar {
+        background-color: #12284c; 
+        color: white;
+        border-color: #12284c; 
+    }
+
+    .btn-enviar:hover {
+      background-color: #15124c;
+      border-color: #00953a;
+  }
+
+  .eva {
+    background-color: #fff;
+    border-left: 30px;
+    margin-right: 20px;
+    padding:30px;
+  }
+
+  .apartado {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #d9d9d6;
+    border-radius: 50px;
+    height: calc(33.33% - 20px);
+    font-size: 10px;
+  }
+
+  .apartado h1{
+    color: black;
+    font-size: 15px;
+    margin: 10px;
+  }
+
+  .apartado a{
+    color: black;
+    font-size: 15px;
+    margin: 10px;
+  }
+
+  .tablaOKR {
+    border-radius: 20px;
+  }
+
+  .tablaCL td {
+    white-space: normal; /* Permitir que el texto se envuelva */
+    word-wrap: break-word; /* Romper las palabras largas si es necesario */
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  .tablaOKR td {
+    white-space: normal; /* Permitir que el texto se envuelva */
+    word-wrap: break-word; /* Romper las palabras largas si es necesario */
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  .tablaKPI td {
+    white-space: normal; /* Permitir que el texto se envuelva */
+    word-wrap: break-word; /* Romper las palabras largas si es necesario */
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  .tablaBono td {
+    white-space: normal; /* Permitir que el texto se envuelva */
+    word-wrap: break-word; /* Romper las palabras largas si es necesario */
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  .tablaEvaluacion1 td, .tablaEvaluacion2 td, .tablaEvaluacion3 td, .tablaEvaluacion4 td{
+    white-space: normal; /* Permitir que el texto se envuelva */
+    word-wrap: break-word; /* Romper las palabras largas si es necesario */
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  .tablaOKR .tablaCL .tablaKPI th {
+    text-align: center;
+  }
+
+
+  .formularioAltaEmpelado{
+    margin-right: 15px;
+  }
+
+  .formularioEditarEmpleado{
+    margin-right: 15px;
+  }
+
+ 
+  .modalError{
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+  
+  .modal-content {
+    background-color: #fefefe;
+    margin: 10% auto; /* Ajuste de margen para centrar verticalmente */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 50%;
+    position: relative;
+  }
+  
+  .closeError{
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 10px;
+  }
+  
+  .closeError:hover {
+    color: black;
+    cursor: pointer;
+  }
+  
+  .modalEnviar{
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+  
+  .closeEnviar{
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 10px;
+  }
+  
+  .closeEnviar:hover {
+    color: black;
+    cursor: pointer;
+  }
+  
+
+
+  /* Estilos para el contenido del modal */
+  .modal-content img {
+    display: block;
+    margin: 0 auto;
+  }
+  
+  .modal-content p {
+    text-align: center;
+  }
+  
+  .modal-content img,
+  .modal-content p {
+    margin-bottom: 20px;
+  }
+    
+  .nota {
+    color: #f00;
+    float: right;
+    font-size: 16px;
+    font-weight: bold;
+    align : right;
+  }
+
+
+  .tablaEvaluaciones td{
+    width: auto;
+    overflow-y: auto;
+    overflow-x: auto;
+    max-height: 500px;
+    max-width: 99%;
+    white-space: normal;
+    word-wrap: break-word;
+    text-align: center;
+    vertical-align: middle;
+  }
+
+
+    </Style>
+  </head>

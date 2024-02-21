@@ -11,21 +11,26 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+from os import path
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+PROJECT_DIR = path.dirname(BASE_DIR)
+
+def location(*args):
+    return path.join(BASE_DIR, *args)
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 's!4q!h#_)u30k5*#5y@#mjrd=h(qe28!f44i%+=se4@bdky)#9'
+SECRET_KEY = '^j^0%18)6kv8jvmie++g8dx2@141%g=z7%f$_*5_x2ze=9b3qw'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -77,7 +82,7 @@ WSGI_APPLICATION = 'Proyecto.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'sql_server.pyodbc',
-        'NAME': 'PRUEBAS_Evaluaciones',
+        'NAME': 'PRUEBAS2_Evaluaciones',
         'USER': 'Tesch',
         'PASSWORD': 'B1Admin',
         'HOST': '192.168.1.250',
@@ -124,12 +129,14 @@ USE_TZ = True
 LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = '/'
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.0/howto/static-files/
-
 STATIC_URL = '/static/'
 AUTH_USER_MODEL = 'evaluaciones.Usuarios'
+
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
+
+MEDIA_URL = '/media/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 

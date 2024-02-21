@@ -1,0 +1,110 @@
+{% extends "plantilla/master.html" %}
+{% load static %}
+
+
+{% block contenido %}
+
+
+
+    <div id="panel" class="panel">
+      <div class="interiorG">
+        <div id="titulo" class="titulo">
+          <h1>Evaluaciones</h1>
+        </div>
+        
+        <div class="row g-3">
+
+        <div id="crearEvaluacion" class="crearEvaluacion col-md-3">
+          <a onclick="crearEvaluacion()" class="btn btn-primary btn-enviar">Crear evaluacion</a>
+        </div>
+
+        <div id="editarEvaluacion" class="editarEvaluacion col-md-3">
+          <a onclick="editarEvaluacion()" class="btn btn-primary btn-enviar">Editar evaluacion</a>
+        </div>
+
+        <div id="asignarEvaluacion" class="asignarEvaluacion col-md-3">
+          <a onclick="asignarEvaluacion()" class="btn btn-primary btn-enviar">Asignar evaluacion</a>
+        </div>
+
+        <div id="rutaEvaluacion" class="rutaEvaluacion col-md-3">
+          <a onclick="crearRuta()" class="btn btn-primary btn-enviar">Rutas seguimiento</a>
+        </div>
+        
+      </div>
+
+      <div class="table-responsive" id="tablaEvaluaciones">
+      <br/>
+      <br/>
+
+      <div class="eva">
+        <h2> Evaluaciones asignadas</h2>
+        <br/>
+        <table id="tablaEvaluaciones" class="tablaEvaluaciones table table-striped table-responsive table-bordered">
+            <thead>
+                <tr>
+                    <th>Num. Evaluación</th>
+                    <th>Fecha</th>
+                    <th>Empleado</th>
+                    <th>Seguimiento</th>
+                    <th>Fase</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for evaluacion in evaluaciones %}
+                <tr>
+                    <td>{{evaluacion.numeroEvaluacion_id}}</td>
+                    <td>{{evaluacion.fecha.mes}}/{{evaluacion.fecha.anio}}</td>
+                    <td>{{evaluacion.empleado}}</td>
+                    <td>
+                      {%if evaluacion.seguimiento.evaluador1_id == 1%}
+                      {%else%}
+                        {{evaluacion.seguimiento.evaluador1}}
+                      {%endif%}
+                      {%if evaluacion.seguimiento.evaluador2_id == 1%}
+                      {%else%}
+                        - {{evaluacion.seguimiento.evaluador2}}
+                      {%endif%}
+                      {%if evaluacion.seguimiento.evaluador3_id == 1%}
+                      {%else%}
+                        - {{evaluacion.seguimiento.evaluador3}}
+                      {%endif%}
+                      {%if evaluacion.seguimiento.evaluador4_id == 1%}
+                      {%else%}
+                       - {{evaluacion.seguimiento.evaluador4}}
+                      {%endif%}
+                      
+                    </td>
+                    <td>{{evaluacion.fase.nombre}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+      </div>
+      </div>
+    </div>
+
+
+    <Script>
+      function editarEvaluacion(){
+        window.location.href = '/editarEvaluacion/';
+      }
+
+      function crearEvaluacion(){
+        window.location.href = '/crearEvaluacion2/';
+      }
+
+      function asignarEvaluacion(){
+        window.location.href = '/asignarEvaluacion/';
+      }
+
+      function crearRuta(){
+        window.location.href = '/rutaEvaluacion/';
+      }
+
+
+
+    </Script>
+  </body>
+</html>
+{% endblock %}

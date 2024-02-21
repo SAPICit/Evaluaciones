@@ -1,0 +1,106 @@
+{% extends "plantilla/master.html" %}
+{% load static %}
+
+
+{% block contenido %}
+
+
+
+    <div id="panel" class="panel">
+      <div class="interiorG">
+        <div id="titulo" class="titulo">
+          <h1>Crear ruta de seguimiento</h1>
+        </div>
+        
+        
+        <div class="eva">
+          <form class="formularioRutaEvaluacion" id="formularioRutaEvaluacion" action="{% url 'guardarRutaEvaluacion' %}" method="post">
+            {% csrf_token %}
+            <div class="row g-3">
+            <div class="col-md-4">
+              <label for="evaluador1">Evaluador 1</label><br />
+              <select required class="form-control" id="evaluador1" name="evaluador1">
+                {% for empleado in empleados %}
+                {% if empleado.no_emp == 1 %}
+                <option value="{{ empleado.no_emp }}" selected>
+                    No asignar evaluador
+                </option>
+                {% else %}
+                <option value="{{ empleado.no_emp }}" {% if empleado.no_emp == 1 %} selected {% endif %}>
+                    {{ empleado.no_emp }} - {{ empleado.nombre }} {{ empleado.apellido_paterno }}
+                </option>
+                {% endif %}
+                {% endfor %}
+              </select><br />
+            </div>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label for="evaluador2">Evaluador 2</label><br />
+              <select required class="form-control" id="evaluador2" name="evaluador2">
+                {% for empleado in empleados %}
+                {% if empleado.no_emp == 1 %}
+                <option value="{{ empleado.no_emp }}" selected>
+                    No asignar evaluador
+                </option>
+                {% else %}
+                <option value="{{ empleado.no_emp }}" {% if empleado.no_emp == 1 %} selected {% endif %}>
+                    {{ empleado.no_emp }} - {{ empleado.nombre }} {{ empleado.apellido_paterno }}
+                </option>
+                {% endif %}
+                {% endfor %}
+              </select><br />
+            </div>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label for="evaluador3">Evaluador 3</label><br />
+              <select required class="form-control" id="evaluador3" name="evaluador3">
+                {% for empleado in empleados %}
+                {% if empleado.no_emp == 1 %}
+                <option value="{{ empleado.no_emp }}" selected>
+                    No asignar evaluador
+                </option>
+                {% else %}
+                <option value="{{ empleado.no_emp }}" {% if empleado.no_emp == 1 %} selected {% endif %}>
+                    {{ empleado.no_emp }} - {{ empleado.nombre }} {{ empleado.apellido_paterno }}
+                </option>
+                {% endif %}
+                {% endfor %}
+              </select><br />
+            </div>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label for="evaluador4">Evaluador 4</label><br />
+              <select required class="form-control" id="evaluador4" name="evaluador4">
+                {% for empleado in empleados %}
+                {% if empleado.no_emp == 1 %}
+                <option value="{{ empleado.no_emp }}" selected>
+                    No asignar evaluador
+                </option>
+                {% else %}
+                <option value="{{ empleado.no_emp }}" {% if empleado.no_emp == 1 %} selected {% endif %}>
+                    {{ empleado.no_emp }} - {{ empleado.nombre }} {{ empleado.apellido_paterno }}
+                </option>
+                {% endif %}
+                {% endfor %}
+              </select><br />
+            </div>
+          </div>
+          <div class="nota">
+            <input type="submit" value="Crear ruta" class="btn btn-primary btn-enviar" />
+          </div>
+        </form>
+        
+        <br/>
+        <br/>
+        {% comment %} <h1 class="nota"> Nota: Para no asignar evaluador seleccionar el valor "1 - Manager"</h1> {% endcomment %}
+      </div>
+    </div>
+  </body>
+</html>
+{% endblock %}

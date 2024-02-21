@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,7 +7,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
     <title>Login</title>
     <style>
-        body, html {
+        body {
             height: 100%;
             margin: 0;
             display: flex;
@@ -14,14 +15,22 @@
             align-items: center;
             background-color: #f0f0f0;
         }
+
+        html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
     
         .contenedor {
-            background-color: #12284c;
+            background-color: rgba(18, 40, 76, 0.9); /* Color de fondo con transparencia */
             color: white;
             width: 80%;
             padding: 20px;
             border-radius: 8px; 
-            height: 50%; 
+            height: 60%; 
             display: flex;
             flex-direction: column;
             justify-content: space-between; /* Distribuye los elementos dentro del contenedor */
@@ -37,9 +46,51 @@
             align-items: center;
             margin: 10px;
             background-color: #cccccc;
-            padding: 20px;
-            align-self: flex-end; /* Alinea el formulario al final del contenedor */
+            padding: 15px;
         }
+    
+        .formulario form {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+    
+        .formulario label,
+        .formulario input {
+            margin-bottom: 10px;
+        }
+    
+        .btn-enviar {
+            margin-left: auto;
+        }
+
+        /* Aplicar el desenfoque a la imagen de fondo */
+        body::before {
+            content: "";
+            background-image: url("{% static 'img/imgPrueba.jpg' %}");
+            background-size: cover;
+            background-position: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -1;
+             filter: blur(2px);
+        }
+
+        .btn-enviar {
+            background-color: #12284c; 
+            color: white;
+            border-color: #12284c;
+            align-items : center;
+        }
+
+        label {
+            color: #000;
+        }
+
+
     </style>
     
 
@@ -49,24 +100,32 @@
 <body>
     <div class="contenedor">
             <h1>Evaluación de desempeño</h1>
-        <div class="formulario">
-            <form method="post" action="{% url 'login' %}">
-                {% csrf_token %}
+            <div class="formulario">
+                <form method="post" action="{% url 'login' %}">
+                    {% csrf_token %}
+                    <label class="form-label" for="id_username">Correo</label>
+                    <input type="text" name="username" class="form-control" id="id_username" required>
+            
+                    <label class="form-label mt-2" for="id_password">Contraseña</label>
+                    <input type="password" name="password" class="form-control" id="id_password" required>
+                {% comment %}
                 <table>
-                    <tr>
+                     <tr>
                         <td>{{ form.username.label_tag }}</td>
-                        <td class="form-control">{{ form.username }}</td>
-                    </tr>
-                    <tr>
+                        <td>{{ form.username }}</td>
+                    </tr> {% endcomment %}
+                    {% comment %} <tr>
                         <td>{{ form.password.label_tag }}</td>
                         <td>{{ form.password }}</td>
-                    </tr>
+                    </tr> 
                 </table>
-                <input type="submit" value="login">
-                <input type="hidden" name="next" value="{{ next }}">
+                {% endcomment %}
+                {% comment %} <input type="submit" value="login"> {% endcomment %}
                 <br/>
-            </form>
-        </div>
+                <button type="submit" value="login" class="btn btn-primary btn-enviar">Ingresar</button>
+        <input type="hidden" name="next" value="{{ next }}">
+    </form>
+</div>
         
     <div>
 </body>

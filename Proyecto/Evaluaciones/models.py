@@ -1,22 +1,29 @@
 from django.db import models
 from django.utils import timezone
-from django.contrib.auth.models import AbstractUser, Group, Permission
+from django.contrib.auth.models import AbstractUser
 
 class Usuarios(AbstractUser):
     email = models.EmailField('email address', unique=True)
+    no_emp = models.IntegerField('employee number', unique=True)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 
 
 class Puestos (models.Model):
     nombre = models.TextField()
-    departamento = models.TextField()
     estatus = models.SmallIntegerField()
 
     def __str__(self):
-        return self.nombre + ' - ' + self.departamento
+        return self.nombre
 
 class Rangos (models.Model):
+    nombre = models.TextField()
+    estatus = models.SmallIntegerField()
+
+    def __str__(self):
+        return self.nombre
+    
+class Departamentos (models.Model):
     nombre = models.TextField()
     estatus = models.SmallIntegerField()
 
@@ -28,112 +35,126 @@ class Empleados (models.Model):
     nombre = models.TextField()
     apellido_paterno = models.TextField()
     apellido_materno = models.TextField()
-    correo = models.TextField()  
+    correo = models.TextField()
     password = models.TextField()
     puesto = models.ForeignKey(Puestos,on_delete=models.PROTECT)
     rango = models.ForeignKey(Rangos,on_delete=models.PROTECT)
+    departamento = models.ForeignKey(Departamentos,on_delete=models.PROTECT)
     estatus = models.SmallIntegerField()
 
     def __str__(self):
-        return self.nombre + ' ' + self.apellido_paterno + ' ' + self.apellido_materno
+        return self.nombre + ' ' + self.apellido_paterno 
     
-class Apartados (models.Model):
+
+class Fechas(models.Model):
+    mes = models.IntegerField()
+    anio = models.IntegerField()
+    version = models.IntegerField()
+
+    def __str__(self):
+        return str(self.mes) + '/' + str(self.anio) + ' V' + str(self.version)
+
+class Apartados(models.Model):
     nombre = models.TextField()
     valor = models.FloatField()
-    estatus = models.SmallIntegerField()
+    estatus = models.IntegerField()
 
     def __str__(self):
-        return self.nombre
+        return self.nombre + ' ' + str(self.valor)
     
-class Objetivos (models.Model):
-    objetivo= models.TextField()
+class NumerosEvaluaciones(models.Model):
+    estatus = models.IntegerField()
+    fechaCreacion = models.DateField()
+
+    def __str__(self):
+        return str(self.fechaCreacion)
+
+
+class Objetivos(models.Model):
+    objetivo = models.TextField()
     metrica = models.TextField()
     valor = models.FloatField()
-    apartado = models.ForeignKey(Apartados,on_delete=models.PROTECT)
-    estatus = models.SmallIntegerField()
+    apartado = models.ForeignKey('Apartados', on_delete=models.PROTECT)
+    numeroEvaluacion = models.ForeignKey('NumerosEvaluaciones', on_delete=models.PROTECT)
+    estatus = models.IntegerField()
 
     def __str__(self):
-        return self.objetivo + ' - ' + self.metrica
+        return self.objetivo + ' ' + self.metrica + ' ' + str(self.valor) + ' ' + str(self.apartado) + ' ' + str(self.tipoEvaluacion)
     
-class Fechas (models.Model):
-    mes = models.SmallIntegerField()
-    anio = models.SmallIntegerField()
-    estatus = models.SmallIntegerField()
+class Seguimiento(models.Model):
+    evaluador1 = models.ForeignKey('Empleados', to_field='no_emp',related_name='evaluador1', on_delete=models.PROTECT)
+    evaluador2 = models.ForeignKey('Empleados', to_field='no_emp',related_name='evaluador2', on_delete=models.PROTECT)
+    evaluador3 = models.ForeignKey('Empleados',to_field='no_emp', related_name='evaluador3', on_delete=models.PROTECT)
+    evaluador4 = models.ForeignKey('Empleados',to_field='no_emp', related_name='evaluador4', on_delete=models.PROTECT)
+    estatus = models.IntegerField()
 
     def __str__(self):
-        return f"{self.mes} - {self.anio}"
-    
-class Calificaciones (models.Model):
-    empleado = models.ForeignKey(Empleados, to_field='no_emp',on_delete=models.PROTECT)
-    fecha = models.ForeignKey(Fechas,on_delete=models.PROTECT)
-    cal_autoevaluacion = models.FloatField()
-    cal_jefe = models.FloatField()
-    cal_administrador = models.FloatField()
-    cal_supervisor = models.FloatField()
-    cal_director = models.FloatField()
-    estatus = models.SmallIntegerField()
+        return str(self.no_emp) + ' ' + str(self.fecha) + ' ' + str(self.evaluador1) +  ' ' + str(self.evaluador2) + ' '  + str(self.evaluador3) + ' ' + str(self.evaluador4) + ' ' + str(self.estatus)
+
+class Fases (models.Model):
+    nombre = models.TextField()
+    estatus = models.IntegerField()
 
     def __str__(self):
-        return str(self.calificacion) + ' - ' + str(self.empleado) 
-    
-class Seguimientos (models.Model):
-    empleado = models.ForeignKey(Empleados, to_field='no_emp', on_delete=models.PROTECT, related_name='seguimientos_empleado')
-    fecha = models.ForeignKey(Fechas, on_delete=models.PROTECT)
-    id_evaluador1 = models.ForeignKey(Empleados, to_field='no_emp', on_delete=models.PROTECT, related_name='seguimientos_evaluador1')
-    contestado_evaludado1 = models.BooleanField()
-    id_evaluador2 = models.ForeignKey(Empleados, to_field='no_emp', on_delete=models.PROTECT, related_name='seguimientos_evaluador2')
-    contestado_evaludado2 = models.BooleanField()
-    id_evaluador3 = models.ForeignKey(Empleados, to_field='no_emp', on_delete=models.PROTECT, related_name='seguimientos_evaluador3')
-    contestado_evaludado3 = models.BooleanField()
-    id_evaluador4 = models.ForeignKey(Empleados, to_field='no_emp', on_delete=models.PROTECT, related_name='seguimientos_evaluador4')
-    contestado_evaludado4 = models.BooleanField()
-    estatus = models.SmallIntegerField()
+        return self.nombre + ' ' + str(self.estatus)
 
-    def __str__(self):
-        return str(self.empleado) + ' - ' + str(self.fecha)
-    
 class Evaluaciones (models.Model):
-    empleado = models.ForeignKey(Empleados, to_field='no_emp',on_delete=models.PROTECT)
-    seguimiento = models.ForeignKey(Seguimientos,on_delete=models.PROTECT)
-    fecha = models.ForeignKey(Fechas,on_delete=models.PROTECT)
-    comentarios_autoevaluado = models.TextField()
-    comentarios_jefe = models.TextField()
-    comentarios_director = models.TextField()
-    comentarios_supervisor = models.TextField()
-    comentarios_administrador = models.TextField()
-    calificacion = models.ForeignKey(Calificaciones,on_delete=models.PROTECT)
-    estatus = models.SmallIntegerField()
-    fechaActivacion = models.DateTimeField(default=timezone.now)
+    fecha = models.ForeignKey('Fechas', on_delete=models.PROTECT)
+    empleado = models.ForeignKey('Empleados', to_field='no_emp', on_delete=models.PROTECT)
+    numeroEvaluacion = models.ForeignKey('NumerosEvaluaciones', on_delete=models.PROTECT)
+    seguimiento = models.ForeignKey('Seguimiento', on_delete=models.PROTECT)
+    fechaActivacion = models.DateField()
+    fase = models.ForeignKey('Fases', on_delete=models.PROTECT)
+    estatus = models.IntegerField()
 
     def __str__(self):
-        return str(self.seguimiento) + ' - ' + str(self.objetivo)
+        return str(self.fecha) + ' ' + str(self.empleado) + ' ' + str(self.estatus) 
     
-class ObjetivosMensuales (models.Model):
-    empleado = models.ForeignKey(Empleados, to_field='no_emp',on_delete=models.PROTECT)
-    fecha = models.ForeignKey(Fechas,on_delete=models.PROTECT)
-    objetivo = models.ForeignKey(Objetivos,on_delete=models.PROTECT)
-    evaluacion = models.ForeignKey(Evaluaciones,on_delete=models.PROTECT)
-    cal_autoevaluacion = models.FloatField()
-    cal_jefe = models.FloatField()
-    cal_director = models.FloatField()
-    cal_administrador = models.FloatField()
-    cal_supervisor = models.FloatField()
-    estatus = models.SmallIntegerField()
+class Resultados(models.Model):
+    evaluacion = models.ForeignKey('Evaluaciones', on_delete=models.PROTECT)
+    calificacion_autoevaluado = models.FloatField()
+    calificacion_evaluador1 = models.FloatField()
+    calificacion_evaluador2 = models.FloatField()
+    calificacion_evaluador3 = models.FloatField()
+    calificacion_evaluador4 = models.FloatField()
+    calificacion_director = models.FloatField()
+    estatus = models.IntegerField()
 
     def __str__(self):
-        return str(self.evaluacion) + ' - ' + str(self.objetivo) + ' - ' + str(self.fecha) + ' - ' + str(self.empleado)
+        return str(self.evaluacion) + ' ' + str(self.calificacion_autoevaluado) + ' ' + str(self.calificacion_evaluador1) + ' ' + str(self.calificacion_evaluador2) + ' ' + str(self.calificacion_evaluador3) + ' ' + str(self.calificacion_evaluador4) + ' ' + str(self.calificacion_director) + ' ' + str(self.estatus)
+    
+class Comentarios(models.Model):
+    evaluacion = models.ForeignKey('Evaluaciones', on_delete=models.PROTECT)
+    comentario_autoevaluado = models.TextField()
+    comentario_evaluador1 = models.TextField()
+    comentario_evaluador2 = models.TextField()
+    comentario_evaluador3 = models.TextField()
+    comentario_evaluador4 = models.TextField()
+    comentario_director = models.TextField()
 
-class ComentariosIndividuales (models.Model):
-    ObjetivoMensual = models.ForeignKey(ObjetivosMensuales,on_delete=models.PROTECT)
-    empleadoComentario = models.ForeignKey(Empleados, to_field='no_emp',on_delete=models.PROTECT)
-    fecha = models.ForeignKey(Fechas,on_delete=models.PROTECT)
+    def __str__(self):
+        return str(self.resultado) + ' ' + str(self.comentario_autoevaluado) + ' ' + str(self.comentario_evaluador1) + ' ' + str(self.comentario_evaluador2) + ' ' + str(self.comentario_evaluador3) + ' ' + str(self.comentario_evaluador4) + ' ' + str(self.comentario_director)
+    
+class CalificacionesObjetivos (models.Model):
+    objetivo = models.ForeignKey('Objetivos', on_delete=models.PROTECT)
+    empleado = models.ForeignKey('Empleados', to_field='no_emp', related_name='empleadoCalificado',on_delete=models.PROTECT)
+    fecha = models.ForeignKey('Fechas', on_delete=models.PROTECT)
+    calificacion = models.FloatField()
+    quienCalifica = models.ForeignKey('Empleados', to_field='no_emp', related_name='quienCalifica',on_delete=models.PROTECT)
+    fechaCalificacion = models.DateField()
+    estatus = models.IntegerField()
+
+    def __str__(self):
+        return str (self.objetivo) + ' ' + str(self.empleado) + ' ' + str(self.fecha) + ' ' + str(self.calificacion) + ' ' + str(self.quienCalifica) + ' ' + str(self.fechaCalificacion) + ' ' + str(self.estatus)
+    
+class ComentariosObjetivos (models.Model):
+    objetivo = models.ForeignKey('Objetivos', on_delete=models.PROTECT)
+    empleado = models.ForeignKey('Empleados', to_field='no_emp', related_name='empleadoComentado',on_delete=models.PROTECT)
+    fecha = models.ForeignKey('Fechas', on_delete=models.PROTECT)
     comentario = models.TextField()
-    estatus = models.SmallIntegerField()
+    quienComenta = models.ForeignKey('Empleados', to_field='no_emp',related_name='quienComenta', on_delete=models.PROTECT)
+    fechaComentario = models.DateField()
+    estatus = models.IntegerField()
 
     def __str__(self):
-        return  str(self.fecha) + ' - ' + str(self.empleadoComentario) + ' - ' + str(self.comentario)
-
-
-
-
-
+        return str(self.objetivo) + ' ' + str(self.empleado) + ' ' + str(self.fecha) + ' ' + str(self.comentario) + ' ' + str(self.quienComenta) + ' ' + str(self.fechaComentario) + ' ' + str(self.estatus)

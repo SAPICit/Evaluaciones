@@ -1,0 +1,466 @@
+{% extends "plantilla/master.html" %}
+{% load static %}
+
+
+{% block contenido %}
+
+
+
+    <div id="panel" class="panel">
+      <div class="interiorG">
+        <div id="titulo" class="titulo">
+          <h1>Asignación de evaluaciones</h1>
+        </div>
+        <div class="eva">
+          <form class="formularioGuardarEvaluacion" id="formularioGuardarEvaluacion" action="{% url 'guardarEvaluacionMensual' %}" method="post">
+            {% csrf_token %}
+          <div class="row g-3">
+          <div class="col-md-6">
+            <label for="numeroEvaluacion">Evaluaciones</label><br />
+            <select required class="form-control" id="numeroEvaluacion" name="numeroEvaluacion">
+              {% for numeroEvaluacion in numeroEvaluacion %}
+              <option value="{{ numeroEvaluacion.id }}" selected>
+                  {{ numeroEvaluacion.id }}
+              </option>
+              {% endfor %}
+            </select><br />
+          </div>
+
+          <div class="col-md-6">
+            <label for="empleado">Asignar a</label><br />
+            <select required class="form-control" id="empleado" name="empleado">
+              {% for empleado in empleados %}
+              <option value="{{ empleado.no_emp }}" selected>
+                  {{ empleado.no_emp }} - {{ empleado.nombre }} {{ empleado.apellido_paterno }}
+              </option>
+              {% endfor %}
+            </select><br />
+          </div>
+
+          <div class="col-md-6">
+            <label for="seguimiento">Asignar ruta</label><br />
+            <select required class="form-control" id="seguimiento" name="seguimiento">
+              {% for seguimiento in seguimientos %}
+              <option value="{{ seguimiento.id }}" selected>
+                  {{ seguimiento.id }}
+              </option>
+              {% endfor %}
+            </select><br />
+          </div>
+
+          <div class="col-md-6">
+            <label for="fecha">Mes a evaluar</label><br />
+            <input class="form-control" type="text" id="fecha" name="fecha" value="{{ fecha.id }}" disabled />
+            <br />
+          </div>
+
+          <div class="nota">
+            <input type="submit" value="Asignar evaluacion" class="btn btn-primary btn-enviar" />
+          </div>
+          
+        </form>
+
+        
+        </div>
+
+        <div class="evaluacion table-responsive" id="evaluacion">
+
+          <br/>
+          <h1 class="descSeguimiento"> Evaluadores </h1>
+          <table id="tablaSeguimiento" class="tablaSeguimiento table table-striped table-responsive table-bordered">
+              <thead>
+                  <tr>
+                      <th>Evaluador 1</th>
+                      <th>Evaluador 2</th>
+                      <th>Evaluador 3</th>
+                      <th>Evaluador 4</th>
+                  </tr>
+              </thead>
+
+              <tbody>
+                <tr>
+                    <!-- Evaluador 1 -->
+                    <td>
+                        {% if rut.evaluador1_id == 1 %}
+                            Sin asignar
+                        {% else %}
+                            {{ rut.evaluador1 }}
+                        {% endif %}
+                    </td>
+                    
+                    <!-- Evaluador 2 -->
+                    <td>
+                        {% if rut.evaluador2_id == 1 %}
+                            Sin asignar
+                        {% else %}
+                            {{ rut.evaluador2 }}
+                        {% endif %}
+                    </td>
+                    
+                    <!-- Evaluador 3 -->
+                    <td>
+                        {% if rut.evaluador3_id == 1 %}
+                            Sin asignar
+                        {% else %}
+                            {{ rut.evaluador3 }}
+                        {% endif %}
+                    </td>
+                    
+                    <!-- Evaluador 4 -->
+                    <td>
+                        {% if rut.evaluador4_id == 1 %}
+                            Sin asignar
+                        {% else %}
+                            {{ rut.evaluador4 }}
+                        {% endif %}
+                    </td>
+                </tr>
+            </tbody>
+            
+          </table>
+
+          <h1 class="descOKR "> OKRs </h1>
+          <table id="tablaEvaluacion1" class="tablaEvaluacion1 table table-striped table-responsive table-bordered">
+              <thead>
+                  <tr>
+                      <th>Objetivo</th>
+                      <th>Metrica</th>
+                      <th>Valor</th>
+                  </tr>
+              </thead>
+
+              <tbody>
+                  {%for obj in obj%}
+                  {% if obj.apartado_id == 1 %}
+                  <tr>
+                      <td>{{obj.objetivo}}</td>
+                      <td>{{obj.metrica}}</td>
+                      <td>{{obj.valor}}</td>
+                  </tr>
+                  {% endif %}
+                  {%endfor%}
+              </tbody>
+          </table>
+
+          <h1 class="descKPI "> KPIs</h1>
+          <table id="tablaEvaluacion2" class="tablaEvaluacion2 table table-striped table-responsive table-bordered" >
+              <thead>
+                  <tr>
+                      <th>Objetivo</th>
+                      <th>Metrica</th>
+                      <th>Valor</th>
+                  </tr>
+              </thead>
+
+              <tbody>
+                {%for obj in obj%}
+                  {% if obj.apartado_id == 2 %}
+                  <tr>
+                      <td>{{obj.objetivo}}</td>
+                      <td>{{obj.metrica}}</td>
+                      <td>{{obj.valor}}</td>
+                  </tr>
+                  {% endif %}
+                  {%endfor%}
+              </tbody>
+          </table>
+
+          <h1 class="descCL "> Cultura laboral </h1>
+          <table id="tablaEvaluacion3" class="tablaEvaluacion3 table table-striped table-responsive table-bordered" >
+              <thead>
+                  <tr>
+                      <th>Objetivo</th>
+                      <th>Metrica</th>
+                      <th>Valor</th>
+                  </tr>
+              </thead>
+              <tbody>
+                {%for obj in obj%}
+                  {% if obj.apartado_id == 3 %}
+                  <tr>
+                      <td>{{obj.objetivo}}</td>
+                      <td>{{obj.metrica}}</td>
+                      <td>{{obj.valor}}</td>
+                  </tr>
+                  {% endif %}
+                  {%endfor%}
+              </tbody>
+          </table>
+
+          <h1 class="descBONO "> Bono </h1>
+          <table id="tablaEvaluacion4" class="tablaEvaluacion4 table table-striped table-responsive table-bordered" > 
+              <thead>
+                  <tr>
+                      <th>Objetivo</th>
+                      <th>Metrica</th>
+                      <th>Valor</th>
+                  </tr>
+              </thead>
+              <tbody>
+                {%for obj in obj%}
+                  {% if obj.apartado_id == 4 %}
+                  <tr>
+                      <td>{{obj.objetivo}}</td>
+                      <td>{{obj.metrica}}</td>
+                      <td>{{obj.valor}}</td>
+                  </tr>
+                  {% endif %}
+                  {%endfor%}
+              </tbody>
+          </table>
+          
+        </div>
+        
+      </div>
+      
+    
+      </div>
+    </div>
+
+    <div id="modalError" class="modalError">
+      <div class="modal-content">
+        <span class="closeError">&times;</span>
+        <img src="{% static 'img/advertencia.png' %}" alt="Imagen" width="35px" height="35px">
+        <p id="modal-messageError"></p>
+      </div>
+    </div>
+  
+
+    <div id="modalEnviar" class="modalEnviar">
+      <div class="modal-content">
+        <span class="closeEnviar">&times;</span>
+        <img src="{% static 'img/comprobado.png' %}" alt="Imagen" width="35px" height="35px">
+        <p id="modal-messageEnviar"></p>
+      </div>
+    </div>
+
+    
+    <script>
+      $(document).ready(function() {
+        $("#numeroEvaluacion").change(function() {
+          var id = $(this).val();
+          $.ajax({
+            url: '/obtener_datos_evaluacion/',
+            data: {
+              'evaluacion_id': id
+            },
+            dataType: 'json',
+            success: function(data) {
+              console.log(data);
+              // Actualiza el contenido de las tablas con los datos recibidos
+
+              //Actualizar tabla de los OKRs
+              var tableOKR = document.querySelector('.tablaEvaluacion1 tbody');
+              var descOKR = document.querySelector('.descOKR');
+              tableOKR.innerHTML = '';
+              if (data.OKR.length > 0) {
+                  // Recorre el arregloOKRs y crea las filas de la tabla
+                  descOKR.innerHTML = 'OKRs';
+                  data.OKR.forEach(function(cl) {
+                      var row = document.createElement('tr');
+                      row.innerHTML = `<td>${cl.objetivo}</td><td>${cl.metrica}</td><td>${cl.valor}</td>`;
+                      tableOKR.appendChild(row);
+                  });
+                  document.querySelector('.tablaEvaluacion1').style.display = 'table';
+              } else {
+                  document.querySelector('.tablaEvaluacion1').style.display = 'none';7
+                  descOKR.innerHTML = '';
+              }
+
+              //Actualizar tabla de los KPIs
+              var tableKPI = document.querySelector('.tablaEvaluacion2 tbody');
+              var descKPI = document.querySelector('.descKPI');
+              tableKPI.innerHTML = '';
+              if (data.KPI.length > 0) {
+                  // Recorre el arregloKPIs y crea las filas de la tabla
+                  descKPI.innerHTML = 'KPIs';
+                  data.KPI.forEach(function(cl) {
+                      var row = document.createElement('tr');
+                      row.innerHTML = `<td>${cl.objetivo}</td><td>${cl.metrica}</td><td>${cl.valor}</td>`;
+                      tableKPI.appendChild(row);
+                  });
+                  document.querySelector('.tablaEvaluacion2').style.display = 'table';
+              }
+              else {
+                  document.querySelector('.tablaEvaluacion2').style.display = 'none';
+                  descKPI.innerHTML = '';
+              }
+
+              //Actualizar tabla de la cultura laboral
+              var tableCL = document.querySelector('.tablaEvaluacion3 tbody');
+              var descCL = document.querySelector('.descCL');
+              tableCL.innerHTML = '';
+              if (data.CL.length > 0) {
+                  // Recorre el arregloCL y crea las filas de la tabla
+                  descCL.innerHTML = 'Cultura Laboral';
+                  data.CL.forEach(function(cl) {
+                      var row = document.createElement('tr');
+                      row.innerHTML = `<td>${cl.objetivo}</td><td>${cl.metrica}</td><td>${cl.valor}</td>`;
+                      tableCL.appendChild(row);
+                  });
+                  document.querySelector('.tablaEvaluacion3').style.display = 'table';
+              }
+              else {
+                  document.querySelector('.tablaEvaluacion3').style.display = 'none';
+                  descCL.innerHTML = '';
+              }
+
+              //Actualizar tabla del bono extra
+              var tableBONO = document.querySelector('.tablaEvaluacion4 tbody');
+              var descBONO = document.querySelector('.descBONO');
+              tableBONO.innerHTML = '';
+              if (data.BONO.length > 0) {
+                  descBONO.innerHTML = 'Bono Extra';
+                  // Recorre el arregloBONO y crea las filas de la tabla
+                  data.BONO.forEach(function(cl) {
+                      var row = document.createElement('tr');
+                      row.innerHTML = `<td>${cl.objetivo}</td><td>${cl.metrica}</td><td>${cl.valor}</td>`;
+                      tableBONO.appendChild(row);
+                  });
+                  document.querySelector('.tablaEvaluacion4').style.display = 'table';
+              }
+              else {
+                  document.querySelector('.tablaEvaluacion4').style.display = 'none';
+                  descBONO.innerHTML = '';
+              }
+            }
+          });
+        });
+
+        $("#seguimiento").change(function() {
+          var id = $(this).val();
+          $.ajax({
+            url: '/obtener_datos_seguimiento/',
+            data: {
+              'seguimiento_id': id
+            },
+            dataType: 'json',
+            success: function(data) {
+              console.log(data);
+              // Actualiza el contenido de las tablas con los datos recibidos
+
+              //Actualizar tabla de los seguimientos
+              var tableSeguimiento = document.querySelector('.tablaSeguimiento tbody');
+              var descSeguimiento = document.querySelector('.descSeguimiento');
+              tableSeguimiento.innerHTML = '';
+              if (data.seguimiento.length > 0) {
+                  // Recorre el arregloSeguimientos y crea las filas de la tabla
+                  descSeguimiento.innerHTML = 'Ruta de la evaluación';
+                  data.seguimiento.forEach(function(cl) {
+                      var row = document.createElement('tr');
+                      var evaluador1_nombre = data.empleados.find(empleado => empleado.no_emp === cl.evaluador1_id);
+                      var evaluador2_nombre = data.empleados.find(empleado => empleado.no_emp === cl.evaluador2_id);
+                      var evaluador3_nombre = data.empleados.find(empleado => empleado.no_emp === cl.evaluador3_id);
+                      var evaluador4_nombre = data.empleados.find(empleado => empleado.no_emp === cl.evaluador4_id);
+
+                      evaluador1 = cl.evaluador1_id + " - " + evaluador1_nombre.nombre;
+                      evaluador2 = cl.evaluador2_id + " - " + evaluador2_nombre.nombre;
+                      evaluador3 = cl.evaluador3_id + " - " + evaluador3_nombre.nombre;
+                      evaluador4 = cl.evaluador4_id + " - " + evaluador4_nombre.nombre;
+
+                      if (cl.evaluador1_id === null || cl.evaluador1_id ===1 ) evaluador1 = "Sin asignar";
+                      if (cl.evaluador2_id === null || cl.evaluador2_id ===1 ) evaluador2 = "Sin asignar";
+                      if (cl.evaluador3_id === null || cl.evaluador3_id ===1 ) evaluador3 = "Sin asignar";
+                      if (cl.evaluador4_id === null || cl.evaluador4_id ===1 ) evaluador4 = "Sin asignar";
+          
+
+                      row.innerHTML = `<td>${evaluador1} </td><td>${evaluador2}</td><td>${evaluador3}</td><td>${evaluador4}</td>`;
+                      tableSeguimiento.appendChild(row);
+                  });
+                  document.querySelector('.tablaSeguimiento').style.display = 'table';
+              } else {
+                  document.querySelector('.tablaSeguimiento').style.display = 'none';
+                  descSeguimiento.innerHTML = '';
+              }
+            }
+          });
+        });
+      });
+      document.getElementById('formularioGuardarEvaluacion').addEventListener('submit', function(event) {
+        event.preventDefault();
+        console.log("detiene envio")
+        enviarDatos(); 
+    });
+
+      function enviarDatos() {
+        // Obtener los datos del formulario
+        var empleado_id = document.getElementById('empleado').value;
+        var fecha = document.getElementById('fecha').value;
+        var evaluacion_id = document.getElementById('numeroEvaluacion').value;
+
+        console.log(empleado_id);
+        console.log(fecha);
+        // Realizar la solicitud AJAX
+        $.ajax({
+            type: 'GET',
+            url: '/obtener_datos_evaluaciones/', // La URL de tu vista Django
+            data: {
+                'empleado_id': empleado_id,
+                'fecha_id': fecha,
+                'numeroEvaluacion_id': evaluacion_id
+            },
+            success: function(response) {
+                if (response.bandera === 0) {
+                    document.getElementById('formularioGuardarEvaluacion').submit();
+                    showModalEnviar("Evaluación asignada correctamente.");
+                } else if (response.bandera === 1) {
+                  console.log("no agrega")
+                    showModalError("Imposible agregar. Usario con evaluación asignada para este mes.");
+                } else {
+                    showModalError("Error al asignar la evaluación. Este usuario no puede tener evaluacion con bono");
+                }
+            }
+        });
+      }
+
+    // Obtener el modal de errores
+    var modal = document.getElementById("modalError");
+    var modalEnviar = document.getElementById("modalEnviar");
+
+    // Obtener el botón que cierra el modal
+    var spanError = document.getElementsByClassName("closeError")[0];
+    var spanEnviar = document.getElementsByClassName("closeEnviar")[0];
+
+    // Función para mostrar el modal con un mensaje específico
+    function showModalError(message) {
+    document.getElementById("modal-messageError").innerText = message;
+    modal.style.display = "block";
+    }
+
+    function showModalEnviar(message) {
+    document.getElementById("modal-messageEnviar").innerText = message;
+    modalEnviar.style.display = "block";
+    }
+
+
+    spanError.onclick = function() {
+    modal.style.display = "none";
+    }
+
+    window.onclick = function(event) {
+      if (event.target == modal) {
+          modal.style.display = "none";
+      }
+      }
+
+
+    spanEnviar.onclick = function() {
+        var url = '/crearEvaluacionDB/' + JSON.stringify(arregloBonos) + '/' + JSON.stringify(arregloCLs) + '/' + JSON.stringify(arregloKPIs) + '/' + JSON.stringify(arregloOKRs) + '/';
+        window.location.href = url;
+
+    }
+
+    window.onclick = function(event) {
+        if (event.target == modalEnviar) {
+            
+            var url = '/crearEvaluacionDB/' + JSON.stringify(arregloBonos) + '/' + JSON.stringify(arregloCLs) + '/' + JSON.stringify(arregloKPIs) + '/' + JSON.stringify(arregloOKRs) + '/';
+        window.location.href = url;
+        }
+    }
+
+
+
+    </script>
+  </body>
+</html>
+{% endblock %}
