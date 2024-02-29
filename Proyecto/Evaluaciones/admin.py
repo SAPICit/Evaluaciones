@@ -3,6 +3,8 @@ from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from .models import Puestos, Rangos, Empleados, Usuarios, Departamentos, Fechas, Apartados, Evaluaciones, ComentariosObjetivos, CalificacionesObjetivos, Resultados, Comentarios, Seguimiento, Objetivos, NumerosEvaluaciones, Fases
 
+admin.site.register(Permission)
+
 admin.site.register(Usuarios)
 admin.site.register(Puestos)
 admin.site.register(Rangos)

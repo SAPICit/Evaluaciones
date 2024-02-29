@@ -23,14 +23,21 @@
                   <div class="split">
                       <div class="split-half">
                           <h3>Próxima evaluación - Parte 1</h3>
+                          
+                          
                       </div>
-                      <div class="split-half">
+                       <div class="split-half">
                           <h3>Próxima evaluación - Parte 2</h3>
                       </div>
                   </div>
               </div>
               <div class="individual">
                   <h3>Cantidad de empleados por departamento</h3>
+                  <div class="eva2">
+                  <div style="height: 162px;">
+                    <canvas id="myChart"></canvas>
+                  </div>
+                </div>
               </div>
               <div class="individual">
                   <h3>Respuestas de mi departamento</h3>
@@ -50,7 +57,37 @@
           </div>
       </div>
   </div>
-  
+ 
+                  
+                  <script>
+                    const ctx2 = document.getElementById('myChart');
+                    new Chart(ctx2, {
+                      type: 'bar',
+                      data: {
+                        labels: [{% for departamento in departamentos %} '{{departamento.nombre}}', {%endfor%}],
+                        datasets: [{
+                          label: 'Empleados',
+                          data: [{% for item in cantidad %} {{ item.cantidad }}, {% endfor %}],
+                          borderWidth: 1,
+                          backgroundColor: [
+                            'rgba(0, 149, 58, 1)',
+                            'rgba(18, 40, 76, 1)',
+                            'rgba(18, 196, 88, 1)'
+                            ],
+                        }]
+                      },
+                      options: {
+                        scales: {
+                          y: {
+                            beginAtZero: true
+                          },
+                          x: {
+                            display: false // Oculta los labels del eje x
+                        }
+                        }
+                      }
+                    });
+                  </script> 
   </body>
 </html>
 {% endblock %}

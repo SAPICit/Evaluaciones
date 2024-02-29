@@ -10,25 +10,56 @@ from django.contrib.auth import logout
 from django.contrib.auth.hashers import make_password
 import json
 from django.http import JsonResponse
-
+from django.db.models import Count
+from django.db.models import Sum
 
 def index(request):
+    
     return redirect(reverse('login'))
 
 @login_required
 def imagenes(request):
-    return render(request, 'imagenes.html')
+    empleados = Empleados.objects.filter(estatus=1)
+    
+    # Obtener la cantidad de empleados por departamento y ordenarlos por departamento
+    cantidad = Empleados.objects.filter(estatus=1).values('departamento_id').annotate(cantidad=Count('id')).order_by('departamento_id')
+    departamentos_con_empleados = [c['departamento_id'] for c in cantidad]
+    
+    # Filtrar los departamentos que tienen empleados
+    departamentos = Departamentos.objects.filter(id__in=departamentos_con_empleados)
+    context ={
+        'empleados': empleados,
+        'departamentos': departamentos,
+        'cantidad': cantidad
+    }
+    return render(request, 'imagenes.html', context)
 
 @login_required
 def dashboard(request):
-    return render(request, 'dashboard.html')
+    empleados = Empleados.objects.filter(estatus=1)
+    
+    # Obtener la cantidad de empleados por departamento y ordenarlos por departamento
+    cantidad = Empleados.objects.filter(estatus=1).values('departamento_id').annotate(cantidad=Count('id')).order_by('departamento_id')
+    departamentos_con_empleados = [c['departamento_id'] for c in cantidad]
+    
+    # Filtrar los departamentos que tienen empleados
+    departamentos = Departamentos.objects.filter(id__in=departamentos_con_empleados)
+
+    context ={
+        'empleados': empleados,
+        'departamentos': departamentos,
+        'cantidad': cantidad
+    }
+    return render(request, 'dashboard.html', context)
 
 @login_required
 def altaEmpleados(request):
     puestos = Puestos.objects.all()
     rangos = Rangos.objects.all()
     departamentos = Departamentos.objects.all()
-    return render(request, 'altaEmpleados.html', {'formulario': crearEmpleado(), 'puestos': puestos, 'rangos': rangos, 'departamentos': departamentos})
+    empleados = Empleados.objects.filter(estatus=1).latest('no_emp')
+    no_empleado= empleados.no_emp + 1
+    return render(request, 'altaEmpleados.html', {'formulario': crearEmpleado(), 'puestos': puestos, 'rangos': rangos, 'departamentos': departamentos, 'no_empleado': no_empleado})
 
 @login_required
 def listaEmpleados(request):
@@ -92,12 +123,21 @@ def fechaMes (request, fecha):
 
 def crearEvaluacion(request):
     fecha = Fechas.objects.latest('id')
-    return render(request, 'crearEvaluacion.html', {'fecha': fecha})
+    valores = {10,20,30,40,50,60,70,80,90,100}
+    empp = Empleados.objects.filter(estatus=1)
+    context={
+        'fecha': fecha,
+        'valores': valores
+    }
+
+    return render(request, 'crearEvaluacion.html', {'fecha': fecha, 'valores': valores, 'empp': empp})
 
 def crearEvaluacion2(request):
     fecha = Fechas.objects.latest('id')
     #evaluacion = Evaluaciones.objects.latest('id')
-    return render(request, 'crearEvaluacion.html', {'fecha': fecha})
+    valores = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+    empp = Empleados.objects.filter(estatus=1)
+    return render(request, 'crearEvaluacion.html', {'fecha': fecha, 'valores': valores})
 
 def asignarEvaluacion(request):
     fecha = Fechas.objects.latest('id')
@@ -109,7 +149,26 @@ def asignarEvaluacion(request):
     rut = Seguimiento.objects.latest('id')
     eva = NumerosEvaluaciones.objects.latest('id')
     obj = Objetivos.objects.filter(numeroEvaluacion_id = eva.id)
-    return render(request, 'asignarEvaluacion.html', {'fecha': fecha, 'empleados': empleados, 'numeroEvaluacion': numeroEvaluacion, 'objetivos': objetivos, 'apartados': apartados, 'seguimientos': seguimientos, 'rut': rut,'obj': obj})
+
+    sumOKR = obj.filter(apartado_id=1).aggregate(total_okr=Sum('valor'))['total_okr']
+    sumKPI = obj.filter(apartado_id=2).aggregate(total_kpi=Sum('valor'))['total_kpi']
+    sumCL = obj.filter(apartado_id=3).values_list('valor', flat=True).first()
+
+    context = {
+        'fecha': fecha,
+        'empleados': empleados,
+        'numeroEvaluacion': numeroEvaluacion,
+        'objetivos': objetivos,
+        'apartados': apartados,
+        'seguimientos': seguimientos,
+        'rut': rut,
+        'obj': obj,
+        'eva': eva,
+        'sumOKR': sumOKR,
+        'sumKPI': sumKPI,
+        'sumCL': sumCL
+    }
+    return render(request, 'asignarEvaluacion.html',context)
 
 
 
@@ -123,12 +182,21 @@ def obtener_datos_evaluacion(request):
         datos_KPI = Objetivos.objects.filter(numeroEvaluacion=evaluacion_id, estatus=1, apartado_id=2)
         datos_CL = Objetivos.objects.filter(numeroEvaluacion=evaluacion_id, estatus=1, apartado_id=3)
         datos_BONO  = Objetivos.objects.filter(numeroEvaluacion=evaluacion_id, estatus=1, apartado_id=4)
+        datos_RESULTADOS = Objetivos.objects.filter(numeroEvaluacion=evaluacion_id, estatus=1, apartado_id=5)
+
+        sumaOKR = datos_OKR.aggregate(total_okr=Sum('valor'))['total_okr']
+        sumaKPI = datos_KPI.aggregate(total_kpi=Sum('valor'))['total_kpi']
+        sumaCL = datos_CL.values_list('valor', flat=True).first()
 
         data = {
             'OKR': list(datos_OKR.values()),
             'KPI': list(datos_KPI.values()),
             'CL': list(datos_CL.values()),
             'BONO': list(datos_BONO.values()),
+            'RESULTADOS': list(datos_RESULTADOS.values()),
+            'sumaOKR': sumaOKR,
+            'sumaKPI': sumaKPI,
+            'sumaCL': sumaCL
         }
         return JsonResponse(data)
 
@@ -198,6 +266,105 @@ def crearEvaluacionDB(request, arregloBonos, arregloCLs, arregloKPIs, arregloOKR
 
 
     return redirect(reverse('evaluaciones'))
+
+
+
+
+def guardarEvaluacionBD(request):
+    if request.method == 'POST':
+        try:
+            # Obtener los datos de los arreglos desde el formulario
+            arregloBonos_str = request.POST.get('arregloBonos')
+            arregloCLs_str = request.POST.get('arregloCLs')
+            arregloKPIs_str = request.POST.get('arregloKPIs')
+            arregloOKRs_str = request.POST.get('arregloOKRs')
+            arregloResultados_str = request.POST.get('arregloResultados')
+
+            # Convertir las cadenas JSON a diccionarios
+            arregloBonos = json.loads(arregloBonos_str)
+            arregloCLs = json.loads(arregloCLs_str)
+            arregloKPIs = json.loads(arregloKPIs_str)
+            arregloOKRs = json.loads(arregloOKRs_str)
+            arregloResultados = json.loads(arregloResultados_str)
+
+            print("Arreglo Bonos:", arregloBonos)
+            print("Arreglo CLs:", arregloCLs)
+            print("Arreglo KPIs:", arregloKPIs)
+            print("Arreglo OKRs:", arregloOKRs)
+            print("Arreglo Resultados:", arregloResultados)
+
+            evaluacion = NumerosEvaluaciones(
+            estatus=1,
+            fechaCreacion=datetime.now()
+            )
+            evaluacion.save()
+
+            numeroEvaluacion = NumerosEvaluaciones.objects.latest('id')
+
+            # Ahora puedes iterar sobre los arreglos y acceder a los datos
+            for item in arregloOKRs:
+                objetivo = Objetivos(
+                    objetivo=item['objetivo'],
+                    metrica=item['metrica'],
+                    valor=item['valor'],
+                    estatus=1,
+                    apartado_id=1,
+                    numeroEvaluacion_id=numeroEvaluacion.id
+                )
+                objetivo.save()
+
+            for item in arregloKPIs:
+                objetivo = Objetivos(
+                    objetivo=item['objetivo'],
+                    metrica=item['metrica'],
+                    valor=item['valor'],
+                    estatus=1,
+                    apartado_id=2,
+                    numeroEvaluacion_id=numeroEvaluacion.id
+                )
+                objetivo.save()
+
+            for item in arregloCLs:
+                objetivo = Objetivos(
+                    objetivo=item['objetivo'],
+                    metrica=item['metrica'],
+                    valor=item['valor'],
+                    estatus=1,
+                    apartado_id=3,
+                    numeroEvaluacion_id=numeroEvaluacion.id
+                )
+                objetivo.save()
+
+            for item in arregloBonos:
+                objetivo = Objetivos(
+                    objetivo=item['objetivo'],
+                    metrica=item['metrica'],
+                    valor=item['valor'],
+                    estatus=1,
+                    apartado_id=4,
+                    numeroEvaluacion_id=numeroEvaluacion.id
+                )
+                objetivo.save()
+
+            for item in arregloResultados:
+                objetivo = Objetivos(
+                     objetivo=item['objetivo'],
+                    metrica=item['metrica'],
+                    valor=item['valor'],
+                    estatus=1,
+                    apartado_id=5,
+                    numeroEvaluacion_id=numeroEvaluacion.id
+                )
+                objetivo.save()
+
+
+            return redirect(reverse('evaluaciones'))
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    else:
+        return JsonResponse({'error': 'Esta vista solo acepta solicitudes POST.'}, status=405)
+
+
 
 @login_required
 def editarEmpleado(request, id):
@@ -296,7 +463,8 @@ def guardarEmpleado(request):
 @login_required
 def rutaEvaluacion(request):
     empleados = Empleados.objects.filter(estatus=1)
-    return render(request, 'rutaEvaluacion.html', {'empleados': empleados})
+    rutas = Seguimiento.objects.all()
+    return render(request, 'rutaEvaluacion.html', {'empleados': empleados, 'rutas': rutas})
 
 @login_required
 def guardarRutaEvaluacion(request):
@@ -343,19 +511,19 @@ def obtener_datos_evaluaciones(request):
         evaluaciones = Evaluaciones.objects.filter(empleado_id=empleado_id)
         objetivos = Objetivos.objects.filter(numeroEvaluacion_id=numeroEvaluacion)
 
-
         bandera = 0
         if evaluaciones.exists():
             for evaluacion in evaluaciones:
                 if evaluacion.fecha_id != fecha_id:
                     bandera = 1
-                break
 
         for objetivo in objetivos:
-            if objetivo.apartado_id == 4 & empleado.rango_id != 4 & (empleado.departamento_id != 14 |  empleado.departamento_id != 15 |  empleado.departamento_id != 16 |  empleado.departamento_id != 17 |  empleado.departamento_id != 18 |  empleado.departamento_id != 19 |  empleado.departamento_id != 20 | empleado.departamento_id != 21 |  empleado.departamento_id != 22 |  empleado.departamento_id != 23 | empleado.departamento_id != 24):
+            if objetivo.apartado_id == 4 and empleado.departamento_id not in [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24]:
                 bandera = 2
-                break
-
+                if (empleado.rango_id != 4):
+                    print("El rango del empleado es diferente de 4")
+                    bandera = 3
+                    print("Bandera ahora es:", bandera)
         data = {
             'bandera': bandera
         }
@@ -380,9 +548,139 @@ def guardarEvaluacionMensual (request):
         estatus=estatus,
         fase_id=1
     )
+
     evaluacion.save()
     return redirect(reverse('evaluaciones'))
 
+
+def guardarEvaluacionEditada (request):
+    #empleado_id = int(request.POST['empleado'])
+    evaluacion = int(request.POST['eva'])
+    numeroEvaluacion_id = int(request.POST['numeroEvaluacion'])
+    seguimiento_id = int(request.POST['seguimiento'])
+    #fecha = Fechas.objects.latest('id')
+
+    evaluacion = Evaluaciones.objects.get(id=evaluacion)
+    evaluacion.seguimiento_id= seguimiento_id
+    evaluacion.numeroEvaluacion_id = numeroEvaluacion_id  
+    evaluacion.save()
+
+    
+    evaluacion.save()
+    return redirect(reverse('evaluaciones'))
+
+
 def editarEvaluacion(request):
     numeroEvaluacion=NumerosEvaluaciones.objects.all()
-    return render(request, 'editarEvaluacion.html',{'numeroEvaluacion': numeroEvaluacion})
+    eva = NumerosEvaluaciones.objects.latest('id')
+    obj = Objetivos.objects.filter(numeroEvaluacion_id = eva.id)
+    valores = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+    sumOKR = obj.filter(apartado_id=1).aggregate(total_okr=Sum('valor'))['total_okr']
+    sumKPI = obj.filter(apartado_id=2).aggregate(total_kpi=Sum('valor'))['total_kpi']
+    sumCL = obj.filter(apartado_id=3).values_list('valor', flat=True).first()
+
+    context = {
+        'numeroEvaluacion': numeroEvaluacion,
+        'obj': obj,
+        'valores': valores,
+        'eva': eva,
+        'sumOKR': sumOKR,
+        'sumKPI': sumKPI,
+        'sumCL': sumCL
+    }
+    return render(request, 'editarEvaluacion.html',context)
+
+
+#funcion para mandar la información necesaria para contestar la autoevaluación
+def evaluacionUsuario (request):
+    empleado=Empleados.objects.get(no_emp=request.user.no_emp)
+    fecha = Fechas.objects.latest('id')
+    evaluacion = Evaluaciones.objects.filter(empleado_id=empleado.no_emp, fecha_id=fecha.id)
+    objetivos = Objetivos.objects.filter(numeroEvaluacion_id=evaluacion.numeroEvaluacion_id)
+    seguimiento = Seguimiento.objects.filter(id=evaluacion.seguimiento_id)
+    context ={ 
+        "evaluacion": evaluacion,
+        "objetivos": objetivos,
+        "seguimiento": seguimiento
+    }
+    return render(request, 'evaluacionUsuario.html', {'evaluaciones': evaluaciones})
+
+#para guardar los comentarios y la calificación del objetivo 
+
+
+
+#editar evaluación asignada
+def editarEvaluacionAsignada(request,id):
+    idd = id
+    fecha = Fechas.objects.latest('id')
+    empleados = Empleados.objects.filter(estatus=1)
+    numeroEvaluacion = NumerosEvaluaciones.objects.all()
+    objetivos=Objetivos.objects.all()
+    apartados = Apartados.objects.all()
+    seguimientos = Seguimiento.objects.all()
+    
+    eva = Evaluaciones.objects.get(id=idd)
+    numEva= NumerosEvaluaciones.objects.get(id=eva.numeroEvaluacion_id)
+    obj = Objetivos.objects.filter(numeroEvaluacion_id=eva.numeroEvaluacion_id)
+    emp = Empleados.objects.get(no_emp= eva.empleado_id)
+    rut = Seguimiento.objects.get(id=eva.seguimiento_id)
+    
+    sumOKR = obj.filter(apartado_id=1).aggregate(total_okr=Sum('valor'))['total_okr']
+    sumKPI = obj.filter(apartado_id=2).aggregate(total_kpi=Sum('valor'))['total_kpi']
+    sumCL = obj.filter(apartado_id=3).values_list('valor', flat=True).first()
+
+    context = {
+        'fecha': fecha,
+        'empleados': empleados,
+        'numeroEvaluacion': numeroEvaluacion,
+        'objetivos': objetivos,
+        'apartados': apartados,
+        'seguimientos': seguimientos,
+        'rut': rut,
+        'obj': obj,
+        'sumOKR': sumOKR,
+        'sumKPI': sumKPI,
+        'sumCL': sumCL,
+        'emp': emp,
+        'numEva': numEva,
+        'eva': eva,
+
+    }
+    return render(request, 'editarEvaluacionAsignada.html', context)
+
+def obtener_datos_evaluaciones_asignada(request):
+    if request.method == 'GET' and request.is_ajax():
+        seguimiento = request.GET.get('seguimiento_id')
+        evaluacion_id = request.GET.get('eva_id')
+        empleado_id = request.GET.get('empleado_id')
+        fecha_id = request.GET.get('fecha_id')
+        numeroEvaluacion = request.GET.get('numeroEvaluacion_id')
+        objetivos = Objetivos.objects.filter(numeroEvaluacion_id=numeroEvaluacion)
+        
+        empleado = Empleados.objects.get(no_emp=empleado_id)   
+
+        bandera = 0
+        if evaluaciones.exists():
+            for evaluacion in evaluaciones:
+                if evaluacion.fecha_id != fecha_id:
+                    bandera = 1
+
+        for objetivo in objetivos:
+            if objetivo.apartado_id == 4 and empleado.departamento_id not in [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24]:
+                bandera = 2
+                if (empleado.rango_id != 4):
+                    print("El rango del empleado es diferente de 4")
+                    bandera = 3
+                    print("Bandera ahora es:", bandera)
+
+
+        if bandera == 0:
+            evaluacion = Evaluaciones.objects.get(id=evaluacion_id.id)
+            evaluacion.seguimiento= seguimiento
+            evaluacion.numeroEvaluacion = numeroEvaluacion  
+            evaluacion.save()
+
+        data = {
+            'bandera': bandera
+        }
+        return JsonResponse(data)

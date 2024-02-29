@@ -15,19 +15,19 @@
         <div class="row g-3">
 
         <div id="crearEvaluacion" class="crearEvaluacion col-md-3">
-          <a onclick="crearEvaluacion()" class="btn btn-primary btn-enviar">Crear evaluacion</a>
+          <a  href="{% url 'crearEvaluacion' %}" class="btn btn-primary btn-enviar">Crear evaluacion</a>
         </div>
 
         <div id="editarEvaluacion" class="editarEvaluacion col-md-3">
-          <a onclick="editarEvaluacion()" class="btn btn-primary btn-enviar">Editar evaluacion</a>
+          <a  href="{% url 'editarEvaluacion' %}" class="btn btn-primary btn-enviar">Editar evaluacion</a>
         </div>
 
         <div id="asignarEvaluacion" class="asignarEvaluacion col-md-3">
-          <a onclick="asignarEvaluacion()" class="btn btn-primary btn-enviar">Asignar evaluacion</a>
+          <a  href="{% url 'asignarEvaluacion' %}" class="btn btn-primary btn-enviar">Asignar evaluacion</a>
         </div>
 
         <div id="rutaEvaluacion" class="rutaEvaluacion col-md-3">
-          <a onclick="crearRuta()" class="btn btn-primary btn-enviar">Rutas seguimiento</a>
+          <a  href="{% url 'rutaEvaluacion' %}" class="btn btn-primary btn-enviar">Rutas seguimiento</a>
         </div>
         
       </div>
@@ -42,16 +42,25 @@
         <table id="tablaEvaluaciones" class="tablaEvaluaciones table table-striped table-responsive table-bordered">
             <thead>
                 <tr>
-                    <th>Num. Evaluación</th>
+                  <th>Editar</th>
+                    <th>Id</th>
                     <th>Fecha</th>
                     <th>Empleado</th>
                     <th>Seguimiento</th>
                     <th>Fase</th>
+                    
                 </tr>
             </thead>
             <tbody>
                 {% for evaluacion in evaluaciones %}
                 <tr>
+                  <td>
+                    {%if evaluacion.fase.id == 1%}
+                    <input type="radio" name="evaluacion_seleccionada" value="{{ evaluacion.id}}" onchange="habilitarBotones()"/>
+                    {%else%}
+                    <input type="radio" name="evaluacion_seleccionada" value="{{ evaluacion.id}}" onchange="habilitarBotones()" disabled/>
+                    {%endif%}
+                  </td>
                     <td>{{evaluacion.numeroEvaluacion_id}}</td>
                     <td>{{evaluacion.fecha.mes}}/{{evaluacion.fecha.anio}}</td>
                     <td>{{evaluacion.empleado}}</td>
@@ -80,31 +89,58 @@
             </tbody>
         </table>
 
+        <div class="botones">
+          <div id="editarEliminarEmpleado" class="editarEliminarEmpleado">
+            <div id="editarEvaluacion" class="editarEvaluacion">
+              <button onclick="editarEvaluacion()" class="btn btn-success editarBtn" disabled="disabled">Editar evaluación</button>
+            </div>
+          </div>
+
       </div>
       </div>
     </div>
 
 
-    <Script>
+    <script>
+      function habilitarBotones() {
+        var radiosSeleccionados = document.querySelectorAll('input[name="evaluacion_seleccionada"]:checked');
+        var editarBtn = document.querySelector('.editarBtn');
+        var eliminarBtn = document.querySelector('.eliminarBtn');
+    
+        if (radiosSeleccionados.length > 0) {
+          editarBtn.disabled = false;
+          {% comment %} eliminarBtn.disabled = false; {% endcomment %}
+        } else {
+          editarBtn.disabled = true;
+          {% comment %} eliminarBtn.disabled = true; {% endcomment %}
+        }
+      }
+
       function editarEvaluacion(){
-        window.location.href = '/editarEvaluacion/';
+        var evaluacionSeleccionada = document.querySelector('input[name="evaluacion_seleccionada"]:checked');
+      
+        var idEvaluacion = evaluacionSeleccionada.value;
+        console.log (idEvaluacion)
+        window.location.href = '/editarEvaluacionAsignada/' + idEvaluacion + '/';
       }
 
-      function crearEvaluacion(){
-        window.location.href = '/crearEvaluacion2/';
+      function eliminarEvaluacion(){
+        var evaluacionSeleccionada = document.querySelector('input[name="evaluacion_seleccionada"]:checked');
+        if(evaluacionSeleccionada){
+          var idEvaluacion = evaluacionSeleccionada.value;
+          window.location.href = '/editarEvaluacionAsignada/' + idEvaluacion + '/';
+        }
       }
 
-      function asignarEvaluacion(){
-        window.location.href = '/asignarEvaluacion/';
-      }
+      var radioButtons = document.querySelectorAll('input[name="evaluacion_seleccionada"]');
+      
+      radioButtons.forEach(function (radio) {
+        radio.addEventListener('change', habilitarBotones);
+      });
 
-      function crearRuta(){
-        window.location.href = '/rutaEvaluacion/';
-      }
+      habilitarBotones();
+    </script>
 
-
-
-    </Script>
   </body>
 </html>
 {% endblock %}

@@ -12,7 +12,7 @@
           <h1>Asignación de evaluaciones</h1>
         </div>
         <div class="eva">
-          <form class="formularioGuardarEvaluacion" id="formularioGuardarEvaluacion" action="{% url 'guardarEvaluacionMensual' %}" method="post">
+          <form class="formularioGuardarEvaluacion" id="formularioGuardarEvaluacion" action="{% url 'guardarEvaluacionEditada' %}" method="post">
             {% csrf_token %}
           <div class="row g-3">
           <div class="col-md-6">
@@ -119,7 +119,7 @@
             
           </table>
 
-          <h1 class="descOKR "> OKRs </h1>
+          <h1 class="descOKR "> OKRs - {{sumOKR}}%</h1>
           <table id="tablaEvaluacion1" class="tablaEvaluacion1 table table-striped table-responsive table-bordered">
               <thead>
                   <tr>
@@ -142,7 +142,7 @@
               </tbody>
           </table>
 
-          <h1 class="descKPI "> KPIs</h1>
+          <h1 class="descKPI "> KPIs - {{sumKPI}}%</h1>
           <table id="tablaEvaluacion2" class="tablaEvaluacion2 table table-striped table-responsive table-bordered" >
               <thead>
                   <tr>
@@ -165,13 +165,12 @@
               </tbody>
           </table>
 
-          <h1 class="descCL "> Cultura laboral </h1>
+          <h1 class="descCL "> Cultura laboral - {{sumCL}}%</h1>
           <table id="tablaEvaluacion3" class="tablaEvaluacion3 table table-striped table-responsive table-bordered" >
               <thead>
                   <tr>
                       <th>Objetivo</th>
                       <th>Metrica</th>
-                      <th>Valor</th>
                   </tr>
               </thead>
               <tbody>
@@ -180,7 +179,6 @@
                   <tr>
                       <td>{{obj.objetivo}}</td>
                       <td>{{obj.metrica}}</td>
-                      <td>{{obj.valor}}</td>
                   </tr>
                   {% endif %}
                   {%endfor%}
@@ -202,7 +200,29 @@
                   <tr>
                       <td>{{obj.objetivo}}</td>
                       <td>{{obj.metrica}}</td>
-                      <td>{{obj.valor}}</td>
+                      <td>${{obj.valor}}</td>
+                  </tr>
+                  {% endif %}
+                  {%endfor%}
+              </tbody>
+          </table>
+
+          <h1 class="descRESULTADOS "> Resultados </h1>
+          <table id="tablaEvaluacion5" class="tablaEvaluacion5 table table-striped table-responsive table-bordered" > 
+              <thead>
+                  <tr>
+                      <th>Objetivo</th>
+                      <th>Metrica</th>
+                      <th>Valor</th>
+                  </tr>
+              </thead>
+              <tbody>
+                {%for obj in obj%}
+                  {% if obj.apartado_id == 5 %}
+                  <tr>
+                      <td>{{obj.objetivo}}</td>
+                      <td>{{obj.metrica}}</td>
+                      <td>${{obj.valor}}</td>
                   </tr>
                   {% endif %}
                   {%endfor%}
@@ -255,12 +275,15 @@
               tableOKR.innerHTML = '';
               if (data.OKR.length > 0) {
                   // Recorre el arregloOKRs y crea las filas de la tabla
-                  descOKR.innerHTML = 'OKRs';
+                  var sOKR=0.0;
+                  
                   data.OKR.forEach(function(cl) {
                       var row = document.createElement('tr');
                       row.innerHTML = `<td>${cl.objetivo}</td><td>${cl.metrica}</td><td>${cl.valor}</td>`;
                       tableOKR.appendChild(row);
+                      sOKR = sOKR + cl.valor;
                   });
+                  descOKR.innerHTML = 'OKRs - ' + sOKR + '%';
                   document.querySelector('.tablaEvaluacion1').style.display = 'table';
               } else {
                   document.querySelector('.tablaEvaluacion1').style.display = 'none';7
@@ -273,12 +296,14 @@
               tableKPI.innerHTML = '';
               if (data.KPI.length > 0) {
                   // Recorre el arregloKPIs y crea las filas de la tabla
-                  descKPI.innerHTML = 'KPIs';
+                  sKPI= 0.0;
                   data.KPI.forEach(function(cl) {
                       var row = document.createElement('tr');
                       row.innerHTML = `<td>${cl.objetivo}</td><td>${cl.metrica}</td><td>${cl.valor}</td>`;
                       tableKPI.appendChild(row);
+                      sKPI= sKPI + cl.valor;
                   });
+                  descKPI.innerHTML = 'KPIs - ' + sKPI + '%';
                   document.querySelector('.tablaEvaluacion2').style.display = 'table';
               }
               else {
@@ -292,12 +317,14 @@
               tableCL.innerHTML = '';
               if (data.CL.length > 0) {
                   // Recorre el arregloCL y crea las filas de la tabla
-                  descCL.innerHTML = 'Cultura Laboral';
+                  sCL   = 0.0;
                   data.CL.forEach(function(cl) {
                       var row = document.createElement('tr');
-                      row.innerHTML = `<td>${cl.objetivo}</td><td>${cl.metrica}</td><td>${cl.valor}</td>`;
+                      row.innerHTML = `<td>${cl.objetivo}</td><td>${cl.metrica}</td>`;
                       tableCL.appendChild(row);
+                      sCL= cl.valor;
                   });
+                  descCL.innerHTML = 'Cultura Laboral - ' + sCL + '%' ;
                   document.querySelector('.tablaEvaluacion3').style.display = 'table';
               }
               else {
@@ -323,6 +350,26 @@
                   document.querySelector('.tablaEvaluacion4').style.display = 'none';
                   descBONO.innerHTML = '';
               }
+
+              //Actualizar tabla de los resultados
+              var tableRESULTADOS = document.querySelector('.tablaEvaluacion5 tbody');
+              var descRESULTADOS = document.querySelector('.descRESULTADOS');
+              tableRESULTADOS.innerHTML = '';
+              if (data.RESULTADOS.length > 0) {
+                  descRESULTADOS.innerHTML = 'Resultados';
+                  // Recorre el arregloRESULTADOS y crea las filas de la tabla
+                  data.RESULTADOS.forEach(function(cl) {
+                      var row = document.createElement('tr');
+                      row.innerHTML = `<td>${cl.objetivo}</td><td>${cl.metrica}</td><td>${cl.valor}</td>`;
+                      tableRESULTADOS.appendChild(row);
+                  });
+                  document.querySelector('.tablaEvaluacion5').style.display = 'table';
+              }
+              else {
+                  document.querySelector('.tablaEvaluacion5').style.display = 'none';
+                  descRESULTADOS.innerHTML = '';
+              }
+
             }
           });
         });
@@ -406,8 +453,10 @@
                 } else if (response.bandera === 1) {
                   console.log("no agrega")
                     showModalError("Imposible agregar. Usario con evaluación asignada para este mes.");
+                } else if (response.bandera === 2){
+                    showModalError("Error al asignar la evaluación. Este usuario no pertenece al área de ventas");
                 } else {
-                    showModalError("Error al asignar la evaluación. Este usuario no puede tener evaluacion con bono");
+                    showModalError("Error al asignar la evaluación. Evaluación solo para rango empleados.");
                 }
             }
         });

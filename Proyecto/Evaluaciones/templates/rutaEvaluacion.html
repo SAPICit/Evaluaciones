@@ -99,6 +99,64 @@
         <br/>
         <br/>
         {% comment %} <h1 class="nota"> Nota: Para no asignar evaluador seleccionar el valor "1 - Manager"</h1> {% endcomment %}
+
+        <table id="tablaSeguimiento" class="tablaSeguimiento table table-striped table-responsive table-bordered">
+          <thead>
+              <tr>
+                  <th>ID</th>
+                  <th>Evaluador 1</th>
+                  <th>Evaluador 2</th>
+                  <th>Evaluador 3</th>
+                  <th>Evaluador 4</th>
+              </tr>
+          </thead>
+
+          <tbody>
+            {%for ruta in rutas%}
+            <tr>
+                <td>
+                  {{ruta.id}}
+                <!-- Evaluador 1 -->
+                </td>
+                <td>
+                    {% if ruta.evaluador1_id == 1 %}
+                        Sin asignar
+                    {% else %}
+                        {{ ruta.evaluador1 }}
+                    {% endif %}
+                </td>
+                
+                <!-- Evaluador 2 -->
+                <td>
+                    {% if ruta.evaluador2_id == 1 %}
+                        Sin asignar
+                    {% else %}
+                        {{ ruta.evaluador2 }}
+                    {% endif %}
+                </td>
+                
+                <!-- Evaluador 3 -->
+                <td>
+                    {% if ruta.evaluador3_id == 1 %}
+                        Sin asignar
+                    {% else %}
+                        {{ ruta.evaluador3 }}
+                    {% endif %}
+                </td>
+                
+                <!-- Evaluador 4 -->
+                <td>
+                    {% if ruta.evaluador4_id == 1 %}
+                        Sin asignar
+                    {% else %}
+                        {{ ruta.evaluador4 }}
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        
+      </table>
       </div>
     </div>
   </body>

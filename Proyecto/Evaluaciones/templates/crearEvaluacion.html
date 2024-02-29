@@ -8,23 +8,23 @@
         <h1>Crear evaluación</h1>
       </div>
         <div class="eva">
-            {% comment %} <div class="row g-3">
-                <div class="col-md-4">
-                    <label for="empleado">Empleado</label><br />
-                    <input class="form-control" type="text" id="empleado" name="empleado" value="{{ empleado.nombre }} {{empleado.apellido_paterno}}" disabled />
-                </div> 
-                <div class="col-md-6">
-                    <label for="fecha">Mes evaluado</label><br />
-                    <input class="form-control" type="text" id="fecha" name="fecha" value="{{ fecha.mes }}/{{fecha.anio}} Versión: {{fecha.version}}" disabled />
-                </div>
-            </div> {% endcomment %}
-           
+            
         </br>
         </br>
             {% comment %} Inicio del apartado de las OKR {% endcomment %}
             <div class="apartado okrOpc"> 
-                <h1>OKR</h1>
-                <h1>20 %</h1>
+                <h1>OKR </h1>
+                
+                <select id="checkOKR" name="checkOKR" style= "color:green">
+                    {% for valor in valores %}
+                        {% if valor == 20%}
+                            <option value="{{ valor }}" selected>{{ valor }}% </option>
+                        {% else %}
+                            <option value="{{ valor }}">{{ valor }}% </option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+                <h1 class="sumasOKR" id="sumasOKR"> </h1>
                 <a href="#">
                     <img src="{% static 'img/anadir.png' %}" alt="Empleados" width="20px" height="20px">
                 </a>
@@ -55,7 +55,7 @@
                     </div>
                     <div class="col-md-4">
                         <label for ="valor" class="form-label">Valor</label>
-                        <input type="number" class="form-control" required id="valorOKR" name="valorOKR">
+                        <input type="text" class="form-control" required id="valorOKR" name="valorOKR">
                     </div>
                     <div class="col-md-12">
                          <br/>
@@ -69,7 +69,16 @@
             {% comment %} Inicio del apartado de los KPI {% endcomment %}
             <div class="apartado kpiOpc"> 
                 <h1>KPI</h1>
-                <h1>70 %</h1>
+                <select  id="checkKPI" name="checkKPI" style="color:green">
+                    {% for valor in valores %}
+                    {% if valor == 70%}
+                        <option value="{{ valor }}" selected>{{ valor }}% </option>
+                    {% else %}
+                        <option value="{{ valor }}">{{ valor }}% </option>
+                    {% endif %}
+                {% endfor %}
+                </select>
+                <h1 class="sumasKPI" id="sumasKPI"> </h1>
                 <a href="">
                     <img src="{% static 'img/anadir.png' %}" alt="Empleados" width= "20px" height="20px">
                 </a>
@@ -100,7 +109,7 @@
                     </div>
                     <div class="col-md-4">
                         <label for ="valor" class="form-label">Valor</label>
-                        <input type="number" class="form-control" required id="valorKPI" name="valorKPI">
+                        <input type="text" class="form-control" required id="valorKPI" name="valorKPI">
                     </div>
                     <div class="col-md-12">
                         <br/>
@@ -114,7 +123,15 @@
             {% comment %} Inicio del apartado de la cultura laboral {% endcomment %}
             <div class="apartado CLOpc"> 
                 <h1>Cultuta laboral</h1>
-                <h1>10 %</h1>
+                <select  id="checkCL" name="checkCL" style="color:green">
+                    {% for valor in valores %}
+                    {% if valor == 10%}
+                        <option value="{{ valor }}" selected>{{ valor }}% </option>
+                    {% else %}
+                        <option value="{{ valor }}">{{ valor }}% </option>
+                    {% endif %}
+                {% endfor %}
+                    </select>
                 <a href="">
                     <img src="{% static 'img/anadir.png' %}" alt="Empleados" width= "20px" height="20px">
                 </a>
@@ -125,7 +142,6 @@
                     <tr>
                         <th>Objetivo</th>
                         <th>Metrica</th>
-                        <th>Valor</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -169,8 +185,53 @@
             {% comment %} Fin del apartado del bono {% endcomment %}
             <br/>
             <br/>
+
+            {% comment %} Inicio del apartado del bono {% endcomment %}
+            <input type="checkbox" id="agregarResultadosCheckbox">
+            <label for="agregarResultadosCheckbox">Agregar apartado resultados</label>
+
+            <div class="apartado resultados"> 
+                <h1>Resultados</h1>
+                <h1></h1>
+                <a href="">
+                    <img src="{% static 'img/anadir.png' %}" id="imagenResultados" alt="Empleados" width="20px" height="20px" style="display: none;">
+                </a>
+                
+            </div>
+            <div class="resultados" id="resultados" style="display: none;">
+                <table id="tablaResultados" class="tablaResultados table table-striped table-responsive table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Objetivo</th>
+                            <th>Metrica</th>
+                            <th>Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+    
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            {% comment %} Fin del apartado del bono {% endcomment %}
+            <br/>
+            <br/>
             <buttton class="btn btn-danger" onclick="cancelar()">Cancelar</buttton>
-            <button onclick="validar()" class="btn btn-primary btn-enviar">Guardar</button>
+
+            
+            <form id="myForm" method="post" action="{% url 'guardarEvaluacionBD' %}">
+                {% csrf_token %}
+                <input type="hidden" name="arregloBonos" id="arregloBonos" value='{{ arregloBonos|json_script:"arregloBonos" }}'>
+                <input type="hidden" name="arregloCLs" id="arregloCLs" value='{{ arregloCLs|json_script:"arregloCLs" }}'>
+                <input type="hidden" name="arregloKPIs" id="arregloKPIs" value='{{ arregloKPIs|json_script:"arregloKPIs" }}'>
+                <input type="hidden" name="arregloOKRs" id="arregloOKRs" value='{{ arregloOKRs|json_script:"arregloOKRs" }}'>
+                <input type="hidden" name="arregloResultados" id="arregloResultados" value='{{ arregloResultados|json_script:"arregloResultados" }}'>
+                <br/>
+                <button type="button" onclick="validar()" class="btn btn-primary btn-enviar">Guardar</button>
+            </form>
+
+           
         <div>
             
       <br />
@@ -198,7 +259,6 @@
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         var empleado = document.getElementById("empleado");
-
         //Elementos de los OKR
         var okrOp = document.querySelector(".okrOpc img"); // Botón para mostrar/ocultar el formulario
         var okrDiv = document.getElementById("okr");    // Div que contiene el formulario y la tala
@@ -221,6 +281,75 @@
 
         var apartadoBono = document.getElementById("agregarBonoCheckbox");
         var imagenEmpleados = document.getElementById('imagenEmpleados');
+
+
+        //Elementos de los resultados
+        var resultadoDiv = document.getElementById("resultados");
+        var tablaResultado = document.getElementById("tablaResultados");
+        var resultadoOp = document.querySelector(".resultados img");
+
+        var apartadoResultado = document.getElementById("agregarResultadosCheckbox");
+        var imagenResultados = document.getElementById('imagenResultados');
+
+
+        var checkOKR = document.getElementById("checkOKR");
+        var checkKPI = document.getElementById("checkKPI");
+        var checkCL = document.getElementById("checkCL");
+
+        checkOKR.addEventListener('change', function() {
+            sumar(1);
+            var ckKPI = document.getElementById("checkKPI").value;
+            var ckCL = document.getElementById("checkCL").value;
+            if (parseInt(checkOKR.value) + parseInt(ckKPI) + parseInt(ckCL) != 100) {
+                checkOKR.style.color = "red";
+                checkKPI.style.color = "red";
+                checkCL.style.color = "red";
+            } else {
+                checkOKR.style.color = "green";
+                checkKPI.style.color = "green";
+                checkCL.style.color = "green";
+            }
+        });
+
+        checkKPI.addEventListener('change', function() {
+            sumar(2);
+            console.log(arregloResultados);
+            var ckOKR = document.getElementById("checkOKR").value;
+            var ckCL = document.getElementById("checkCL").value;
+            if (parseInt(ckOKR) + parseInt(checkKPI.value) + parseInt(ckCL) != 100) {
+                checkOKR.style.color = "red";
+                checkKPI.style.color = "red";
+                checkCL.style.color = "red";
+            } else {
+                checkOKR.style.color = "green";
+                checkKPI.style.color = "green";
+                checkCL.style.color = "green";
+            }
+        });
+
+        checkCL.addEventListener('change', function() {
+            var ckCL = document.getElementById("checkCL").value;
+
+            console.log(arregloCLs);
+            var ckOKR = document.getElementById("checkOKR").value;
+            var ckKPI = document.getElementById("checkKPI").value;
+            if (parseInt(checkCL.value) + parseInt(ckKPI) + parseInt(ckOKR) != 100) {
+                checkOKR.style.color = "red";
+                checkKPI.style.color = "red";
+                checkCL.style.color = "red";
+                llenarArregloCLs();
+                console.log(arregloCLs);
+            } else {
+                checkOKR.style.color = "green";
+                checkKPI.style.color = "green";
+                checkCL.style.color = "green";
+                llenarArregloCLs();
+                for (var i = 0; i < arregloCLs.length; i++) {
+                    arregloCLs[i].valor = ckCL;
+                }
+                console.log(arregloCLs);
+            }
+        });
 
         //Ocultar tabla y form de la sección KPI
         kpiOp.addEventListener("click", function(event) {
@@ -257,6 +386,8 @@
             }
         });
 
+
+
         //Ocultar tabla y form de la sección Bono
         bonoOp.addEventListener("click", function(event) {
             event.preventDefault();
@@ -266,6 +397,17 @@
             } else {
                 bonoDiv.style.display = "none";
                 tablaBono.style.display = "none";
+            }
+        });
+
+        resultadoOp.addEventListener("click", function(event) {
+            event.preventDefault();
+            if (resultadoDiv.style.display === "none") {
+                resultadoDiv.style.display = "block";
+                tablaResultado.style.display = "block";
+            } else {
+                resultadoDiv.style.display = "none";
+                tablaResultado.style.display = "none";
             }
         });
 
@@ -282,14 +424,36 @@
         }
     });
 
+    apartadoResultado.addEventListener('change', function() {
+        if (apartadoResultado.checked) {
+            imagenResultados.style.display = 'inline-block';
+            arregloResultados = [];
+            llenarArregloResultados();           
+        } else {
+            imagenResultados.style.display = 'none';
+            resultadoDiv.style.display = "none";
+            tablaResultado.style.display = "none";
+            arregloResultados = [];
+        }
+    });
         //Agregar OKR
         var formOKR = document.getElementById("formOKR");
         formOKR.addEventListener("submit", function(event) {
-            event.preventDefault();
-            var objetivo = document.getElementById("objetivoOKR").value;
+            var valorInput = document.getElementById('valorOKR').value;
+            var valorOKR = document.getElementById('valorOKR').value;
+            event.preventDefault(); 
+            if (valorInput == 0) {
+                showModal('El valor no puede ser 0. Por favor, ingrese un valor válido.');
+                event.preventDefault(); 
+            } else if (!isDecimal(valorOKR)){
+                showModal('Por favor, ingrese un número decimal válido para el valor.');
+                event.preventDefault(); 
+            }
+            else {
+                var objetivo = document.getElementById("objetivoOKR").value;
             var metrica = document.getElementById("metricaOKR").value;
             var valor = document.getElementById("valorOKR").value;
-    
+                
             console.log(objetivo, metrica, valor);
             var nuevoOKR = {
                 id : contOKRs++,
@@ -304,12 +468,61 @@
     
             console.log(arregloOKRs)
             updateTable(); // Actualiza la tabla
+            sumar(1);
+            }
+            
         });
+
+        function isDecimal(value) {
+            // Use una expresión regular para verificar si el valor ingresado es un número decimal
+            return /^-?\d*\.?\d+$/.test(value);
+        }
+
+        function sumar(opc) {
+            if (opc==1)
+            {
+                sumOKR=0;
+            for (var i = 0; i < arregloOKRs.length; i++) {
+                sumOKR += parseFloat(arregloOKRs[i].valor);
+            }
+            document.getElementById("sumasOKR").innerHTML =  sumOKR;
+
+            if (sumOKR != document.getElementById("checkOKR").value) {
+                document.getElementById("sumasOKR").style.color = "red";
+            } else {
+                document.getElementById("sumasOKR").style.color = "green";
+            }
+            }
+            else if (opc==2)
+            {
+                sumKPI=0;
+                for (var i = 0; i < arregloKPIs.length; i++) {
+                    sumKPI += parseFloat(arregloKPIs[i].valor);
+                }
+    
+                document.getElementById("sumasKPI").innerHTML =  sumKPI;
+    
+                if (sumKPI != document.getElementById("checkKPI").value) {
+                    document.getElementById("sumasKPI").style.color = "red";
+                } else {
+                    document.getElementById("sumasKPI").style.color = "green";
+                }
+            }
+        }
         
         //Agregar KPI
         var formKPI = document.getElementById("formKPI");
         formKPI.addEventListener("submit", function(event) {
-            event.preventDefault();
+            var valorInput = document.getElementById('valorKPI').value;
+            var valorKPI = document.getElementById('valorKPI').value;
+            event.preventDefault(); 
+            if (valorInput == 0) {
+                showModal('El valor no puede ser 0. Por favor, ingrese un valor válido.');
+                event.preventDefault(); 
+            } else if (!isDecimal(valorKPI)){
+                showModal('Por favor, ingrese un número decimal válido para el valor.');
+                event.preventDefault(); 
+            }else {
             var objetivo = document.getElementById("objetivoKPI").value;
             var metrica = document.getElementById("metricaKPI").value;
             var valor = document.getElementById("valorKPI").value;
@@ -328,9 +541,43 @@
     
             console.log(arregloKPIs)
             updateTableKPI(); // Actualiza la tabla
+            sumar(2);
+        }
         });
         
     });
+
+    function sumar(opc) {
+        if (opc==1)
+        {
+            sumOKR=0;
+        for (var i = 0; i < arregloOKRs.length; i++) {
+            sumOKR += parseFloat(arregloOKRs[i].valor);
+        }
+        document.getElementById("sumasOKR").innerHTML =  sumOKR;
+
+        if (sumOKR != document.getElementById("checkOKR").value) {
+            document.getElementById("sumasOKR").style.color = "red";
+        } else {
+            document.getElementById("sumasOKR").style.color = "green";
+        }
+        }
+        else if (opc==2)
+        {
+            sumKPI=0;
+            for (var i = 0; i < arregloKPIs.length; i++) {
+                sumKPI += parseFloat(arregloKPIs[i].valor);
+            }
+
+            document.getElementById("sumasKPI").innerHTML =  sumKPI;
+
+            if (sumKPI != document.getElementById("checkKPI").value) {
+                document.getElementById("sumasKPI").style.color = "red";
+            } else {
+                document.getElementById("sumasKPI").style.color = "green";
+            }
+        }
+    }
     
     var arregloOKRs = [];
     var contOKRs = 1;
@@ -340,39 +587,49 @@
 
     //Apartado Cultura laboral
     var arregloCLs = [];
+    var arregloResultados = [];
 
-    var nuevoCL = {
-        objetivo: "Vivir nuestra Misión, Visión, Valores y Políticas de la compañía todos los días dentro y fuera de la compañía.",
-        metrica: "Respetar las políticas como puntualidad, asistencia, vestimenta, comedor y todas aquellas que forman parte de nuestra cultura y que sirven para alinearnos con los objetivos de la compañía. Tener una conducta apropiada de acuerdo a los valores de CESEHSA, dentro y fuera de la compañía",
-        valor: 2.5
-    };
+    llenarArregloCLs();
+    
+    function llenarArregloCLs() {
+        arregloCLs = [];
+        var chekCL = document.getElementById("checkCL").value;
+        var nuevoCL = {
+            objetivo: "Vivir nuestra Misión, Visión, Valores y Políticas de la compañía todos los días dentro y fuera de la compañía.",
+            metrica: "Respetar las políticas como puntualidad, asistencia, vestimenta, comedor y todas aquellas que forman parte de nuestra cultura y que sirven para alinearnos con los objetivos de la compañía. Tener una conducta apropiada de acuerdo a los valores de CESEHSA, dentro y fuera de la compañía",
+            valor: chekCL
+        };
+    
+        arregloCLs.push(nuevoCL);
+        var chekCL = document.getElementById("checkCL").value;
+        var nuevoCL = {
+            objetivo: "Participar en las capacitaciones a las cuales sea invitado, así como tener iniciativa en buscar y presentar propuestas de capacitación para mejorar mis habilidades y conocimientos.",
+            metrica: "Asistir a todas las capacitaciones, presentar mis evaluaciones y todo lo requerido para estas. Mínimo 1 propuesta y una acción a desarrollar para mejorar una habilidad blanda o técnica.",
+            valor: chekCL
+        };
+    
+        arregloCLs.push(nuevoCL);
+    
+        var nuevoCL = {
+            objetivo: "Proponer y desarrollar mejoras en procesos o innovaciones dentro de CESEHSA o ser parte de equipo que ya esté desarrollando alguna. ",
+            metrica: "Presentar una propuesta y desarrollarla, o participar dentro de un equipo que ya esté trabajando en una implementación o desarrollo. Cero Reportes de que por alguna acción este ocasionando un re trabajo a los diferentes equipos de la compañía.",
+            valor: chekCL
+        };
+    
+        arregloCLs.push(nuevoCL);
+    
+        var nuevoCL = {
+            objetivo: "Respetar y cuidar en todo momento las herramientas,  equipos como celulares, computadoras y vehículos, fondos de caja a nuestro resguardo.",
+            metrica: "Tener todo lo que este a mi resguardo en óptimas condiciones y hacer uso de estos de acuerdo a las políticas establecidas.",
+            valor: chekCL
+        };
+    
+        arregloCLs.push(nuevoCL);
+        actualizarTablaCL();
 
-    arregloCLs.push(nuevoCL);
 
-    var nuevoCL = {
-        objetivo: "Participar en las capacitaciones a las cuales sea invitado, así como tener iniciativa en buscar y presentar propuestas de capacitación para mejorar mis habilidades y conocimientos.",
-        metrica: "Asistir a todas las capacitaciones, presentar mis evaluaciones y todo lo requerido para estas. Mínimo 1 propuesta y una acción a desarrollar para mejorar una habilidad blanda o técnica.",
-        valor: 2.5
-    };
-
-    arregloCLs.push(nuevoCL);
-
-    var nuevoCL = {
-        objetivo: "Proponer y desarrollar mejoras en procesos o innovaciones dentro de CESEHSA o ser parte de equipo que ya esté desarrollando alguna. ",
-        metrica: "Presentar una propuesta y desarrollarla, o participar dentro de un equipo que ya esté trabajando en una implementación o desarrollo. Cero Reportes de que por alguna acción este ocasionando un re trabajo a los diferentes equipos de la compañía.",
-        valor: 2.5
-    };
-
-    arregloCLs.push(nuevoCL);
-
-    var nuevoCL = {
-        objetivo: "Respetar y cuidar en todo momento las herramientas,  equipos como celulares, computadoras y vehículos, fondos de caja a nuestro resguardo.",
-        metrica: "Tener todo lo que este a mi resguardo en óptimas condiciones y hacer uso de estos de acuerdo a las políticas establecidas.",
-        valor: 2.5
-    };
-
-    arregloCLs.push(nuevoCL);
-    actualizarTablaCL();
+    }
+    
     //Fin apartado Cultura laboral
 
     //Apartado Bono
@@ -405,6 +662,17 @@
         actualizarTablaBonos();
     }
     //Fin apartado Bono
+
+    function llenarArregloResultados (){
+        var nuevoResultado = {
+            objetivo: "En mi evaluacion llegue arriba del 70% por lo cual me corresponderia un bono adicional si la empresa alcanzo el 100% de su objetivo del mes.",
+            metrica: "Tener en su evaluacion mensual arriba del 70% de calificacion total y que la empresa llegue al 100% de su objetivo mensual.",
+            valor: 0
+        };
+    
+        arregloResultados.push(nuevoResultado);
+        actualizarTablaResultados();
+    }
     
     // Función para actualizar la tabla OKR
     function updateTable() {
@@ -458,8 +726,8 @@
         arregloOKRs = arregloOKRs.filter(function(element) {
             return element.id !== id;
         });
-    
         // Actualiza la tabla
+        sumar(1);
         updateTable();
     }
 
@@ -472,7 +740,7 @@
             // Recorre el arregloOKRs y crea las filas de la tabla
             arregloCLs.forEach(function(cl) {
                 var row = document.createElement('tr');
-                row.innerHTML = `<td>${cl.objetivo}</td><td>${cl.metrica}</td><td>${cl.valor}</td>`;
+                row.innerHTML = `<td>${cl.objetivo}</td><td>${cl.metrica}</td>`;
                 tableBody.appendChild(row);
             });
             // Mostrar la tabla si hay datos
@@ -494,7 +762,7 @@
             // Recorre el arregloOKRs y crea las filas de la tabla
             arregloBonos.forEach(function(bono) {
                 var row = document.createElement('tr');
-                row.innerHTML = `<td>${bono.objetivo}</td><td>${bono.metrica}</td><td>${bono.valor}</td>`;
+                row.innerHTML = `<td>${bono.objetivo}</td><td>${bono.metrica}</td><td>$${bono.valor}</td>`;
                 tableBody.appendChild(row);
             });
             // Mostrar la tabla si hay datos
@@ -503,6 +771,27 @@
         else {
             // Si el arregloOKRs está vacío, oculta la tabla
             document.querySelector('.tablaBono').style.display = 'none';
+        }
+    
+    }
+
+    function actualizarTablaResultados()
+    {
+        var tableBody = document.querySelector('.tablaResultados tbody');
+        tableBody.innerHTML = '';
+        if (arregloResultados.length > 0) {
+            // Recorre el arregloOKRs y crea las filas de la tabla
+            arregloResultados.forEach(function(resul) {
+                var row = document.createElement('tr');
+                row.innerHTML = `<td>${resul.objetivo}</td><td>${resul.metrica}</td><td>${resul.valor}</td>`;
+                tableBody.appendChild(row);
+            });
+            // Mostrar la tabla si hay datos
+            document.querySelector('.tablaResultados').style.display = 'table';
+        }
+        else {
+            // Si el arregloOKRs está vacío, oculta la tabla
+            document.querySelector('.tablaResultados').style.display = 'none';
         }
     
     }
@@ -560,7 +849,7 @@
         arregloKPIs = arregloKPIs.filter(function(element) {
             return element.id !== id;
         });
-    
+        sumar(2);
         // Actualiza la tabla
         updateTableKPI();
     }
@@ -598,9 +887,7 @@
     }
 
     spanEnviar.onclick = function() {
-        var url = '/crearEvaluacionDB/' + JSON.stringify(arregloBonos) + '/' + JSON.stringify(arregloCLs) + '/' + JSON.stringify(arregloKPIs) + '/' + JSON.stringify(arregloOKRs) + '/';
-        window.location.href = url;
-
+        validar(); // Llama a la función de validación antes de enviar el formulario
     }
 
     // Cuando el usuario hace clic en cualquier lugar fuera del modal, también cierra el modal
@@ -610,37 +897,58 @@
     }
     }
 
-    window.onclick = function(event) {
+     window.onclick = function(event) {
         if (event.target == modalEnviar) {
-            var url = '/crearEvaluacionDB/' + JSON.stringify(arregloBonos) + '/' + JSON.stringify(arregloCLs) + '/' + JSON.stringify(arregloKPIs) + '/' + JSON.stringify(arregloOKRs) + '/';
-        window.location.href = url;
+            validar();
         }
+    } 
+
+    function actualizarCampoOculto() {
+        var arregloBonosInput = document.querySelector('input[name="arregloBonos"]');
+        arregloBonosInput.value = JSON.stringify(arregloBonos);
+        var arregloCLsInput = document.querySelector('input[name="arregloCLs"]');
+        arregloCLsInput.value = JSON.stringify(arregloCLs);
+        var arregloKPIsInput = document.querySelector('input[name="arregloKPIs"]');
+        arregloKPIsInput.value = JSON.stringify(arregloKPIs);
+        var arregloOKRsInput = document.querySelector('input[name="arregloOKRs"]');
+        arregloOKRsInput.value = JSON.stringify(arregloOKRs);
+        var arregloResultadosInput = document.querySelector('input[name="arregloResultados"]');
+        arregloResultadosInput.value = JSON.stringify(arregloResultados);
     }
 
+    function validar() {
+        var totOKRs = 0;
+        var totKPIs = 0;
+        var checkOKR = document.getElementById("checkOKR").value;
+        var checkKPI = document.getElementById("checkKPI").value;
+        var checkCL = document.getElementById("checkCL").value;
 
-    function validar(){
-        var totOKRs=0;
-        var totKPIs=0;
 
+        actualizarCampoOculto();
         for (var i = 0; i < arregloOKRs.length; i++) {
-            console.log("Valor que tiene", arregloOKRs[i].valor);
-            totOKRs += parseInt(arregloOKRs[i].valor, 10);
+            totOKRs += parseFloat(arregloOKRs[i].valor, 10);
         }
-        
-        for (var i = 0; i < arregloKPIs.length; i++) {
-            totKPIs += parseInt(arregloKPIs[i].valor, 10);
-        }
-
-        if (totOKRs != 20) {
-            showModal("La suma de los OKRs debe ser igual a 20");
-        } else if (totKPIs != 70) {
-            showModal("La suma de los KPIs debe ser igual a 70");
-        } else {
-            showModalEnviar("Evaluación con sumas correctas. Guardando...");
-        }
-    }
-
     
+        for (var i = 0; i < arregloKPIs.length; i++) {
+            totKPIs += parseFloat(arregloKPIs[i].valor, 10);
+        }
+        console.log(parseFloat(checkOKR) + parseFloat(checkKPI) + parseFloat(checkCL))
+        if ((parseFloat(checkOKR) + parseFloat(checkKPI) + parseFloat(checkCL)) != 100) {
+            showModal("La suma de los porcentajes de OKR, KPI y Cultura laboral debe ser igual a 100");
+        } else {
+            // Si la validación pasa, valida que los datos sean correctos
+            if (totOKRs != checkOKR) {
+                showModal("La suma de los OKRs debe ser igual a " + checkOKR);
+            } else if (totKPIs != checkKPI) {
+                showModal("La suma de los KPIs debe ser igual a " +  checkKPI);
+            } else {
+                // Si la validación pasa, envía el formulario
+                document.getElementById("myForm").submit();
+            }
+        }
+    
+        
+    }
 </script>
 
 </body>

@@ -42,6 +42,12 @@
       </li>
       <li class="opcion">
         <a href="{% url 'evaluaciones' %}">Evaluaciones</a>
+        <ul class="submenu" id="submenuEvaluaciones">
+          <li><a href="{% url 'crearEvaluacion2' %}">Crear evaluación</a></li>
+          <li><a href="{% url 'editarEvaluacion' %}">Editar evaluacion</a></li>
+          <li><a href="{% url 'rutaEvaluacion' %}">Crear ruta</a></li>
+          <li><a href="{% url 'asignarEvaluacion' %}">Asignar evaluacion</a></li>
+        </ul>
       </li>
       <li class="opcion">
         <a href="#">Informes</a>

@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="en" >
   <head>
-    <title>Dashboard</title>
-    {% comment %}
-<link rel="stylesheet" type="text/css" href="{% static 'css/barraNavegacion.css' %}" />
-{% endcomment %}
+    <title>Evaluaciones</title>
+
+
 <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
  
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <Style>
       body {
@@ -24,7 +24,7 @@
       
       .panel {
         padding: 15px;
-        margin-left: max(10%, 250px);
+        margin-left: max(10%, 15%);
         padding: 0 15px;
         padding-top: 15px;
         padding-bottom: 15px;
@@ -61,7 +61,7 @@
       .lateral {
         background: #12284c;
         color: white;
-        width: 250px;
+        width: 15%;
         padding: 20px;
         padding-top: 30px;
         height: 100%;
@@ -167,6 +167,34 @@
       .contenedor {
         padding: 20px;
     }
+
+    .submenu {
+      display: none;
+      margin-left: 20px;
+      margin-top: 10px;
+    }
+    
+    .submenu li {
+      margin-bottom: 5px;
+    }
+    
+    /* Mostrar submenú al pasar el ratón sobre la opción de menú principal */
+    .opcion:hover .submenu {
+      display: block;
+    }
+    
+    /* Ajustes de estilo para el enlace del submenú */
+    .submenu a {
+      color: #ffffff;
+      font-family: "Arial", sans-serif;
+      font-size: 15px; /* Tamaño del texto del submenú */
+      text-decoration: none;
+      display: block;
+    }
+    
+    .submenu a:hover {
+      text-decoration: underline;
+    }
     
     .meses, .general, .individual {
         background-color: #d9d9d6;
@@ -178,6 +206,7 @@
         display: inline-block;
         font-family: Arial, sans-serif;
         font-size: 20px; 
+        padding-bottom: 7px;
     }
 
     .individual {
@@ -189,6 +218,7 @@
         display: inline-block;
         font-family: Arial, sans-serif;
         font-size: 20px; 
+        
     }
     
     .split {
@@ -265,11 +295,27 @@
       border-color: #00953a;
   }
 
+
   .eva {
     background-color: #fff;
     border-left: 30px;
     margin-right: 20px;
     padding:30px;
+  }
+
+  .eva2 {
+    background-color: #fff;
+    margin: 7px;
+    margin-bottom: 5px;
+    border-radius : 10px;
+    height: 166px;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .chart-conteteiner{
+    justify-content: center;
+    align-items: center;
   }
 
   .apartado {
@@ -326,7 +372,14 @@
     vertical-align: middle;
   }
 
-  .tablaEvaluacion1 td, .tablaEvaluacion2 td, .tablaEvaluacion3 td, .tablaEvaluacion4 td{
+  .tablaResultados td {
+    white-space: normal; /* Permitir que el texto se envuelva */
+    word-wrap: break-word; /* Romper las palabras largas si es necesario */
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  .tablaEvaluacion1 td, .tablaEvaluacion2 td, .tablaEvaluacion3 td, .tablaEvaluacion4 td, .tablaEvaluacion5 td{
     white-space: normal; /* Permitir que el texto se envuelva */
     word-wrap: break-word; /* Romper las palabras largas si es necesario */
     text-align: center;
@@ -448,6 +501,43 @@
     vertical-align: middle;
   }
 
+  .tablaEvaluaciones {
+    overflow-y: auto;
+    overflow-x: auto;
+    max-height: 500px;
+    max-width: 99%;
+  }
 
+ #checkOKR{
+    width: 10%;
+    padding: 3px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    font-size: 16px;
+    color: #555;
+
+}
+
+#checkKPI{
+    width: 10%;
+    padding: 3px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    font-size: 16px;
+    color: #555;
+}
+
+#checkCL{
+  width:10%;
+  padding: 3px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  font-size: 16px;
+  color: #555;
+}
+  
     </Style>
   </head>

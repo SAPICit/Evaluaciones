@@ -1,15 +1,59 @@
-{% load static%}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Imágenes</title>
-</head>
-<body>
-    <h1>Imágenes</h1>
-    <img src={% static 'img/imgPrueba.jpg' %} alt="Imagen" width="200" height="200">
-    <img src={% static 'img/colores.jpg' %} alt="Imagen" width="200" height="200">
-    <br/>
-    <br/>
-    <a href="{% url 'index' %}">Enlace a otra página</a>
-</body>
+{% extends "plantilla/master.html" %}
+{% load static %}
+
+
+{% block contenido %}
+
+
+
+    <div id="panel" class="panel">
+      <div class="interiorG">
+        <div id="titulo" class="titulo">
+          <h1>asignarEvaluacion</h1>
+        </div>
+        
+        <div class="row mt-2">
+            <div class="col-md-4">
+                <h3> Catidad de empleados por departmaento <h3/>
+
+            </div>
+        </div>
+                <div>
+                <canvas id="myChart"></canvas>
+              </div>
+              
+              <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+              
+              <script>
+                const ctx = document.getElementById('myChart');
+              
+                new Chart(ctx, {
+                  type: 'bar',
+                  data: {
+                    labels: [{% for departamento in departamentos %} '{{departamento.nombre}}', {%endfor%}],
+                    datasets: [{
+                      label: 'Empleados',
+                      data: [{% for item in cantidad %} {{ item.cantidad }}, {% endfor %}],
+                      borderWidth: 1,
+                      backgroundColor: [
+                        'rgba(0, 149, 58, 1)',
+                        'rgba(18, 40, 76, 1)',
+                        'rgba(18, 196, 88, 1)'
+                        ],
+                    }]
+                  },
+                  options: {
+                    scales: {
+                      y: {
+                        beginAtZero: true
+                      }
+                    }
+                  }
+                });
+              </script>           
+        
+      </div>
+    </div>
+  </body>
 </html>
+{% endblock %}
