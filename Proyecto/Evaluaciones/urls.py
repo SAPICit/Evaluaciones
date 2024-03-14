@@ -33,7 +33,13 @@ urlpatterns = [
     path ('guardarEvaluacionEditada', views.guardarEvaluacionEditada, name='guardarEvaluacionEditada'),
     path ('editarEvaluacion/', views.editarEvaluacion, name='editarEvaluacion'),
     path ('obtener_datos_evaluaciones/', views.obtener_datos_evaluaciones, name='obtener_datos_evaluaciones'),
+    path ('obtener_datos_evaluaciones_editada/', views.obtener_datos_evaluaciones_editada, name='obtener_datos_evaluaciones_editada'),
     path ('editarEvaluacionAsignada/<int:id>/', views.editarEvaluacionAsignada, name='editarEvaluacionAsignada'),
-    path ('obtener_datos_evaluaciones_asignada/', views.obtener_datos_evaluaciones_asignada, name='obtener_datos_evaluaciones_asignada'),
+    path ('comentariosInicio/', views.comentariosInicio, name='comentariosInicio'),
+    path ('guardar_comentarios_iniciales/', views.guardar_comentarios_iniciales, name='guardar_comentarios_iniciales'),
+    path ('autoevaluacion/', views.autoevaluacion, name='autoevaluacion'),
+    path ('obtener_datos_evaluacion_comentarios/', views.obtener_datos_evaluacion_comentarios, name='obtener_datos_evaluacion_comentarios'),
+    path ('calendario/', views.calendario, name='calendario'),
+    path ('traerDatosEmpleado/', views.traerDatosEmpleado, name='traerDatosEmpleado'),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

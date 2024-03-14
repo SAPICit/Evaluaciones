@@ -20,37 +20,45 @@
       <li class="opcion">
         
       </li>
-      <li class="opcion">
-        <a href="#">Autoevaluación</a>
+      <li class="opcion autoevaluacio">
+        <a href="{% url 'autoevaluacion' %}">Autoevaluación</a>
       </li>
-      <li class="opcion">
+      <li class="opcion misEvaluaciones">
         <a href="#">Mis evaluaciones</a>
       </li>
-      <li class="opcion">
+      {% comment %} {% if %} {% endcomment %}
+      <li class="opcion porEvaluar" style= "display: none;">
         <a href="#">Por evaluar</a>
+      </li>
+      {% comment %} {% endif %} {% endcomment %}
+      <li class="opcion apartadoComentarios" style= "display: none;">
+        <a href="{% url 'comentariosInicio' %}">Comentarios</a>
       </li>
 
       <br />
 
-      <div class="separacion"></div>
-      <li class="opcionImg">
+      <div class="separacion capitalHumano" style= "display: none;"></div>
+      <li class="opcionImg apartadoEmp" style= "display: none;">
         <img src={% static 'img/usuarios.png' %} alt="Imagen" width="35px" height="35px">
         <a href="{% url 'listaEmpleados' %}">Empleados</a>
       <li/>
       <li class="opcion">
         
       </li>
-      <li class="opcion">
-        <a href="{% url 'evaluaciones' %}">Evaluaciones</a>
+      <li class="opcion apartadoEvaluaciones" style= "display: none;">
+        <a href="{% url 'evaluaciones' %}" >Evaluaciones</a>
         <ul class="submenu" id="submenuEvaluaciones">
-          <li><a href="{% url 'crearEvaluacion2' %}">Crear evaluación</a></li>
-          <li><a href="{% url 'editarEvaluacion' %}">Editar evaluacion</a></li>
-          <li><a href="{% url 'rutaEvaluacion' %}">Crear ruta</a></li>
-          <li><a href="{% url 'asignarEvaluacion' %}">Asignar evaluacion</a></li>
+          <li class="crearEvaluacion"><a href="{% url 'crearEvaluacion2' %}">Crear evaluación</a></li>
+          <li class="editarEvaluacion"><a href="{% url 'editarEvaluacion' %}">Editar evaluacion</a></li>
+          <li class="crearRuta"><a href="{% url 'rutaEvaluacion' %}">Crear ruta</a></li>
+          <li class="asignarEvaluacion"><a href="{% url 'asignarEvaluacion' %}">Asignar evaluacion</a></li>
         </ul>
       </li>
-      <li class="opcion">
+      <li class="opcion informes" style= "display: none;">
         <a href="#">Informes</a>
+      </li>
+      <li class="opcion calendario" style= "display: none;">
+        <a href="{% url 'calendario' %}">Calendario</a>
       </li>
       <br />
 
@@ -66,4 +74,48 @@
       </li>
     </ul>
   </div>
+
+  <script>
+    traerDatos();
+    function traerDatos(){
+    $.ajax({
+      url: "{% url 'traerDatosEmpleado' %}",
+      data: {
+        'no_emp': {{user.no_emp}}
+      },  
+      type: 'GET',
+      success: function(data) {
+        console.log(data);
+        var calendario = document.getElementsByClassName('calendario');
+        var evaluaciones = document.getElementsByClassName('apartadoEvaluaciones');
+        var informes = document.getElementsByClassName('informes');
+        var empleados = document.getElementsByClassName('apartadoEmp');
+        var capitalHumano = document.getElementsByClassName('capitalHumano');
+        var porEvaluar = document.getElementsByClassName('porEvaluar');
+        var comentarios = document.getElementsByClassName('apartadoComentarios');
+    
+
+        {% comment %} if (data.empleado.rango != 1) {
+          calendario[0].style.display = 'none';
+        } {% endcomment %}
+
+        if (data.empleado.departamento == 11) {
+          console.log('entro 1');
+          evaluaciones[0].style.display = 'block';
+          informes[0].style.display = 'block';
+          empleados[0].style.display = 'block';
+          calendario[0].style.display = 'block';
+          capitalHumano[0].style.display = 'block';
+        }
+
+        if (data.empleado.rango == 1 || data.empleado.rango == 2 || data.empleado.rango == 3 || data.empleado.rango == 5) {
+          console.log('entro');
+          porEvaluar[0].style.display = 'block';
+          comentarios[0].style.display = 'block';
+        }
+
+      }
+    });
+  }
+  </script>
 

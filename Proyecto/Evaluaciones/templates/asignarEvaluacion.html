@@ -12,7 +12,7 @@
           <h1>Asignación de evaluaciones</h1>
         </div>
         <div class="eva">
-          <form class="formularioGuardarEvaluacion" id="formularioGuardarEvaluacion" action="{% url 'guardarEvaluacionEditada' %}" method="post">
+          <form class="formularioGuardarEvaluacion" id="formularioGuardarEvaluacion" action="{% url 'guardarEvaluacionMensual' %}" method="post">
             {% csrf_token %}
           <div class="row g-3">
           <div class="col-md-6">
@@ -51,6 +51,7 @@
           <div class="col-md-6">
             <label for="fecha">Mes a evaluar</label><br />
             <input class="form-control" type="text" id="fecha" name="fecha" value="{{ fecha.id }}" disabled />
+            {% comment %} <input class="form-control" type="text" id="fecha" name="fecha" value="Hola que tal" data-real-value="{{ fecha.id }}" disabled /> {% endcomment %}
             <br />
           </div>
 

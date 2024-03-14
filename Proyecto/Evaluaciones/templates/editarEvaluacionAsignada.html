@@ -14,7 +14,7 @@
         <form class="formularioGuardarEvaluacion" id="formularioGuardarEvaluacion" action="{% url 'guardarEvaluacionEditada' %}" method="post">
 
           {% csrf_token %}
-            <input type="hidden" name="eva" value="{{ eva.id }}" />
+            <input type="hidden" name="eva" id="eva" value="{{ eva.id }}" />
         <div class="row g-3">
         <div class="col-md-6">
           <label for="numeroEvaluacion">Evaluaciones</label><br />
@@ -459,12 +459,12 @@
       // Realizar la solicitud AJAX
       $.ajax({
           type: 'GET',
-          url: '/obtener_datos_evaluaciones/', // La URL de tu vista Django
+          url: '/obtener_datos_evaluaciones_editada/', // La URL de tu vista Django
           data: {
               'empleado_id': empleado_id,
               'fecha_id': fecha,
-              'numeroEvaluacion_id': evaluacion_id
-              'eva_id': eva
+              'numeroEvaluacion_id': evaluacion_id,
+              'eva_id': eva,
               'seguimiento_id': seguimiento_id
           },
           success: function(response) {

@@ -1,0 +1,189 @@
+{% extends "plantilla/master.html" %}
+{% load static %}
+
+
+{% block contenido %}
+
+
+
+    <div id="panel" class="panel">
+      <div class="interiorG">
+        <div id="titulo" class="titulo">
+          <h1>Calendario</h1>
+        </div>
+        
+        <div class="eva">
+            <div class="calendarioo">
+                <form  method="post">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class = "col-md-12">
+                            <label>Comentarios</label>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="comentariosInicialesInicio">Inicio</label>
+                            <input type="date" class="form-control" id="comentariosInicialesInicio" name="comentariosInicialesInicio" required> 
+                        </div>
+                        <div class="col-md-6">
+                            <label for="comentariosInicialesFin">Fin</label>
+                            <input type="date" class="form-control" id="comentariosInicialesFin" name="comentariosInicialesFin" required>
+                        </div>
+
+                        <br/>
+                        <div class = "col-md-12">
+                            <br/>
+                            <label>Autoevaluacion</label>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="empleadosInicio">Inicio</label>
+                            <input type="date" class="form-control" id="empleadosInicio" name="empleadosInicio" required> 
+                        </div>
+                        <div class="col-md-6">
+                            <label for="empleadosFin">Fin</label>
+                            <input type="date" class="form-control" id="empleadosFin" name="empleadosFin" required>
+                        </div>
+
+
+
+                        <br/>
+                        <div class = "col-md-12">
+                            <br/>
+                            <label>Evaluadores</label>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="evaluadoresInicio">Inicio</label>
+                            <input type="date" class="form-control" id="evaluadoresInicio" name="evaluadoresInicio" required> 
+                        </div>
+                        <div class="col-md-6">
+                            <label for="evaluadoresFin">Fin</label>
+                            <input type="date" class="form-control" id="evaluadoresFin" name="evaluadoresFin" required>
+                        </div>
+
+
+
+                    </div>
+                    <br/>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </form>
+            </div>
+        </div>
+        
+        <div id="calendario"></div>
+
+      </div>
+    </div>
+    <div id="modalError" class="modalError">
+        <div class="modal-content">
+          <span class="closeError">&times;</span>
+          <img src="{% static 'img/advertencia.png' %}" alt="Imagen" width="35px" height="35px">
+          <p id="modal-messageError"></p>
+        </div>
+      </div>
+    
+  
+      <div id="modalEnviar" class="modalEnviar">
+        <div class="modal-content">
+          <span class="closeEnviar">&times;</span>
+          <img src="{% static 'img/comprobado.png' %}" alt="Imagen" width="35px" height="35px">
+          <p id="modal-messageEnviar"></p>
+        </div>
+      </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            var form = document.querySelector('form');
+            
+            form.addEventListener('submit', function (event) {
+                var today = new Date(); // Obtener la fecha actual
+                
+                var comentariosInicialesInicio = new Date(document.getElementById('comentariosInicialesInicio').value);
+                var comentariosInicialesFin = new Date(document.getElementById('comentariosInicialesFin').value);
+    
+                if (comentariosInicialesInicio <= today ) {
+                    showModalError("Las fechas de comentarios deben ser potseriores al día de hoy");
+                    event.preventDefault();
+                } else 
+
+                if (comentariosInicialesFin < comentariosInicialesInicio) {
+                    showModalError("La fecha de fin de comentarios debe ser posterior a la fecha de inicio");
+                    event.preventDefault();
+                }
+                
+                var empleadosInicio = new Date(document.getElementById('empleadosInicio').value);
+                var empleadosFin = new Date(document.getElementById('empleadosFin').value);
+                if (empleadosInicio <= today) {
+                    showModalError("Las fechas de autoevaluación deben ser iguales o posteriores a hoy");
+                    event.preventDefault();
+                }
+                else
+                if (empleadosFin < empleadosInicio) {
+                    showModalError("La fecha de fin de autoevaluación debe ser posterior a la fecha de inicio");
+                    event.preventDefault();
+                }
+    
+                var evaluadoresInicio = new Date(document.getElementById('evaluadoresInicio').value);
+                var evaluadoresFin = new Date(document.getElementById('evaluadoresFin').value);
+                if (evaluadoresInicio <= today ) {
+                    showModalError("Las fechas de evaluadores deben ser iguales o posteriores a hoy");
+                    event.preventDefault();
+                }
+                else 
+                if (evaluadoresFin < evaluadoresInicio) {
+                    showModalError("La fecha de fin de evaluadores debe ser posterior a la fecha de inicio");
+                    event.preventDefault();
+                }
+            });
+        });
+
+
+        // Obtener el modal de errores
+    var modal = document.getElementById("modalError");
+    var modalEnviar = document.getElementById("modalEnviar");
+
+    // Obtener el botón que cierra el modal
+    var spanError = document.getElementsByClassName("closeError")[0];
+    var spanEnviar = document.getElementsByClassName("closeEnviar")[0];
+
+    // Función para mostrar el modal con un mensaje específico
+    function showModalError(message) {
+    document.getElementById("modal-messageError").innerText = message;
+    modal.style.display = "block";
+    }
+
+    function showModalEnviar(message) {
+    document.getElementById("modal-messageEnviar").innerText = message;
+    modalEnviar.style.display = "block";
+    }
+
+
+    spanError.onclick = function() {
+    modal.style.display = "none";
+    }
+
+    window.onclick = function(event) {
+      if (event.target == modal) {
+          modal.style.display = "none";
+      }
+      }
+
+
+    spanEnviar.onclick = function() {
+        var url = '/evaluaciones/';
+        window.location.href = url;
+
+    }
+
+    window.onclick = function(event) {
+        if (event.target == modalEnviar) {
+            
+            var url = '/evaluaciones/';
+        window.location.href = url;
+        }
+    }
+
+    </script>
+
+  </body>
+</html>
+{% endblock %}

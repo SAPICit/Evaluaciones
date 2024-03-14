@@ -22,12 +22,12 @@
               <div class="individual">
                   <div class="split">
                       <div class="split-half">
-                          <h3>Próxima evaluación - Parte 1</h3>
+                          <h3>Próxima evaluación</h3>
                           
                           
                       </div>
                        <div class="split-half">
-                          <h3>Próxima evaluación - Parte 2</h3>
+                          <h3> Pendiente </h3>
                       </div>
                   </div>
               </div>
@@ -53,6 +53,29 @@
               </div>
               <div class="general">
                   <h3>Faltantes de contestar</h3>
+                  <div style="overflow-x:auto;">
+                    <table style="width:100%;"  class="tablaNoContestado table  table-success table-striped table-responsive table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Departamento</th>
+                                <th>Nombre</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for evaluacion in evaluaciones %}
+                            <tr>
+                                {% for departamento in departamentos %}
+                                {% if departamento.id == evaluacion.empleado.departamento_id %}
+                                <td>{{departamento.nombre}}</td>
+                                {% endif %}
+                                {% endfor %}
+                                <td>{{evaluacion.empleado.nombre}}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+        
               </div>
           </div>
       </div>

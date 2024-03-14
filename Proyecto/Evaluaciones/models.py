@@ -131,13 +131,16 @@ class Comentarios(models.Model):
     comentario_evaluador3 = models.TextField()
     comentario_evaluador4 = models.TextField()
     comentario_director = models.TextField()
+    comentario_capitalHumano = models.TextField()
+    logros = models.TextField()
+    estatus = models.IntegerField()
 
     def __str__(self):
         return str(self.resultado) + ' ' + str(self.comentario_autoevaluado) + ' ' + str(self.comentario_evaluador1) + ' ' + str(self.comentario_evaluador2) + ' ' + str(self.comentario_evaluador3) + ' ' + str(self.comentario_evaluador4) + ' ' + str(self.comentario_director)
     
 class CalificacionesObjetivos (models.Model):
     objetivo = models.ForeignKey('Objetivos', on_delete=models.PROTECT)
-    empleado = models.ForeignKey('Empleados', to_field='no_emp', related_name='empleadoCalificado',on_delete=models.PROTECT)
+    evaluacion = models.ForeignKey('Evaluaciones', on_delete=models.PROTECT)
     fecha = models.ForeignKey('Fechas', on_delete=models.PROTECT)
     calificacion = models.FloatField()
     quienCalifica = models.ForeignKey('Empleados', to_field='no_emp', related_name='quienCalifica',on_delete=models.PROTECT)
@@ -149,7 +152,7 @@ class CalificacionesObjetivos (models.Model):
     
 class ComentariosObjetivos (models.Model):
     objetivo = models.ForeignKey('Objetivos', on_delete=models.PROTECT)
-    empleado = models.ForeignKey('Empleados', to_field='no_emp', related_name='empleadoComentado',on_delete=models.PROTECT)
+    evaluacion = models.ForeignKey('Evaluaciones', on_delete=models.PROTECT)
     fecha = models.ForeignKey('Fechas', on_delete=models.PROTECT)
     comentario = models.TextField()
     quienComenta = models.ForeignKey('Empleados', to_field='no_emp',related_name='quienComenta', on_delete=models.PROTECT)
@@ -158,3 +161,17 @@ class ComentariosObjetivos (models.Model):
 
     def __str__(self):
         return str(self.objetivo) + ' ' + str(self.empleado) + ' ' + str(self.fecha) + ' ' + str(self.comentario) + ' ' + str(self.quienComenta) + ' ' + str(self.fechaComentario) + ' ' + str(self.estatus)
+    
+
+class Calendario (models.Model):
+    comentariosInicialesInicio = models.DateField()
+    comentariosInicialesFin = models.DateField()
+    empleadosInicio = models.DateField()
+    empleadosFin = models.DateField()
+    evaluadoresInicio = models.DateField()
+    evaluadoresFin = models.DateField()
+    tipo = models.IntegerField()
+    estatus = models.IntegerField()
+
+    def __str__(self):
+        return str(self.comentariosInicialesInicio) + ' ' + str(self.comentariosInicialesFin) + ' ' + str(self.empleadosInicio) + ' ' + str(self.empleadosFin) + ' ' + str(self.evaluadoresInicio) + ' ' + str(self.evaluadoresFin) + ' ' + str(self.tipo) + ' ' + str(self.estatus)

@@ -1,0 +1,653 @@
+{% extends "plantilla/master.html" %}
+{% load static %}
+
+
+{% block contenido %}
+
+
+
+    <div id="panel" class="panel">
+      <div class="interiorG">
+        <div id="titulo" class="titulo">
+          <h1>Autoevaluación</h1>
+        </div>
+        <div class="eva">
+
+        {% if evaluacion%}
+          
+          <div class="evaluacion table-responsive" id="evaluacion">
+            {{evaluacion.0.id}}
+            <h1 class="descOKR "> OKRs - {{sumOKR}}%</h1>
+            <h1 id="resultadoOKR"></h1>
+            <table id="tablaEvaluacion1" class="tablaEvaluacion1 table table-striped table-responsive table-bordered">
+                <thead>
+                    <tr>
+                        <th>Objetivo</th>
+                        <th>Metrica</th>
+                        <th>Valor</th>
+                        <th>Comentarios</th>
+                        <th>Autoevaluación</th>
+                    </tr>
+                </thead>
+  
+                <tbody>
+                </tbody>
+            </table>
+  
+            <h1 class="descKPI "> KPIs - {{sumKPI}}%</h1>
+            <table id="tablaEvaluacion2" class="tablaEvaluacion2 table table-striped table-responsive table-bordered" >
+                <thead>
+                    <tr>
+                        <th>Objetivo</th>
+                        <th>Metrica</th>
+                        <th>Valor</th>
+                        <th>Comentarios</th>
+                        <th>Autoevaluación</th>
+                    </tr>
+                </thead>
+  
+                <tbody>
+                </tbody>
+            </table>
+  
+            <h1 class="descCL "> Cultura laboral - {{sumCL}}%</h1>
+            <table id="tablaEvaluacion3" class="tablaEvaluacion3 table table-striped table-responsive table-bordered" >
+                <thead>
+                    <tr>
+                        <th>Objetivo</th>
+                        <th>Metrica</th>
+                        <th>Comentarios</th>
+                        <th>Autoevaluación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+  
+            <h1 class="descBONO "> Bono </h1>
+            <table id="tablaEvaluacion4" class="tablaEvaluacion4 table table-striped table-responsive table-bordered" > 
+                <thead>
+                    <tr>
+                        <th>Objetivo</th>
+                        <th>Metrica</th>
+                        <th>Valor</th>
+                        <th>Comentarios</th>
+                        <th>Autoevaluación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+  
+            <h1 class="descRESULTADOS "> Resultados </h1>
+            <table id="tablaEvaluacion5" class="tablaEvaluacion5 table table-striped table-responsive table-bordered" > 
+                <thead>
+                    <tr>
+                        <th>Objetivo</th>
+                        <th>Metrica</th>
+                        <th>Valor</th>
+                        <th>Comentarios</th>
+                        <th>Autoevaluación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+            <div class="logros">
+                <label for="logros">¿Cual fue tu mayor logro este mes?</label>
+                <textarea class="form-control logros" id="logros" name="logros" rows="3" required></textarea>
+            </div>
+            <br/>
+            <div class="comentariosGenerales">
+                <label for="comentariosGenerales">Comentarios generales</label>
+                {% if comentariosGenerales.comentario_evaluador1 != "" %}
+                <h6>Evaluador 1: {{comentariosGenerales.comentario_evaluador1}}</h6>
+                {% endif %}
+                {% if comentariosGenerales.comentario_capitalHumano != "" %}
+                <h6>Capital humano: {{comentariosGenerales.comentario_capitalHumano}}</h6>
+                {% endif %}
+                <textarea class="form-control comentariosGenerales" id="comentariosGenerales" name="comentariosGenerales" rows="3"></textarea>
+            </div>
+            <br/>
+            <button class="btn btn-primary" onclick="aquiPonerElNombreDeLaFuncion()">Guardar comentarios</button>
+          </div>
+        {% else %}
+        <h3>No tienes avaluación asignada para este mes, comunicate con CH</h3>
+        {% endif %}
+        </div>
+      </div>
+    </div>
+    <div id="modalError" class="modalError">
+        <div class="modal-content">
+          <span class="closeError">&times;</span>
+          <img src="{% static 'img/advertencia.png' %}" alt="Imagen" width="35px" height="35px">
+          <p id="modal-messageError"></p>
+        </div>
+      </div>
+    
+    
+      <div id="modalEnviar" class="modalEnviar">
+        <div class="modal-content">
+          <span class="closeEnviar">&times;</span>
+          <img src="{% static 'img/comprobado.png' %}" alt="Imagen" width="35px" height="35px">
+          <p id="modal-messageEnviar"></p>
+        </div>
+      </div>
+  
+    <script>
+        llenarInicio();
+                     
+        function llenarInicio(){
+          var id = $("#numeroEvaluacion").val();
+          $.ajax({
+            url: '/obtener_datos_evaluacion_comentarios/',
+            data: {
+              'evaluacion_id': {{evaluacion.0.id}}
+            },                                          
+            dataType: 'json',
+            success: function(data) {
+              console.log(data);
+              // Actualiza el contenido de las tablas con los datos recibidos
+  
+              //Actualizar tabla de los OKRs
+              var tableOKR = document.querySelector('.tablaEvaluacion1 tbody');
+              var descOKR = document.querySelector('.descOKR');
+              tableOKR.innerHTML = '';
+              if (data.OKR.length > 0) {
+                  // Recorre el arregloOKRs y crea las filas de la tabla
+                  var sOKR=0.0;
+                  
+                  data.OKR.forEach(function(cl) {
+                    var row = document.createElement('tr');
+                    row.innerHTML = `<td>${cl.objetivo}</td><td>${cl.metrica}</td><td>${cl.valor}</td>`;
+
+                    // Crear cell para el comentario
+                    var comentariosHeader = document.createElement('h6');
+                    var commentsAndInputCell = document.createElement('td');
+                    var commentsAndInputContainer = document.createElement('div');
+                    var input = document.createElement('textarea');
+                    input.className = 'form-control';
+                    input.rows = '3';
+                    input.type = 'text';
+                    input.id = cl.id;
+                    input.name = cl.id;
+                    input.className = 'comentarioOKR'; // Clase para el input si necesitas aplicar estilos o acceder a él posteriormente
+                    var comentarios = ''; // Variable para almacenar los comentarios
+                    data.coment_OKR.forEach(function(comentario) {
+                        if (comentario.objetivo_id == cl.id)
+                        {   
+                            data.empleados.forEach(function(empleado) {
+                                if (empleado.no_emp == comentario.quienComenta_id)
+                                {
+                                    comentarios += `${empleado.nombre} ${empleado.apellido_paterno}:`;
+                                }
+                            });
+                            comentarios += `${comentario.comentario}\n`;
+                        }
+                    });
+                    comentariosHeader.textContent = comentarios;
+                    commentsAndInputContainer.appendChild(comentariosHeader);
+                    commentsAndInputContainer.appendChild(input);   
+                    commentsAndInputCell.appendChild(commentsAndInputContainer);
+                    row.appendChild(commentsAndInputCell);
+                    
+                    
+                    // Crear un nuevo cell para el combo box
+                    var selectCell = document.createElement('td');
+                    // Crear el combo box
+                    var select = document.createElement('select');
+                    select.className = 'form-control opcionesOKR';
+                    select.name = 'opcionesOKR';
+                    select.id = 'opcionesOKR';
+                    
+                    // Crear las opciones dentro del combo box
+                    var optionNo = document.createElement('option');
+                    optionNo.value = 0;
+                    optionNo.text = 'No';
+                    var optionSi = document.createElement('option');
+                    optionSi.value = cl.valor;
+                    optionSi.text = 'Sí';
+                    
+                    
+                    // Agregar las opciones al combo box
+                    select.appendChild(optionNo);
+                    select.appendChild(optionSi);
+                    
+                    
+                    // Agregar el combo box al cell
+                    selectCell.appendChild(select);
+                    
+                    // Agregar el cell a la fila
+                    row.appendChild(selectCell);
+                    // Agregar la fila a la tabla
+                    tableOKR.appendChild(row);
+
+                    
+                    sOKR = sOKR + cl.valor;
+
+                
+        
+                });
+                  descOKR.innerHTML = 'OKRs - ' + sOKR + '%';
+                  document.querySelector('.tablaEvaluacion1').style.display = 'table';
+              } else {
+                  document.querySelector('.tablaEvaluacion1').style.display = 'none';
+                  descOKR.innerHTML = '';
+              }
+  
+              //Actualizar tabla de los KPIs
+              var tableKPI = document.querySelector('.tablaEvaluacion2 tbody');
+              var descKPI = document.querySelector('.descKPI');
+              tableKPI.innerHTML = '';
+              if (data.KPI.length > 0) {
+                  // Recorre el arregloKPIs y crea las filas de la tabla
+                  sKPI= 0.0;
+                  data.KPI.forEach(function(cl) {
+                      var row = document.createElement('tr');
+                      row.innerHTML = `<td>${cl.objetivo}</td><td>${cl.metrica}</td><td>${cl.valor}</td>`;
+                      var comentariosHeader = document.createElement('h6');
+                    var commentsAndInputCell = document.createElement('td');
+                    var commentsAndInputContainer = document.createElement('div');
+                      var input = document.createElement('textarea');
+                      input.class= 'form-control';
+                      input.rows= '3';
+                      input.type = 'text';
+                      input.id= cl.id;
+                      input.name= cl.id;
+                      input.className = 'comentarioKPI';
+                      var comentarios = ''; // Variable para almacenar los comentarios
+                      data.coment_KPI.forEach(function(comentario) {
+                        if (comentario.objetivo_id == cl.id)
+                        {   
+                            data.empleados.forEach(function(empleado) {
+                                if (empleado.no_emp == comentario.quienComenta_id)
+                                {
+                                    comentarios += `${empleado.nombre} ${empleado.apellido_paterno}:`;
+                                }
+                            });
+                            comentarios += `${comentario.comentario}\n`;
+                        }
+                    });
+                    comentariosHeader.textContent = comentarios;
+                    commentsAndInputContainer.appendChild(comentariosHeader);
+                    commentsAndInputContainer.appendChild(input);   
+                    commentsAndInputCell.appendChild(commentsAndInputContainer);
+                    row.appendChild(commentsAndInputCell);
+
+                      // Crear un nuevo cell para el combo box
+                    var selectCell = document.createElement('td');
+                    // Crear el combo box
+                    var select = document.createElement('select');
+                    select.className = 'form-control opciones';
+                    select.name = 'cl.id';
+                    select.id = 'cl.id';
+                    
+                    // Crear las opciones dentro del combo box
+                    var optionSi = document.createElement('option');
+                    optionSi.value = 'si';
+                    optionSi.text = 'Sí';
+                    var optionNo = document.createElement('option');
+                    optionNo.value = 'no';
+                    optionNo.text = 'No';
+                    
+                    // Agregar las opciones al combo box
+                    select.appendChild(optionSi);
+                    select.appendChild(optionNo);
+                    
+                    // Agregar el combo box al cell
+                    selectCell.appendChild(select);
+                    
+                    // Agregar el cell a la fila
+                    row.appendChild(selectCell)
+                      tableKPI.appendChild(row);
+                      sKPI= sKPI + cl.valor;
+                  });
+                  descKPI.innerHTML = 'KPIs - ' + sKPI + '%';
+                  document.querySelector('.tablaEvaluacion2').style.display = 'table';
+              }
+              else {
+                  document.querySelector('.tablaEvaluacion2').style.display = 'none';
+                  descKPI.innerHTML = '';
+              }
+  
+              //Actualizar tabla de la cultura laboral
+              var tableCL = document.querySelector('.tablaEvaluacion3 tbody');
+              var descCL = document.querySelector('.descCL');
+              tableCL.innerHTML = '';
+              if (data.CL.length > 0) {
+                  // Recorre el arregloCL y crea las filas de la tabla
+                  sCL   = 0.0;
+                  var obj ="";
+                  var met = "";
+                  var val= 0.0;
+                  id=0;
+                  comentarios="";
+  
+                  data.CL.forEach(function(cl) {
+                      obj += cl.objetivo;
+                      met += cl.metrica;
+                      sCL = cl.valor;
+                      id = cl.id;
+                      data.coment_CL.forEach(function(comentario) {
+                        if (comentario.objetivo_id == cl.id)
+                        {   
+                            data.empleados.forEach(function(empleado) {
+                                if (empleado.no_emp == comentario.quienComenta_id)
+                                {
+                                    comentarios += `${empleado.nombre} ${empleado.apellido_paterno}:`;
+                                }
+                            });
+                            comentarios += `${comentario.comentario}\n`;
+                        }
+                });
+                  });
+                  
+                  var row = document.createElement('tr');
+                  row.innerHTML = `<td>${obj}</td><td>${met}</td>`;
+                  tableCL.appendChild(row);
+                      
+                  var comentariosHeader = document.createElement('h6');
+                  var commentsAndInputCell = document.createElement('td');
+                  var commentsAndInputContainer = document.createElement('div');
+                      var input = document.createElement('textarea');
+                      input.class= 'form-control';
+                      input.type = 'text';
+                      input.id = id;
+                      input.name = id;
+                      input.rows= '3';
+                      //input.placeholder = 'Ingrese sus comentarios aquí...';
+                      input.className = 'comentarioCL'; // Clase para el input si necesitas aplicar estilos o acceder a él posteriormente
+                      comentariosHeader.textContent = comentarios;
+                      commentsAndInputContainer.appendChild(comentariosHeader);
+                      commentsAndInputContainer.appendChild(input);   
+                      commentsAndInputCell.appendChild(commentsAndInputContainer);
+                      row.appendChild(commentsAndInputCell);
+  
+                   // Crear un nuevo cell para el combo box
+                   var selectCell = document.createElement('td');
+                   // Crear el combo box
+                   var select = document.createElement('select');
+                   select.className = 'form-control opciones';
+                   select.name = id;
+                   select.id = id;
+                   
+                   // Crear las opciones dentro del combo box
+                   var optionSi = document.createElement('option');
+                   optionSi.value = 'si';
+                   optionSi.text = 'Sí';
+                   var optionNo = document.createElement('option');
+                   optionNo.value = 'no';
+                   optionNo.text = 'No';
+                   
+                   // Agregar las opciones al combo box
+                   select.appendChild(optionSi);
+                   select.appendChild(optionNo);
+                   
+                   // Agregar el combo box al cell
+                   selectCell.appendChild(select);
+                   
+                   // Agregar el cell a la fila
+                   row.appendChild(selectCell)     
+                  
+                  descCL.innerHTML = 'Cultura Laboral - ' + sCL + '%' ;
+                  document.querySelector('.tablaEvaluacion3').style.display = 'table';
+              }
+              else {
+                  document.querySelector('.tablaEvaluacion3').style.display = 'none';
+                  descCL.innerHTML = '';
+              }
+  
+              //Actualizar tabla del bono extra
+              var tableBONO = document.querySelector('.tablaEvaluacion4 tbody');
+              var descBONO = document.querySelector('.descBONO');
+              tableBONO.innerHTML = '';
+              if (data.BONO.length > 0) {
+                  descBONO.innerHTML = 'Bono Extra';
+                  // Recorre el arregloBONO y crea las filas de la tabla
+                  data.BONO.forEach(function(cl) {
+                      var row = document.createElement('tr');
+                      row.innerHTML = `<td>${cl.objetivo}</td><td>${cl.metrica}</td><td>${cl.valor}</td>`;
+                      tableBONO.appendChild(row);
+                      var comentariosHeader = document.createElement('h6');
+                    var commentsAndInputCell = document.createElement('td');
+                    var commentsAndInputContainer = document.createElement('div');
+                      var input = document.createElement('textarea');
+                      input.class= 'form-control';
+                      input.rows= '3';
+                      input.type = 'text';
+                      input.id= cl.id;
+                      input.name= cl.id;
+                      input.className = 'comentarioBONO';
+                        var comentarios = ''; // Variable para almacenar los comentarios
+                        data.coment_BONO.forEach(function(comentario) {
+                            if (comentario.objetivo_id == cl.id)
+                            {   
+                                data.empleados.forEach(function(empleado) {
+                                    if (empleado.no_emp == comentario.quienComenta_id)
+                                    {
+                                        comentarios += `${empleado.nombre} ${empleado.apellido_paterno}:`;
+                                    }
+                                });
+                                comentarios += `${comentario.comentario}\n`;
+                            }
+                        });
+                        comentariosHeader.textContent = comentarios;
+                        commentsAndInputContainer.appendChild(comentariosHeader);
+                        commentsAndInputContainer.appendChild(input);
+                        commentsAndInputCell.appendChild(commentsAndInputContainer);
+                        row.appendChild(commentsAndInputCell);
+
+                        // Crear un nuevo cell para el combo box
+                    var selectCell = document.createElement('td');
+                    // Crear el combo box
+                    var select = document.createElement('select');
+                    select.className = 'form-control opciones';
+                    select.name = 'cl.id';
+                    select.id = 'cl.id';
+
+                    // Crear las opciones dentro del combo box
+                    var optionSi = document.createElement('option');
+                    optionSi.value = 'si';
+                    optionSi.text = 'Sí';
+                    var optionNo = document.createElement('option');
+                    optionNo.value = 'no';
+                    optionNo.text = 'No';
+
+                    // Agregar las opciones al combo box
+                    select.appendChild(optionSi);
+                    select.appendChild(optionNo);
+
+                    // Agregar el combo box al cell
+                    selectCell.appendChild(select);
+                    row.appendChild(selectCell)
+                    tableBONO.appendChild(row);
+
+                  });
+                  document.querySelector('.tablaEvaluacion4').style.display = 'table';
+              }
+              else {
+                  document.querySelector('.tablaEvaluacion4').style.display = 'none';
+                  descBONO.innerHTML = '';
+              }
+              
+              //Actualizar tabla de los resultados
+              var tableRESULTADOS = document.querySelector('.tablaEvaluacion5 tbody');
+              var descRESULTADOS = document.querySelector('.descRESULTADOS');
+              tableRESULTADOS.innerHTML = '';
+              if (data.RESULTADOS.length > 0) {
+                  descRESULTADOS.innerHTML = 'Resultados';
+                  // Recorre el arregloRESULTADOS y crea las filas de la tabla
+                  data.RESULTADOS.forEach(function(cl) {
+                      var row = document.createElement('tr');
+                      row.innerHTML = `<td>${cl.objetivo}</td><td>${cl.metrica}</td><td>${cl.valor}</td>`;
+
+                    var comentariosHeader = document.createElement('h6');
+                    var commentsAndInputCell = document.createElement('td');
+                    var commentsAndInputContainer = document.createElement('div');
+                      var input = document.createElement('textarea');
+                      input.class= 'form-control';
+                      input.type = 'text';
+                      input.id = id;
+                      input.name = id;
+                      input.rows= '3';
+                      //input.placeholder = 'Ingrese sus comentarios aquí...';
+                      input.className = 'comentarioCL'; // Clase para el input si necesitas aplicar estilos o acceder a él posteriormente
+                      var comentarios = ''; // Variable para almacenar los comentarios
+                      data.coment_RESULTADOS.forEach(function(comentario) {
+                        if (comentario.objetivo_id == cl.id)
+                        {   
+                            data.empleados.forEach(function(empleado) {
+                                if (empleado.no_emp == comentario.quienComenta_id)
+                                {
+                                    comentarios += `${empleado.nombre} ${empleado.apellido_paterno}:`;
+                                }
+                            });
+                            comentarios += `${comentario.comentario}\n`;
+                        }
+                    });
+                    comentariosHeader.textContent = comentarios;
+                    commentsAndInputContainer.appendChild(comentariosHeader);
+                    commentsAndInputContainer.appendChild(input);   
+                    commentsAndInputCell.appendChild(commentsAndInputContainer);
+                    row.appendChild(commentsAndInputCell);
+
+
+                      // Crear un nuevo cell para el combo box
+                    var selectCell = document.createElement('td');
+                    // Crear el combo box
+                    var select = document.createElement('select');
+                    select.className = 'form-control opciones';
+                    select.name = 'cl.id';
+                    select.id = 'cl.id';
+                    
+                    // Crear las opciones dentro del combo box
+                    var optionSi = document.createElement('option');
+                    optionSi.value = 'si';
+                    optionSi.text = 'Sí';
+                    var optionNo = document.createElement('option');
+                    optionNo.value = 'no';
+                    optionNo.text = 'No';
+                    
+                    // Agregar las opciones al combo box
+                    select.appendChild(optionSi);
+                    select.appendChild(optionNo);
+                    
+                    // Agregar el combo box al cell
+                    selectCell.appendChild(select);
+                    
+                    // Agregar el cell a la fila
+                    row.appendChild(selectCell)
+                      tableRESULTADOS.appendChild(row);
+                  });
+                  document.querySelector('.tablaEvaluacion5').style.display = 'table';
+              }
+              else {
+                  document.querySelector('.tablaEvaluacion5').style.display = 'none';
+                  descRESULTADOS.innerHTML = '';
+              }
+              
+            }
+          });
+        }
+  
+        function guardarComentarios() {
+          var comentarios = [];
+          $('.comentarioOKR, .comentarioKPI, .comentarioCL').each(function() {
+              var id = $(this).attr('id');
+              var comentario = $(this).val();
+              if (comentario.trim() !== '') {
+                  comentarios.push({ id: id, comentario: comentario });
+              }
+          });
+          console.log(comentarios);
+          if (comentarios.length > 0) {
+            numeroEvaluacion = $("#numeroEvaluacion").val();
+             {% comment %} numEva = evaluacion[0].id; {% endcomment %}
+              $.ajax({
+                  url: '/guardar_comentarios_iniciales/',
+                  method: 'POST',
+                  data: { 
+                    comentarios: JSON.stringify(comentarios),
+                    numeroEvaluacion: numeroEvaluacion,
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                  },
+                  success: function(response) {
+                      console.log(response);
+                      showModalEnviar("Comentarios guardados exitosamente.");
+                  },
+                  error: function(xhr, status, error) {
+                      console.error(error);
+                  }
+              });
+          } else {
+              console.log('No hay comentarios para enviar.');
+              showModalError("No hay comentarios para enviar.");
+          }
+      }
+  
+  
+      // Obtener el modal de errores
+    var modal = document.getElementById("modalError");
+    var modalEnviar = document.getElementById("modalEnviar");
+  
+    // Obtener el botón que cierra el modal
+    var spanError = document.getElementsByClassName("closeError")[0];
+    var spanEnviar = document.getElementsByClassName("closeEnviar")[0];
+  
+    // Función para mostrar el modal con un mensaje específico
+    function showModalError(message) {
+    document.getElementById("modal-messageError").innerText = message;
+    modal.style.display = "block";
+    }
+  
+    function showModalEnviar(message) {
+    document.getElementById("modal-messageEnviar").innerText = message;
+    modalEnviar.style.display = "block";
+    }
+  
+  
+    spanError.onclick = function() {
+    modal.style.display = "none";
+    }
+  
+    window.onclick = function(event) {
+      if (event.target == modal) {
+          modal.style.display = "none";
+      }
+      }
+  
+  
+    spanEnviar.onclick = function() {
+        var url = '/comentariosInicio/';
+        window.location.href = url;
+  
+    }
+  
+    window.onclick = function(event) {
+        if (event.target == modalEnviar) {
+            
+            var url = '/comentariosInicio/';
+        window.location.href = url;
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        console.log('El DOM ha sido cargado');
+    var resultadoOKR = 0;
+    $('.opcionesOKR').change(function() {
+        console.log('Cambio en el combo box');
+        var valorSeleccionado = parseFloat($(this).val());
+        if (valorSeleccionado > 0) {
+            resultadoOKR += valorSeleccionado;
+        } else {
+            resultadoOKR -= valorSeleccionado;
+        }
+        console.log('Resultado OKR: ' + resultadoOKR);
+        $('#resultadoOKR').text("Resultado OKR: " + resultadoOKR + "%");
+    });
+
+});
+      </script>
+  </body>
+</html>
+{% endblock %}
