@@ -169,3 +169,4 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'bsistemas@cesehsa.com'
 EMAIL_HOST_PASSWORD = 'csh0501iT_24'
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
