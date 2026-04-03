@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Correo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            background-color: #00953a;
+            color: #fff;
+            padding: 20px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+        .content {
+            padding: 20px;
+            color: #333;
+        }
+        .divider {
+            border-top: 2px solid #12284c;
+            margin: 20px 0;
+        }
+        .employee-name {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Evaluación contestada</h1>
+        </div>
+        <div class="content">
+            {% comment %} <p>{{evaluador.nombre}} {{evaluador.apellido_paterno}}.</p> {% endcomment %}
+            <p><span class="employee-name"> {{empleado.nombre}} {{empleado.apellido_paterno}} {{empleado.apellido_materno}} </span> ha contestado su autoevaluación en el sistema.</p>
+            <p>Fecha para calificar: {{calendario.jefesInicio}} al {{calendario.jefesFin}}</p>
+            {% comment %} <div class="divider"></div> {% endcomment %}
+            <p>Saludos cordiales</p>
+            <p>Sistema de Desempeño</p>
+        </div>
+    </div>
+</body>
+</html>

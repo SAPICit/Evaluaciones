@@ -1,0 +1,655 @@
+{% extends "plantilla/master.html" %}
+{% load static %}
+
+
+{% block contenido %}
+
+<style>
+    /* Estilos para el contenedor principal */
+    .panel {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Estilos para el título */
+    .titulo {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    /* Estilos para los campos y opciones */
+    .consultaCampos,
+    .consultaEmpleados,
+    .consultaDepartamentos,
+    .consultasFechas,
+    .consultasMeses {
+        background-color: #ffffff;
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Estilos para los botones */
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+        color: #ffffff;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    /* Estilos para los checkboxes y radios */
+    .form-check-input {
+        margin-right: 5px;
+    }
+
+    .form-check-label {
+        cursor: pointer;
+    }
+</style>
+
+    {% comment %} <div id="panel" class="panel">
+      <div class="interiorG"> {% endcomment %}
+        <div id="titulo" class="titulo">
+          <h1>Reportes generales</h1>
+        </div>
+        <div class="eva">
+            
+            <div class="consultaCampos row g-3">
+                <h6 class="col-md-12"> Columnas </h6>
+                <div class="form-check-item col-md-2">
+                    <input class="form-check-input campos" type="checkbox" value="" id="id_evaluacion" checked disabled>
+                    <label class="form-check-label" for="id_evaluacion">id_evaluacion</label>
+                </div>
+                <div class="form-check-item col-md-2" >
+                    <input class="form-check-input campos" type="checkbox" value="" id="no_emp" checked disabled>
+                    <label class="form-check-label" for="no_emp">no_emp</label>
+                </div>
+                <div class="form-check-item col-md-2">
+                    <input class="form-check-input campos" type="checkbox" value="" id="nombre" checked disabled>
+                    <label class="form-check-label" for="nombre">Nombre</label>
+                </div>
+                <div class="form-check-item col-md-2">
+                    <input class="form-check-input campos" type="checkbox" value="" id="apellido">
+                    <label class="form-check-label" for="apellido">Apellidos</label>
+                </div>
+                <div class="form-check-item col-md-2">
+                    <input class="form-check-input campos" type="checkbox" value="" id="departamento">
+                    <label class="form-check-label" for="departamento">Departamento</label>
+                </div>
+                <div class="form-check-item col-md-2">
+                    <input class="form-check-input campos" type="checkbox" value="" id="mes">
+                    <label class="form-check-label" for="mes">Mes</label>
+                </div>
+                <div class="form-check-item col-md-2">
+                    <input class="form-check-input campos" type="checkbox" value="" id="anio">
+                    <label class="form-check-label" for="anio">Año</label>
+                </div>
+                <div class="form-check-item col-md-2">
+                    <input class="form-check-input campos" type="checkbox" value="" id="empleado">
+                    <label class="form-check-label" for="empleado">Autocalificación</label>
+                </div>
+                <div class="form-check-item col-md-2">
+                    <input class="form-check-input campos" type="checkbox" value="" id="jefe">
+                    <label class="form-check-label" for="jefe">Jefe</label>
+                </div>
+                {% comment %} <div class="form-check-item col-md-2">
+                    <input class="form-check-input campos" type="checkbox" value="" id="gerente">
+                    <label class="form-check-label" for="gerente">Evaluador2</label>
+                </div>
+                <div class="form-check-item col-md-2">
+                    <input class="form-check-input campos" type="checkbox" value="" id="evaluador2">
+                    <label class="form-check-label" for="evaluador3">Evaluador3</label>
+                </div>
+                <div class="form-check-item col-md-2">
+                    <input class="form-check-input campos" type="checkbox" value="" id="evaluador4">
+                    <label class="form-check-label" for="evaluador4">Evaluador4</label>
+                </div>
+                <div class="form-check-item col-md-2">
+                    <input class="form-check-input campos" type="checkbox" value="" id="Director">
+                    <label class="form-check-label" for="Director">Director</label>
+                </div> {% endcomment %}
+                <div class="form-check-item col-md-2">
+                    <input class="form-check-input campos" type="checkbox" value="" id="bonoE">
+                    <label class="form-check-label" for="bonoE">Bono empleado</label>
+                </div>
+                <div class="form-check-item col-md-2">
+                    <input class="form-check-input campos" type="checkbox" value="" id="bonoJ">
+                    <label class="form-check-label" for="bonoJ">Bono jefe</label>
+                </div>
+                <div class="form-check-item col-md-2">
+                    <input class="form-check-input campos" type="checkbox" value="" id="evaluadores">
+                    <label class="form-check-label" for="evaluadores">Evaluadores</label>
+                </div>
+                <div class="form-check-item col-md-2">
+                    <input class="form-check-input campos" type="checkbox" value="" id="comentarios">
+                    <label class="form-check-label" for="comentarios">Comentarios</label>
+                </div>
+                <div class="form-check-item col-md-2">
+                    <input class="form-check-input campos" type="checkbox" value="" id="todo">
+                    <label class="form-check-label" for="todo">Todo</label>
+                </div>
+
+            </div>
+
+            <br/>
+            <br/>
+
+            
+            <div class="consultaEmpleados row g-3">
+                <h6 class="col-md-12"> Empleados </h6> 
+                {% if empleado.departamento_id == 11 or empleado.no_emp == 101 %}
+                <div class="form-check-item col-md-2">
+                    <input class="form-check-input consEmp" type="radio" value="1" id="gen" name="consEmp">
+                    <label class="form-check-label" for="gen">General</label>
+                </div>
+                <div class="form-check-item col-md-2" >
+                    <input class="form-check-input consEmp" type="radio" value="2" id="dep" name="consEmp">
+                    <label class="form-check-label" for="dep">Departamentos</label>
+                </div>
+                {% else %}
+                <div class="form-check-item col-md-2">
+                    <input class="form-check-input consEmp" type="radio" value="1" id="gen" name="consEmp" disabled >
+                    <label class="form-check-label" for="gen" disabled>General</label>
+                </div>
+                <div class="form-check-item col-md-2" >
+                    <input class="form-check-input consEmp" type="radio" value="2" id="dep" name="consEmp" disabled >
+                    <label class="form-check-label" for="dep" disabled >Departamentos</label>
+                </div>
+                {% endif %}
+                <div class="form-check-item col-md-2">
+                    <input class="form-check-input consEmp" type="radio" value="3" id="ind" name="consEmp">
+                    <label class="form-check-label" for="ind">Individual</label>
+                </div>
+            </div>
+
+            <br/>
+            <br/>
+
+            <div class="consultaDepartamentos row g-3" style="display: none;">
+                <h6 class="col-md-12">Departamentos</h6>
+                {% for dep in departamentos %}
+                <div class="form-check-item col-md-3">
+                    <input class="form-check-input departamentos" type="checkbox" value="{{dep.id}}" id="departamentos">
+                    <label class="form-check-label" for="bono{{ dep.id }}">{{ dep.nombre }}</label>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div class="consultasEmpleados row g-3" style="display: none;">
+                <h6 class="col-md-12">Empleados</h6>
+                {% for emp in empleados %}
+                <div class="form-check-item col-md-3">
+                    <input class="form-check-input empleados" type="checkbox" value="{{emp.no_emp}}" id="empleados">
+                    <label class="form-check-label" for="bono{{ emp.id }}">{{ emp.nombre }} {{emp.apellido_paterno}}</label>
+                </div>
+                {% endfor %}
+            </div>
+
+            <br/>
+            <br/>
+
+            <div class="consultasFechas row g-3" >
+                <h6 class="col-md-12"> Fechas </h6>
+                <div class="form-check-item col-md-2">
+                    <input class="form-check-input rfechas" type="radio" value="1" id="generalFechas" name="fechas">
+                    <label class="form-check-label" for="gen">Todas</label>
+                </div>
+
+                {% for anio in anios %}
+                <div class="form-check-item col-md-2">
+                    <input class="form-check-input rfechas" type="radio" value="{{anio.anio}}" id="anios" name="fechas">
+                    <label class="form-check-label" for="gen">{{anio.anio}}</label>
+                </div>
+                {% endfor %}
+
+                <div class="form-check-item col-md-2">
+                    <input class="form-check-input rfechas" type="radio" value="1" id="individualFechas" name="fechas">
+                    <label class="form-check-label" for="gen">Individual</label>
+                </div>
+
+            </div>
+
+            <br/>
+            <br/>
+
+            <div class="consultasMeses row g-3" style="display:none ;";>
+                <h6 class="col-md-12"> Meses </h6>
+            </div>
+
+            
+
+
+            <form id="myForm" method="post" action="{% url 'generarReporte' %}">
+                {% csrf_token %}
+                <input type="hidden" name="camposSeleccionados" id="camposSeleccionados" value='{{ camposSeleccionados|json_script:"camposSeleccionados" }}'>
+                <input type="hidden" name="empleadosSeleccionados" id="empleadosSeleccionados" value='{{ empleadosSeleccionados|json_script:"empleadosSeleccionados" }}'>
+                <input type="hidden" name="departamentosSeleccionados" id="departamentosSeleccionados" value='{{ departamentosSeleccionados|json_script:"departamentosSeleccionados" }}'>
+                <input type="hidden" name="mesesSeleccionados" id="mesesSeleccionados" value='{{ mesesSeleccionados|json_script:"mesesSeleccionados" }}'>
+                <br/>
+                <button onclick="validarDatos()" class="btn btn-primary nota" style="background-color: #12284c;">Generar reporte</button>
+            </form>
+            <br/>
+            <br/>
+
+            <br/>
+        </div>
+        
+        
+      </div>
+    </div>
+
+    <div id="modalError" class="modalError">
+        <div class="modal-content">
+          <span class="closeError">&times;</span>
+          <img src="{% static 'img/advertencia.png' %}" alt="Imagen" width="35px" height="35px">
+          <p id="modal-messageError"></p>
+        </div>
+      </div>
+    
+    
+      <div id="modalEnviar" class="modalEnviar">
+        <div class="modal-content">
+          <span class="closeEnviar">&times;</span>
+          <img src="{% static 'img/comprobado.png' %}" alt="Imagen" width="35px" height="35px">
+          <p id="modal-messageEnviar"></p>
+        </div>
+      </div>
+
+
+    <script>
+        myForm = document.getElementById('myForm');
+            myForm.addEventListener('submit', function(e){
+                e.preventDefault();
+                validarDatos();
+            });
+
+
+        var fechas = JSON.parse('{{ fechas_json | escapejs }}');
+
+        document.addEventListener("DOMContentLoaded", function() {
+            // En la seccion de empleados para ocultar y desocultar los campos de departamentos y empleados
+            var radioButtons = document.querySelectorAll('input[name="consEmp"]');
+            var consultaDepartamentos = document.querySelector('.consultaDepartamentos');
+            var consultasEmpleados = document.querySelector('.consultasEmpleados');
+            radioButtons.forEach(function(radioButton) {
+                radioButton.addEventListener('change', function() {
+                    //deseleccionar empleados y departamentos
+                    var departamentos = document.querySelectorAll('.departamentos');
+                    var empleados = document.querySelectorAll('.empleados');
+                    departamentos.forEach(function(departamento){
+                        departamento.checked = false;
+                    });
+                    empleados.forEach(function(empleado){
+                        empleado.checked = false;
+                    });
+                });
+            });
+            radioButtons.forEach(function(radioButton) {
+                radioButton.addEventListener('change', function() {
+                    if (this.checked) {
+        
+                        if (this.value == 1) {
+                            consultaDepartamentos.style.display = 'none';
+                            consultasEmpleados.style.display = 'none';
+                        } else if (this.value == 2) {
+                            consultaDepartamentos.style.display = 'flex'; // o 'flex' dependiendo de la estructura de tu CSS
+                            consultasEmpleados.style.display = 'none';
+                        } else if (this.value == 3) {
+                            consultaDepartamentos.style.display = 'none';
+                            consultasEmpleados.style.display = 'flex'; // o 'flex' dependiendo de la estructura de tu CSS
+                        }
+                    }
+                });
+            });
+
+            // En la seccion de campos para seleccionar todos los campos o deseleccionar todos los campos
+            var checkboxTodo = document.getElementById('todo');
+            var checkboxes = document.querySelectorAll('.campos');
+            checkboxTodo.addEventListener('change', function() {
+                if (this.checked) {
+                    checkboxes.forEach(function(checkbox) {
+                        checkbox.checked = true;
+                    });
+                } else {
+                    checkboxes.forEach(function(checkbox) {
+                        checkbox.checked = false;
+                    });
+                }
+            });
+
+
+            // En la seccion de fechas para seleccionar los meses que se pueden estar 
+            var radioFechas = document.querySelectorAll('input[id="anios"]');
+            var consultaMeses = document.querySelector('.consultasMeses');
+
+            radioFechas.forEach(function(radioButton) {
+                var meses = [];
+                radioButton.addEventListener('change', function() {
+                    if (this.checked) {
+                        consultaMeses.style.display = 'flex';
+                        var meses = [];
+                        var anio = parseInt(this.value);
+                        consultaMeses.innerHTML = ""; 
+                        for (var i = 0; i < fechas.length; i++) {
+                            if (fechas[i].fields.anio == anio) {
+                                obj = {
+                                    mes: fechas[i].fields.mes,
+                                    anio: fechas[i].fields.anio,
+                                    id: fechas[i].pk
+                                }
+                                meses.push(obj);
+                            }
+                        }
+                    }
+                    var encabezado = document.createElement('h6');
+                    encabezado.classList.add('col-md-12');
+                    encabezado.innerHTML = "Meses";
+                    consultaMeses.appendChild(encabezado);
+
+                    for (var i = 0; i < meses.length; i++) {
+                        var div = document.createElement('div');
+                        div.classList.add('form-check-item');
+                        div.classList.add('col-md-2');
+                        var input = document.createElement('input');
+                        input.classList.add('form-check-input');
+                        input.type = 'checkbox';
+                        input.value = meses[i].id;
+                        input.id = 'meses';
+                        input.classList.add('mesess');
+                        var label = document.createElement('label');
+                        label.classList.add('form-check-label');
+                        label.htmlFor = 'meses';
+                        label.innerHTML = mesEscrito(meses[i].mes, meses[i].anio);
+                        div.appendChild(input);
+                        div.appendChild(label);
+                        consultaMeses.appendChild(div);
+                    }
+                });
+            });
+            
+            var generalFechas = document.getElementById('generalFechas');
+            var consultaMeses = document.querySelector('.consultasMeses');
+            generalFechas.addEventListener('change', function() {
+                if (this.checked) {
+                    consultaMeses.style.display = 'none';
+                }
+            });
+
+            var individualFechas = document.querySelectorAll('input[id="individualFechas"]');
+            var consultaMeses = document.querySelector('.consultasMeses');
+
+            individualFechas.forEach(function(radioButton){
+                var meses = [];
+                radioButton.addEventListener('change', function() {
+                    if (this.checked) {
+                        consultaMeses.style.display = 'flex';
+                        var meses = [];
+                        var anio = parseInt(this.value);
+                        consultaMeses.innerHTML = ""; 
+                        for (var i = 0; i < fechas.length; i++) {
+                                obj = {
+                                    mes: fechas[i].fields.mes,
+                                    anio: fechas[i].fields.anio,
+                                    id: fechas[i].pk
+                                }
+                                meses.push(obj);
+                        }
+                    }
+                    var encabezado = document.createElement('h6');
+                    encabezado.classList.add('col-md-12');
+                    encabezado.innerHTML = "Meses";
+                    consultaMeses.appendChild(encabezado);
+
+                    for (var i = 0; i < meses.length; i++) {
+                        var div = document.createElement('div');
+                        div.classList.add('form-check-item');
+                        div.classList.add('col-md-2');
+                        var input = document.createElement('input');
+                        input.classList.add('form-check-input');
+                        input.type = 'checkbox';
+                        input.value = meses[i].id;
+                        input.id = 'meses';
+                        input.classList.add('mesess');
+                        var label = document.createElement('label');
+                        label.classList.add('form-check-label');
+                        label.htmlFor = 'meses';
+                        label.innerHTML = mesEscrito(meses[i].mes, meses[i].anio);
+                        div.appendChild(input);
+                        div.appendChild(label);
+                        consultaMeses.appendChild(div);
+                    }
+                });
+            });
+
+
+
+            
+
+        });
+
+        function mesEscrito(mes, anio) {
+            mes = parseInt(mes); // Convierte el mes a entero
+            anio = parseInt(anio); // Convierte el año a entero
+            if (mes === 1) {
+                return "Diciembre " + (anio - 1);
+            } else if (mes === 2) {
+                return "Enero " + anio;
+            } else if (mes === 3) {
+                return "Febrero " + anio;
+            } else if (mes === 4) {
+                return "Marzo " + anio;
+            } else if (mes === 5) {
+                return "Abril " + anio;
+            } else if (mes === 6) {
+                return "Mayo " + anio;
+            } else if (mes === 7) {
+                return "Junio " + anio;
+            } else if (mes === 8) {
+                return "Julio " + anio;
+            } else if (mes === 9) {
+                return "Agosto " + anio;
+            } else if (mes === 10) {
+                return "Septiembre " + anio;
+            } else if (mes === 11) {
+                return "Octubre " + anio;
+            } else if (mes === 12) {
+                return "Noviembre " + anio;
+            } else {
+                return "NA"; // Si el mes no está en el rango válido
+            }
+        }
+        
+        
+        
+        // Obtener el modal de errores
+        var modal = document.getElementById("modalError");
+        var modalEnviar = document.getElementById("modalEnviar");
+
+        // Obtener el botón que cierra el modal
+        var spanError = document.getElementsByClassName("closeError")[0];
+        var spanEnviar = document.getElementsByClassName("closeEnviar")[0];
+
+        // Función para mostrar el modal con un mensaje específico
+        // Función para mostrar el modal con un mensaje específico
+        function showModalError(message) {
+            document.getElementById("modal-messageError").innerText = message;
+            modal.style.display = "block";
+        }
+        
+        function showModalEnviar(message) {
+            document.getElementById("modal-messageEnviar").innerText = message;
+            modalEnviar.style.display = "block";
+        }
+
+        spanError.onclick = function() {
+        modal.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+
+        spanEnviar.onclick = function() {
+            var url = '/listaEmpleados/';
+            window.location.href = url;
+
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modalEnviar) {
+                
+            var url = '/listaEmpleados/';
+            window.location.href = url;
+            }
+        }
+
+        function validarDatos(){
+            var campos = document.querySelectorAll('.campos');
+            var empleados = document.querySelectorAll('.empleados');
+            var departamentos = document.querySelectorAll('.departamentos');
+            var meses = document.querySelectorAll('.mesess');
+            if (meses.length == 0){
+                var meses = document.querySelectorAll('.meses');
+            }
+            var anios = document.querySelectorAll('.anios');
+            var generalFechas = document.getElementById('generalFechas');
+            consEmp = document.querySelectorAll('.consEmp');
+            var gen = document.getElementById('gen');
+            var dep = document.getElementById('dep');
+            var ind = document.getElementById('ind');
+            radioFechas = document.querySelectorAll('.rfechas');
+
+            var camposSeleccionados = [];
+            var empleadosSeleccionados = [];
+            var departamentosSeleccionados = [];
+            var mesesSeleccionados = [];
+            var aniosSeleccionados = [];
+            var generalFechasSeleccionado = false;
+            var genSeleccionado = false;
+            var depSeleccionado = false;
+            var indSeleccionado = false;
+
+            campos.forEach(function(campo){
+                if (campo.checked){
+                    camposSeleccionados.push(campo.id);
+                }
+            });
+
+            empleados.forEach(function(empleado){
+                if (empleado.checked){
+                    empleadosSeleccionados.push(empleado.value);
+                }
+            });
+
+            departamentos.forEach(function(departamento){
+                if (departamento.checked){
+                    departamentosSeleccionados.push(departamento.value);
+                }
+            });
+
+            meses.forEach(function(mes){
+                if (mes.checked){
+                    mesesSeleccionados.push(mes.value);
+                }
+            });
+
+            errores = 0;
+            // validar que al menos un campo este seleccionado 
+            if (camposSeleccionados.length < 2){
+                errores=1;
+                showModalError("Selecciona al menos un campo para generar el reporte");
+            }  
+
+            //validar que un radio de consEmp este seleccionado
+            genSeleccionado = false;
+            depSeleccionado = false;
+            indSeleccionado = false;
+            valor = 0;
+
+            
+
+            consEmp.forEach(function(radio){
+                if (radio.checked){
+                    if (radio.value == 1){
+                        genSeleccionado = true;
+                        valor = 1;
+                    } else if (radio.value == 2){
+                        depSeleccionado = true;
+                        valor = 2;
+                    } else if (radio.value == 3){
+                        indSeleccionado = true;
+                        valor = 3;
+                    }
+                }
+            });
+
+            if ((!genSeleccionado) && (!depSeleccionado) && (!indSeleccionado)){
+                showModalError("Selecciona una opción de empleados para generar el reporte");
+                errores = 1;
+            } else {
+                if (depSeleccionado){
+                    if (departamentosSeleccionados.length == 0){
+                        errores = 1;
+                        showModalError("Selecciona al menos un departamento para generar el reporte");
+                    }
+                } else if (indSeleccionado){
+                    if (empleadosSeleccionados.length == 0){
+                        errores = 1;
+                        showModalError("Selecciona al menos un empleado para generar el reporte");
+                    }
+                }
+            }
+
+            //validar que un radio de fechas este seleccionado
+            generalFechasSeleccionado = false;
+            aniosSeleccionados = [];
+            radioFechas.forEach(function(radio){
+                if (radio.checked){
+                    if (radio.value == 1){
+                        generalFechasSeleccionado = true;
+                    } else {
+                        aniosSeleccionados.push(radio.value);
+                    }
+                }
+            });
+
+            if ((!generalFechasSeleccionado) && (aniosSeleccionados.length == 0)){
+                showModalError("Selecciona una opción de fechas para generar el reporte");
+                errores = 1;
+            } else {
+                if (aniosSeleccionados.length > 0){
+                    if (mesesSeleccionados.length == 0){
+                        errores = 1;
+                        showModalError("Selecciona al menos un mes para generar el reporte");
+                    }
+                }
+            }
+
+            if (errores == 0){
+                document.getElementById('camposSeleccionados').value = JSON.stringify(camposSeleccionados);
+                document.getElementById('empleadosSeleccionados').value = JSON.stringify(empleadosSeleccionados);
+                document.getElementById('departamentosSeleccionados').value = JSON.stringify(departamentosSeleccionados);
+                document.getElementById('mesesSeleccionados').value = JSON.stringify(mesesSeleccionados);
+                document.getElementById('myForm').submit();
+            }
+
+
+        }
+        
+        </script>
+  </body>
+</html>
+{% endblock %}

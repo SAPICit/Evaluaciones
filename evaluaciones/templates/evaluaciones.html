@@ -1,0 +1,220 @@
+{% extends "plantilla/master.html" %}
+{% load static %}
+
+
+{% block contenido %}
+
+
+{% comment %} 
+    <div id="panel" class="panel">
+      <div class="interiorG"> {% endcomment %}
+        <div id="titulo" class="titulo">
+          <h1>Evaluaciones</h1>
+        </div>
+        
+        <div class="row g-3">
+
+        {% comment %} <div id="crearEvaluacion" class="crearEvaluacion col-md-2">
+          <a  href="{% url 'crearEvaluacion' %}" class="btn btn-primary btn-enviar">Crear evaluacion</a>
+        </div>
+
+        <div id="editarEvaluacion" class="editarEvaluacion col-md-2">
+          <a  href="{% url 'editarEvaluacion' %}" class="btn btn-primary btn-enviar">Editar evaluacion</a>
+        </div>
+
+        <div id="asignarEvaluacion" class="asignarEvaluacion col-md-2">
+          <a  href="{% url 'asignarEvaluacion' %}" class="btn btn-primary btn-enviar">Asignar evaluacion</a>
+        </div>
+
+        <div id="rutaEvaluacion" class="rutaEvaluacion col-md-2">
+          <a  href="{% url 'rutaEvaluacion' %}" class="btn btn-primary btn-enviar">Rutas seguimiento</a>
+        </div>
+{% endcomment %}
+
+        <div id="evaluaciones" class="evaluaciones col-md-3">
+          <a  href="{% url 'crearEvaluaciones' %}" class="btn btn-primary btn-enviar">Generar evaluaciones</a>
+        </div> 
+        
+      </div>
+
+      <div class="table-responsive" id="tablaEvaluaciones">
+      <br/>
+      <br/>
+
+      <div class="eva">
+        {% if evaluaciones %}
+        <h2> Evaluaciones asignadas últimos meses</h2>
+        <h6>
+          <span style="color: #4dbce9;">●</span> Asignada &nbsp;
+          <span style="color: #d9abff">●</span> Resultados cargados &nbsp;
+          <span style="color: #f7db15;">●</span> Avance guardado &nbsp;
+          <span style="color: #00c16c;">●</span> Finalizada
+        </h6>
+        
+        
+        <br/>
+        <table id="tablaEvaluaciones" class="tablaEvaluaciones table table-striped table-responsive table-bordered">
+            <thead>
+                <tr style="text-align:center">
+                  <th>Editar</th>
+                    <th>Num. Evaluación</th>
+                    <th>Mes evaluado</th>
+                    <th>Empleado</th>
+                    <th>Evaluador</th>
+                    <th>Fase concluida</th>
+                    <th>Calificacion</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for evaluacion in evaluaciones %}
+                {% if evaluacion.empleado.estatus == 1  %}
+                <tr>
+                  <td>
+                    {%if evaluacion.estado.id == 1%}
+                    <input type="radio" name="evaluacion_seleccionada" value="{{ evaluacion.id}}" onchange="habilitarBotones()"/>
+                    {%else%}
+                    <input type="radio" name="evaluacion_seleccionada" value="{{ evaluacion.id}}" onchange="habilitarBotones()" disabled/>
+                    {%endif%}
+                  </td>
+                    <td>{{evaluacion.id}}-{{evaluacion.tipoEvaluacion_id}}</td>
+                    {%if evaluacion.fecha == fecha1%}
+                    <td style= "background-color: #cde9ca">
+                    {%else%}
+                    {%if evaluacion.fecha == fecha2%}
+                    <td style= "background-color: #f3e7d7">
+                    {%else%}
+                    <td style= "background-color: #ffcdc5">
+                    {%endif%}
+                    {%endif%}
+                    {%if evaluacion.fecha.mes == 1%}
+                    diciembre/{{evaluacion.fecha.anio|add:"-1"}}
+                    {%endif%}
+                    {%if evaluacion.fecha.mes == 2%}
+                    enero/{{evaluacion.fecha.anio}}
+                    {%endif%}
+                    {%if evaluacion.fecha.mes == 3%}
+                    febrero/{{evaluacion.fecha.anio}}
+                    {%endif%}
+                    {%if evaluacion.fecha.mes == 4%}
+                    marzo/{{evaluacion.fecha.anio}}
+                    {%endif%}
+                    {%if evaluacion.fecha.mes == 5%}
+                    abril/{{evaluacion.fecha.anio}}
+                    {%endif%}
+                    {%if evaluacion.fecha.mes == 6%}
+                    mayo/{{evaluacion.fecha.anio}}
+                    {%endif%}
+                    {%if evaluacion.fecha.mes == 7%}
+                    junio/{{evaluacion.fecha.anio}}
+                    {%endif%}
+                    {%if evaluacion.fecha.mes == 8%}
+                    julio/{{evaluacion.fecha.anio}}
+                    {%endif%}
+                    {%if evaluacion.fecha.mes == 9%}
+                    agosto/{{evaluacion.fecha.anio}}
+                    {%endif%}
+                    {%if evaluacion.fecha.mes == 10%}
+                    septiembre/{{evaluacion.fecha.anio}}
+                    {%endif%}
+                    {%if evaluacion.fecha.mes == 11%}
+                    octubre/{{evaluacion.fecha.anio}}
+                    {%endif%}
+                    {%if evaluacion.fecha.mes == 12%}
+                    noviembre/{{evaluacion.fecha.anio}}
+                    {%endif%}
+                    {%if evaluacion.fecha.mes == 99 or evaluacion.fecha.mes == 22%}
+                    {{evaluacion.fecha.mes}}/{{evaluacion.fecha.anio}}
+                    {%endif%}
+<td>
+                    <a href="{% url 'reporteEvaluacion' evaluacion.id %}">
+                      {{ evaluacion.empleado }}
+                    </a>
+</td>
+                    <td>
+                      {{evaluacion.ruta.evaluador}}
+                    </td>
+                    </td>
+                    {% if evaluacion.estado_id == 1 %}
+                      <td style="background-color: #4dbce9">{{evaluacion.estado.nombre}}</td>
+                    {% else %}
+                      {% if evaluacion.estado_id == 2 %}
+                      <td style="background-color: #d9abff">{{evaluacion.estado.nombre}}</td>
+                      {% else %}
+                        {% if evaluacion.estado_id == 3 %}
+                        <td style="background-color: #00c16c">{{evaluacion.estado.nombre}}</td>
+                        {% else %}
+                          <td style="background-color: #f7db15">Avance guardado</td>
+                          
+                          {% endif %}
+                          {% endif %}
+                          {% endif %}
+                          <td>
+                            {% for res in resultados %}
+                              {% if res.evaluacion_id == evaluacion.id %}
+                                    {{res.calificacion_evaluador}}
+                              {% endif %}
+                          {% endfor %}
+                        </td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="botones">
+          <div id="editarEliminarEmpleado" class="editarEliminarEmpleado">
+            <div id="editarEvaluacion" class="editarEvaluacion">
+              <button onclick="editarEvaluacion()" class="btn btn-success editarBtn" disabled="disabled">Editar evaluación</button>
+            </div>
+          </div>
+        {% else %}
+          <span>Sin registros</span>
+        {% endif %}
+
+      </div>
+      </div>
+    </div>
+
+
+    <script>
+      function habilitarBotones() {
+        var radiosSeleccionados = document.querySelectorAll('input[name="evaluacion_seleccionada"]:checked');
+        var editarBtn = document.querySelector('.editarBtn');
+        var eliminarBtn = document.querySelector('.eliminarBtn');
+    
+        if (radiosSeleccionados.length > 0) {
+          editarBtn.disabled = false;
+          {% comment %} eliminarBtn.disabled = false; {% endcomment %}
+        } else {
+          editarBtn.disabled = true;
+          {% comment %} eliminarBtn.disabled = true; {% endcomment %}
+        }
+      }
+
+      function editarEvaluacion(){
+        var evaluacionSeleccionada = document.querySelector('input[name="evaluacion_seleccionada"]:checked');
+        var idEvaluacion = evaluacionSeleccionada.value;
+        console.log (idEvaluacion)
+        window.location.href = '/editarEvaluacionAsignada/' + idEvaluacion + '/';
+      }
+
+      function eliminarEvaluacion(){
+        var evaluacionSeleccionada = document.querySelector('input[name="evaluacion_seleccionada"]:checked');
+        if(evaluacionSeleccionada){
+          var idEvaluacion = evaluacionSeleccionada.value;
+          window.location.href = '/editarEvaluacionAsignada/' + idEvaluacion + '/';
+        }
+      }
+
+      var radioButtons = document.querySelectorAll('input[name="evaluacion_seleccionada"]');
+      
+      radioButtons.forEach(function (radio) {
+        radio.addEventListener('change', habilitarBotones);
+      });
+
+      habilitarBotones();
+    </script>
+
+  </body>
+</html>
+{% endblock %}

@@ -1,0 +1,661 @@
+{% extends "plantilla/master.html" %}
+{% load static %}
+
+
+{% block contenido %}
+
+
+
+    {% comment %} <div id="panel" class="panel">
+      <div class="interiorG"> {% endcomment %}
+        <div id="titulo" class="titulo">
+          <h1>Calendario</h1>
+        </div>
+        
+        <div class="eva">
+            <div class="calendarioo">
+
+                <form  method="post" action="{% url 'guardarCalendario' %}">
+                    {% csrf_token %}
+                    <div class="col-md-6">
+                        <label for="fecha">Mes a evaluar</label><br />
+                        <select required class="form-control" id="fechas" name="fechas">
+                        {% comment %} <input type="hidden" id="fecha" name="fecha" value="{{ fecha.id }}" /> {% endcomment %}
+                        {% for fecha in fechas%}
+                        {%if fecha.id == fechh.id%}
+                        <option value="{{ fecha.id }}" selected>
+                        {% else %}
+                        <option value="{{ fecha.id }}" selected>
+                        {%endif%}
+                        {% if fecha.mes == 1 %}
+                        diciembre {{ fecha.anio|add:"-1" }}
+                        {% endif %}
+                        {%if fecha.mes == 2%}
+                        enero {{fecha.anio}}
+                        {%endif%}
+                        {%if fecha.mes == 3%}
+                        febrero {{fecha.anio}}
+                        {%endif%}
+                        {%if fecha.mes == 4%}
+                        marzo {{fecha.anio}}
+                        {%endif%}
+                        {%if fecha.mes == 5%}
+                        abril {{fecha.anio}}
+                        {%endif%}
+                        {%if fecha.mes == 6%}
+                        mayo {{fecha.anio}}
+                        {%endif%}
+                        {%if fecha.mes == 7%}
+                        junio {{fecha.anio}}
+                        {%endif%}
+                        {%if fecha.mes == 8%}
+                        julio {{fecha.anio}}
+                        {%endif%}
+                        {%if fecha.mes == 9%}
+                        agosto {{fecha.anio}}
+                        {%endif%}
+                        {%if fecha.mes == 10%}
+                        septiembre {{fecha.anio}}
+                        {%endif%}
+                        {%if fecha.mes == 11%}
+                        octubre {{fecha.anio}}
+                        {%endif%}
+                        {%if fecha.mes == 12%}
+                        noviembre {{fecha.anio}}
+                        {%endif%}
+                        {%if fecha.mes == 22 or fecha.mes == 99%}
+                        sin fecha {{fecha.anio}}
+                        {%endif%}
+                        {% comment %} <input class="form-control" type="text" id="fecha" name="fecha" value="Hola que tal" data-real-value="{{ fecha.id }}" disabled /> {% endcomment %}
+                        <br />
+                      </option>
+                      {% endfor %}  
+                      </select>
+                    </div>
+
+                    <br/>
+                     <label class="titCalendario" style="background-color:#ffc1ed;">Concentrado de resultados al drive</label>
+                    <div class="comentarios-section">
+                    <div class="row g-3">
+                        
+                        <div class="col-md-6">
+                            <label for="comentariosInicialesInicio">Inicio</label>
+                            <input type="date" class="form-control" id="comentariosInicialesInicio" name="comentariosInicialesInicio" required> 
+                        </div>
+                        <div class="col-md-6">
+                            <label for="comentariosInicialesFin">Fin</label>
+                            <input type="date" class="form-control" id="comentariosInicialesFin" name="comentariosInicialesFin" required disabled>
+                        </div>
+                    </div>
+                    </div>
+                    <label class="titCalendario" style="background-color: #96cf51;">Vaciar información al sistema</label>
+                    <div class="comentarios-section">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="empleadosInicio">Inicio</label>
+                            <input type="date" class="form-control" id="empleadosInicio" name="empleadosInicio" required disabled> 
+                        </div>
+                        <div class="col-md-6">
+                            <label for="empleadosFin">Fin</label>
+                            <input type="date" class="form-control" id="empleadosFin" name="empleadosFin" required disabled>
+                        </div>
+                    </div>
+                    </div>
+                    <label class="titCalendario" style="background-color:#a1daf0;">Evaluacion de Líderes con equipo</label>
+                    <div class="comentarios-section">
+                        <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="evaluadoresInicio">Inicio</label>
+                            <input type="date" class="form-control" id="evaluadoresInicio" name="evaluadoresInicio" required disabled> 
+                        </div>
+                        <div class="col-md-6">
+                            <label for="evaluadoresFin">Fin</label>
+                            <input type="date" class="form-control" id="evaluadoresFin" name="evaluadoresFin" required disabled>
+                        </div>
+
+                    </div>
+                </div>
+                <label class="titCalendario" style="background-color:#fff49a;"> Evaluación de Lideres con comité</label>
+                <div class="comentarios-section">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="gerentesInicio">Inicio</label>
+                            <input type="date" class="form-control" id="gerentesInicio" name="gerentesInicio" required disabled> 
+                        </div>
+                        <div class="col-md-6">
+                            <label for="gerentesFin">Fin</label>
+                            <input type="date" class="form-control" id="gerentesFin" name="gerentesFin" required disabled>
+                        </div>
+
+                    
+                    
+                     </div>
+                </div>
+                    <button type="submit" class="btn btn-primary btnEnviar nota" id="btnEnviar" disabled>Guardar</button>
+                </form>
+            </div>
+
+            <br/>
+            <br/>
+            <br/>
+            <div id="calendario">
+            {% if calendarios %}     
+            <p>Calendarios vigentes</p>
+            <table class="table table-responsive table-bordered" style="text-align: center;"> 
+                <thead>
+                    <tr style="text-align:center">
+                        <td rowspan="2"  >Editar</td>
+                        <td rowspan="2"  >Eva</td>
+                        <td colspan="2" style = "background-color:#ffc1ed;">Resultados Drive</td>
+                        <td colspan="2" style = "background-color:#96cf51;">Información sistema</td>
+                        <td colspan="2" style = "background-color:#a1daf0;">Líderes con equipo</td>
+                        <td colspan="2" style = "background-color:#fff49a;">Evaluación de Lideres con comité</td>
+                    </tr>
+                    <tr>
+                        <td>Inicio</td>
+                        <td>Fin</td>
+                        <td>Inicio</td>
+                        <td>Fin</td>
+                        <td>Inicio</td>
+                        <td>Fin</td>
+                        <td>Inicio</td>
+                        <td>Fin</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for calendario in calendarios %}
+                    <tr>
+                        <td>
+                            <input type="radio" name="calendario_seleccionado" class="calendario_seleccionado" id="calendario_seleccionado" value="{{ calendario.id }}" onchange="editarCalendario()" />
+                        </td>
+                        <td>
+                            {% if calendario.fecha.mes == 1 %}
+                        12/{{ calendario.fecha.anio|add:"-1" }}
+                        {% else %}
+                        {{ calendario.fecha.mes|add:"-1" }}/{{ calendario.fecha.anio }}
+                        {% endif %}
+                        </td>
+                        <td style = "background-color:#ea90bc;">{{ calendario.comentariosInicialesInicio }}</td>
+                        <td style = "background-color:#ea90bc;">{{ calendario.comentariosInicialesFin }}</td>
+                        <td style = "background-color:#96dd86;">{{ calendario.empleadosInicio }}</td>
+                        <td style = "background-color:#96dd86;">{{ calendario.empleadosFin }}</td>
+                        <td style = "background-color:#6986cf;">{{ calendario.jefesInicio }}</td>
+                        <td style = "background-color:#6986cf;">{{ calendario.jefesFin }}</td>
+                        <td style = "background-color:#ffe881;">{{ calendario.gerentesInicio }}</td>
+                        <td style = "background-color:#ffe881;">{{ calendario.gerentesFin }}</td>
+                    </tr>
+                    {% endfor %}
+                    
+                </tbody>
+            </table>
+
+            {% else %}
+                    <p>No hay calendarios creados para este mes</p>
+                    {% endif %}
+
+
+
+
+            <div class="formularioOculto" style="display:none;">
+            <form  method="post" action="{% url 'editarCalendario' %}" >
+                    
+                {% csrf_token %}
+                <br/>
+                <br/>
+                <input type="hidden" name="calendarioSelect" class="calendarioSelect" id="calendarioSelect" value="" >
+                
+                 <div class="form-check form-switch nota divInput" style="display:none;"> 
+                    <input class="form-check-input tipoEditar" type="checkbox" name="tipoEditar" role="switch" id="tipoEditar" class="tipoEditar" disabled>
+                    <label class="form-check-label tipoEditar" for="tipoEditar" style="color:red" disabled>Calendario para ventas</label>
+                </div> 
+
+                 <label class="titCalendario">Concentrado de resultados al drive</label>
+                <div class="comentarios-section" style="background-color:#ffc1ed;">
+                <div class="row g-3">
+                    
+                    <div class="col-md-6" >
+                        <label for="comentariosInicialesInicioEditar">Inicio</label>
+                        <input type="date" class="form-control" id="comentariosInicialesInicioEditar" name="comentariosInicialesInicioEditar" required> 
+                    </div>
+                    <div class="col-md-6">
+                        <label for="comentariosInicialesFinEditar">Fin</label>
+                        <input type="date" class="form-control" id="comentariosInicialesFinEditar" name="comentariosInicialesFinEditar" required>
+                    </div>
+                </div>
+                </div>
+                <label class="titCalendario">Vaciar información al sistema</label>
+                <div class="comentarios-section" style = "background-color:#96cf51;">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="empleadosInicioEditar">Inicio</label>
+                        <input type="date" class="form-control" id="empleadosInicioEditar" name="empleadosInicioEditar" required> 
+                    </div>
+                    <div class="col-md-6">
+                        <label for="empleadosFinEditar">Fin</label>
+                        <input type="date" class="form-control" id="empleadosFinEditar" name="empleadosFinEditar" required>
+                    </div>
+                </div>
+                </div>
+                <label class="titCalendario">Evaluacion de Líderes con equipo</label>
+                <div class="comentarios-section" style = "background-color:#a1daf0;">
+                    <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="evaluadoresInicioEditar">Inicio</label>
+                        <input type="date" class="form-control" id="evaluadoresInicioEditar" name="evaluadoresInicioEditar" required> 
+                    </div>
+                    <div class="col-md-6">
+                        <label for="evaluadoresFinEditar">Fin</label>
+                        <input type="date" class="form-control" id="evaluadoresFinEditar" name="evaluadoresFinEditar" required>
+                    </div>
+
+                </div>
+            </div>
+            <label class="titCalendario">Evaluación de Lideres con comité</label>
+            <div class="comentarios-section" style = "background-color:#fff49a;">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="gerentesInicioEditar">Inicio</label>
+                        <input type="date" class="form-control" id="gerentesInicioEditar" name="gerentesInicioEditar" required> 
+                    </div>
+                    <div class="col-md-6">
+                        <label for="gerentesFinEditar">Fin</label>
+                        <input type="date" class="form-control" id="gerentesFinEditar" name="gerentesFinEditar" required>
+                    </div>
+
+
+
+                 </div>
+            </div>
+                <button type="submit" class="btn btn-primary btnEnviar" id="btnEditar" disabled>Editar</button>
+            </form>
+
+
+            
+        </div>
+        <br/>
+        <br/>
+        {% if todosCalendarios %}     
+        <p>Todos los calendarios</p>
+        <table class="table table-responsive table-bordered" style="text-align: center;"> 
+            <thead>
+                <tr style="text-align:center">
+                    <td rowspan="2" >Editar</td>
+                    <td rowspan="2" >Fecha</td>
+                    <td colspan="2" style = "background-color:#ffc1ed;">Resultados Drive</td>
+                    <td colspan="2" style = "background-color:#96cf51;">Información sistema</td>
+                    <td colspan="2" style = "background-color:#a1daf0;">Líderes con equipo</td>
+                    <td colspan="2" style = "background-color:#fff49a;">Evaluación de Lideres con comité</td>
+                </tr>
+                <tr>
+                    <td>Inicio</td>
+                    <td>Fin</td>
+                    <td>Inicio</td>
+                    <td>Fin</td>
+                    <td>Inicio</td>
+                    <td>Fin</td>
+                    <td>Inicio</td>
+                    <td>Fin</td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for calendario in todosCalendarios %}
+                <tr>
+                    {% if calendario.tipo == 1 %}
+                    <td>
+                        <input type="radio" name="calendario_seleccionado" class="calendario_seleccionado" id="calendario_seleccionado" value="{{ calendario.id }}" onchange="editarCalendario()" />
+                    </td>
+                    <td>
+                        {% if calendario.fecha.mes == 1 %}
+                        12/{{ calendario.fecha.anio|add:"-1" }}
+                        {% else %}
+                        {{ calendario.fecha.mes|add:"-1" }}/{{ calendario.fecha.anio }}
+                        {% endif %}
+                    </td>
+                    <td style = "background-color:#ea90bc;">{{ calendario.comentariosInicialesInicio }}</td>
+                    <td style = "background-color:#ea90bc;">{{ calendario.comentariosInicialesFin }}</td>
+                    <td style = "background-color:#96dd86;">{{ calendario.empleadosInicio }}</td>
+                    <td style = "background-color:#96dd86;">{{ calendario.empleadosFin }}</td>
+                    <td style = "background-color:#6986cf;">{{ calendario.jefesInicio }}</td>
+                    <td style = "background-color:#6986cf;">{{ calendario.jefesFin }}</td>
+                    <td style = "background-color:#ffe881;">{{ calendario.gerentesInicio }}</td>
+                    <td style = "background-color:#ffe881;">{{ calendario.gerentesFin }}</td>
+                    {% else %}
+                    <td>
+                        <input type="radio" name="calendario_seleccionado" class="calendario_seleccionado" id="calendario_seleccionado" value="{{ calendario.id }}" onchange="editarCalendario()" />
+                    </td>
+                    <td >
+                        {{ calendario.fecha.mes|add:"-1" }}/{{ calendario.fecha.anio }}
+                    </td>
+                    <td style = "background-color:#df77a4;">{{ calendario.comentariosInicialesInicio }}</td>
+                    <td style = "background-color:#df77a4;">{{ calendario.comentariosInicialesFin }}</td>
+                    <td style = "background-color:#7dc46f;">{{ calendario.empleadosInicio }}</td>
+                    <td style = "background-color:#7dc46f;">{{ calendario.empleadosFin }}</td>
+                    <td style = "background-color:#3f66ab;">{{ calendario.jefesInicio }}</td>
+                    <td style = "background-color:#3f66ab;">{{ calendario.jefesFin }}</td>
+                    <td style = "background-color:#ffd14f;">{{ calendario.gerentesInicio }}</td>
+                    <td style = "background-color:#ffd14f;">{{ calendario.gerentesFin }}</td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+                
+            </tbody>
+        </table>
+        
+        {% else %}
+                <p> Sin mas calendarios</p>
+                {% endif %}
+
+        </div>
+        </div>
+        
+        
+
+      </div>
+    </div>
+    <div id="modalError" class="modalError">
+        <div class="modal-content">
+          <span class="closeError">&times;</span>
+          <img src="{% static 'img/advertencia.png' %}" alt="Imagen" width="35px" height="35px">
+          <p id="modal-messageError"></p>
+        </div>
+      </div>
+    
+  
+      <div id="modalEnviar" class="modalEnviar">
+        <div class="modal-content">
+          <span class="closeEnviar">&times;</span>
+          <img src="{% static 'img/comprobado.png' %}" alt="Imagen" width="35px" height="35px">
+          <p id="modal-messageEnviar"></p>
+        </div>
+      </div>
+
+    <script>
+        //PERMITIR QUE SOLO PUEDA AGREGAR EL DÍA ACTUAL O POSTERIOR
+        var today = new Date().toISOString().split('T')[0];
+        console.log(today);
+        document.getElementById("comentariosInicialesInicio").setAttribute("min", today);
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+        comentariosInicialesInicio.addEventListener ('change', function(event) {
+            document.getElementById('comentariosInicialesFin').value = "";
+            document.getElementById('empleadosInicio').value = "";
+            document.getElementById('empleadosFin').value = "";
+            document.getElementById('evaluadoresInicio').value = "";
+            document.getElementById('evaluadoresFin').value = "";
+            document.getElementById('gerentesInicio').value = "";
+            document.getElementById('gerentesFin').value = "";
+            document.getElementById('empleadosInicio').setAttribute('disabled', 'disabled');
+            document.getElementById('empleadosFin').setAttribute('disabled', 'disabled');
+            document.getElementById('evaluadoresInicio').setAttribute('disabled', 'disabled');
+            document.getElementById('evaluadoresFin').setAttribute('disabled', 'disabled');
+            document.getElementById('gerentesInicio').setAttribute('disabled', 'disabled');
+            document.getElementById('gerentesFin').setAttribute('disabled', 'disabled');
+            btnEnviar.setAttribute('disabled', 'disabled');
+            var comentariosInicialesInicioValor = document.getElementById('comentariosInicialesInicio').value;
+            var comentariosInicialesInicioElemento = new Date(comentariosInicialesInicioValor);
+            if (comentariosInicialesInicioValor < today ) {
+                showModalError("Las fechas de comentarios deben ser potseriores al día de hoy");
+                comentariosInicialesInicio.value = "";
+            } else {
+                document.getElementById('comentariosInicialesFin').removeAttribute('disabled');
+                comentariosInicialesInicioElemento.setDate(comentariosInicialesInicioElemento.getDate() + 1);
+                comentariosInicialesInicioValor = comentariosInicialesInicioElemento.toISOString().split('T')[0];
+                document.getElementById("comentariosInicialesFin").setAttribute("min", comentariosInicialesInicioValor);
+            }
+        });
+
+        comentariosInicialesFin.addEventListener('change', function(event) {
+            document.getElementById('empleadosInicio').value = "";
+            document.getElementById('empleadosFin').value = "";
+            document.getElementById('evaluadoresInicio').value = "";
+            document.getElementById('evaluadoresFin').value = "";
+            document.getElementById('gerentesInicio').value = "";
+            document.getElementById('gerentesFin').value = "";
+            document.getElementById('empleadosInicio').setAttribute('disabled', 'disabled');
+            document.getElementById('empleadosFin').setAttribute('disabled', 'disabled');
+            document.getElementById('evaluadoresInicio').setAttribute('disabled', 'disabled');
+            document.getElementById('evaluadoresFin').setAttribute('disabled', 'disabled');
+            document.getElementById('gerentesInicio').setAttribute('disabled', 'disabled');
+            document.getElementById('gerentesFin').setAttribute('disabled', 'disabled');
+            btnEnviar.setAttribute('disabled', 'disabled');
+            var comentariosInicialesInicioValor = document.getElementById('comentariosInicialesInicio').value;
+            var comentariosInicialesFinValor = document.getElementById('comentariosInicialesFin').value;
+            var comentariosInicialesInicioElemento = new Date(comentariosInicialesInicioValor);
+            var comentariosInicialesFinElemento = new Date(comentariosInicialesFinValor);
+
+            if (comentariosInicialesFinValor <= comentariosInicialesInicioValor) {
+                showModalError("La fecha de fin de comentarios debe ser posterior a la fecha de inicio");
+                comentariosInicialesFin.value = "";
+            } else {
+                document.getElementById('empleadosInicio').removeAttribute('disabled');
+                comentariosInicialesFinElemento.setDate(comentariosInicialesFinElemento.getDate() + 1);
+                comentariosInicialesFinValor = comentariosInicialesFinElemento.toISOString().split('T')[0];
+                document.getElementById("empleadosInicio").setAttribute("min", comentariosInicialesFinValor);
+            }
+        });
+
+        empleadosInicio.addEventListener('change', function(event) {
+            document.getElementById('empleadosFin').value = "";
+            document.getElementById('evaluadoresInicio').value = "";
+            document.getElementById('evaluadoresFin').value = "";
+            document.getElementById('gerentesInicio').value = "";
+            document.getElementById('gerentesFin').value = "";
+            document.getElementById('empleadosFin').setAttribute('disabled', 'disabled');
+            document.getElementById('evaluadoresInicio').setAttribute('disabled', 'disabled');
+            document.getElementById('evaluadoresFin').setAttribute('disabled', 'disabled');
+            document.getElementById('gerentesInicio').setAttribute('disabled', 'disabled');
+            document.getElementById('gerentesFin').setAttribute('disabled', 'disabled');
+            btnEnviar.setAttribute('disabled', 'disabled');
+            var empleadosInicioValor = document.getElementById('empleadosInicio').value;
+            var comentariosInicialesFinValor = document.getElementById('comentariosInicialesFin').value;
+            var empleadosInicioElemento = new Date(empleadosInicioValor);
+            var comentariosInicialesFinElemento = new Date(comentariosInicialesFinValor);
+
+            if (empleadosInicioValor <= comentariosInicialesFinValor) {
+                showModalError("Las fechas de autoevaluación deben ser posteriores a las fechas de comentarios");
+                empleadosInicio.value = "";
+            } else {
+                document.getElementById('empleadosFin').removeAttribute('disabled');
+                empleadosInicioElemento.setDate(empleadosInicioElemento.getDate() + 1);
+                empleadosInicioValor = empleadosInicioElemento.toISOString().split('T')[0];
+                document.getElementById("empleadosFin").setAttribute("min", empleadosInicioValor);
+            }
+        });
+
+        empleadosFin.addEventListener('change', function(event) {
+            document.getElementById('evaluadoresInicio').value = "";
+            document.getElementById('evaluadoresFin').value = "";
+            document.getElementById('gerentesInicio').value = "";
+            document.getElementById('gerentesFin').value = "";
+            document.getElementById('evaluadoresInicio').setAttribute('disabled', 'disabled');
+            document.getElementById('evaluadoresFin').setAttribute('disabled', 'disabled');
+            document.getElementById('gerentesInicio').setAttribute('disabled', 'disabled');
+            document.getElementById('gerentesFin').setAttribute('disabled', 'disabled');
+            btnEnviar.setAttribute('disabled', 'disabled');
+            var empleadosInicioValor = document.getElementById('empleadosInicio').value;
+            var empleadosFinValor = document.getElementById('empleadosFin').value;
+            var empleadosInicioElemento = new Date(empleadosInicioValor);
+            var empleadosFinElemento = new Date(empleadosFinValor);
+
+            if (empleadosFinValor <= empleadosInicioValor) {
+                showModalError("La fecha de fin de autoevaluación debe ser posterior a la fecha de inicio");
+                empleadosFin.value = "";
+            } else {
+                document.getElementById('evaluadoresInicio').removeAttribute('disabled');
+                empleadosFinElemento.setDate(empleadosFinElemento.getDate() + 1);
+                empleadosFinValor = empleadosFinElemento.toISOString().split('T')[0];
+                document.getElementById("evaluadoresInicio").setAttribute("min", empleadosFinValor);
+            }
+        });
+
+        evaluadoresInicio.addEventListener('change', function(event) {
+            document.getElementById('evaluadoresFin').value = "";
+            document.getElementById('gerentesInicio').value = "";
+            document.getElementById('gerentesFin').value = "";
+            document.getElementById('evaluadoresFin').setAttribute('disabled', 'disabled');
+            document.getElementById('gerentesInicio').setAttribute('disabled', 'disabled');
+            document.getElementById('gerentesFin').setAttribute('disabled', 'disabled');
+            btnEnviar.setAttribute('disabled', 'disabled');
+            var evaluadoresInicioValor = document.getElementById('evaluadoresInicio').value;
+            var empleadosFinValor = document.getElementById('empleadosFin').value;
+            var evaluadoresInicioElemento = new Date(evaluadoresInicioValor);
+            var empleadosFinElemento = new Date(empleadosFinValor);
+
+            if (evaluadoresInicioValor <= empleadosFinValor) {
+                showModalError("Las fechas de evaluadores deben ser posteriores a las fechas de autoevaluación");
+                evaluadoresInicio.value = "";
+            } else {
+                document.getElementById('evaluadoresFin').removeAttribute('disabled');
+                evaluadoresInicioElemento.setDate(evaluadoresInicioElemento.getDate() + 1);
+                evaluadoresInicioValor = evaluadoresInicioElemento.toISOString().split('T')[0];
+                document.getElementById("evaluadoresFin").setAttribute("min", evaluadoresInicioValor);
+            }
+        });
+
+        evaluadoresFin.addEventListener('change', function(event) {
+            document.getElementById('gerentesInicio').value = "";
+            document.getElementById('gerentesFin').value = "";
+            document.getElementById('gerentesInicio').setAttribute('disabled', 'disabled');
+            document.getElementById('gerentesFin').setAttribute('disabled', 'disabled');
+            btnEnviar.setAttribute('disabled', 'disabled');
+            var evaluadoresInicioValor = document.getElementById('evaluadoresInicio').value;
+            var evaluadoresFinValor = document.getElementById('evaluadoresFin').value;
+            var evaluadoresInicioElemento = new Date(evaluadoresInicioValor);
+            var evaluadoresFinElemento = new Date(evaluadoresFinValor);
+
+            if (evaluadoresFinValor <= evaluadoresInicioValor) {
+                showModalError("La fecha de fin de evaluadores debe ser posterior a la fecha de inicio");
+                evaluadoresFin.value = "";
+            } else {
+                document.getElementById('gerentesInicio').removeAttribute('disabled');
+                evaluadoresFinElemento.setDate(evaluadoresFinElemento.getDate() + 1);
+                evaluadoresFinValor = evaluadoresFinElemento.toISOString().split('T')[0];
+                document.getElementById("gerentesInicio").setAttribute("min", evaluadoresFinValor);
+            }
+        });
+
+        gerentesInicio.addEventListener('change', function(event) {
+            document.getElementById('gerentesFin').value = "";
+            document.getElementById('gerentesFin').setAttribute('disabled', 'disabled');
+            btnEnviar.setAttribute('disabled', 'disabled');
+            var gerentesInicioValor = document.getElementById('gerentesInicio').value;
+            var evaluadoresFinValor = document.getElementById('evaluadoresFin').value;
+            var gerentesInicioElemento = new Date(gerentesInicioValor);
+            var evaluadoresFinElemento = new Date(evaluadoresFinValor);
+
+            if (gerentesInicioValor <= evaluadoresFinValor) {
+                showModalError("Las fechas de gerentes deben ser posteriores a las fechas de evaluadores");
+                gerentesInicio.value = "";
+            } else {
+                document.getElementById('gerentesFin').removeAttribute('disabled');
+                gerentesInicioElemento.setDate(gerentesInicioElemento.getDate() + 1);
+                gerentesInicioValor = gerentesInicioElemento.toISOString().split('T')[0];
+                document.getElementById("gerentesFin").setAttribute("min", gerentesInicioValor);
+            }
+        });
+
+        gerentesFin.addEventListener('change', function(event) {
+            btnEnviar.removeAttribute('disabled');
+        });
+
+        
+
+        });
+
+
+        // Obtener el modal de errores
+    var modal = document.getElementById("modalError");
+    var modalEnviar = document.getElementById("modalEnviar");
+
+    // Obtener el botón que cierra el modal
+    var spanError = document.getElementsByClassName("closeError")[0];
+    var spanEnviar = document.getElementsByClassName("closeEnviar")[0];
+
+    // Función para mostrar el modal con un mensaje específico
+    function showModalError(message) {
+    document.getElementById("modal-messageError").innerText = message;
+    modal.style.display = "block";
+    }
+
+    function showModalEnviar(message) {
+    document.getElementById("modal-messageEnviar").innerText = message;
+    modalEnviar.style.display = "block";
+    }
+
+
+    spanError.onclick = function() {
+    modal.style.display = "none";
+    }
+
+    window.onclick = function(event) {
+      if (event.target == modal) {
+          modal.style.display = "none";
+      }
+      }
+
+
+    spanEnviar.onclick = function() {
+        var url = '/evaluaciones/';
+        window.location.href = url;
+
+    }
+
+    window.onclick = function(event) {
+        if (event.target == modalEnviar) {
+            
+            var url = '/evaluaciones/';
+        window.location.href = url;
+        }
+    }
+
+    function llenarFormulario(){
+        //llenar manualemnte el formulario de acuerdo al calendario seleccionado
+        var calendario_seleccionado = document.querySelector('input[name="calendario_seleccionado"]:checked');
+
+
+        
+    }
+
+    
+    function editarCalendario(){
+        var radios = document.querySelectorAll('.calendario_seleccionado');
+        radios.forEach(function(radio) {
+            if (radio.checked) {
+                var calendarioSeleccionado = radio.value;
+                $.ajax({
+                    url: '/obtener_calendario/',
+                    data: {
+                      'calendario_id': calendarioSeleccionado
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                      var calendario = data.calendario[0].fields; // Acceder a los campos del calendario
+                      document.getElementById('comentariosInicialesInicioEditar').value = calendario.comentariosInicialesInicio;
+                      document.getElementById('comentariosInicialesFinEditar').value = calendario.comentariosInicialesFin;
+                      document.getElementById('empleadosInicioEditar').value = calendario.empleadosInicio;
+                      document.getElementById('empleadosFinEditar').value = calendario.empleadosFin;
+                      document.getElementById('evaluadoresInicioEditar').value = calendario.jefesInicio;
+                      document.getElementById('evaluadoresFinEditar').value = calendario.jefesFin;
+                      document.getElementById('gerentesInicioEditar').value = calendario.gerentesInicio;
+                      document.getElementById('gerentesFinEditar').value = calendario.gerentesFin;
+                      document.querySelector('.formularioOculto').style.display = 'block';
+                      if (calendario.tipo == 2) {
+                            document.querySelector('.tipoEditar').checked = true;
+                    }  else {
+                        document.querySelector('.tipoEditar').checked = false;
+                    }
+                        document.querySelector('.calendarioSelect').value = calendarioSeleccionado;
+                        document.getElementById('btnEditar').removeAttribute('disabled');
+                    }
+                });
+            }
+        });
+    }
+
+    </script>
+
+  </body>
+</html>
+{% endblock %}

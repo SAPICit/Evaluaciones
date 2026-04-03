@@ -1,0 +1,1205 @@
+{% extends "plantilla/master.html" %}
+{% load static %}
+
+
+{% block contenido %}
+    {% comment %} <div id="panel" class="panel">
+      <div class="interiorG"> {% endcomment %}
+        <div id="titulo" class="titulo">
+          <h1>Reportes</h1>
+        </div>
+        
+        <div class="eva">
+            {% if evaluaciones %}     
+            <div class="col-md-4">
+                <label for="numEvaluacion">Evaluación</label><br />
+                <select required class="form-control" id="numEvaluacion" name="numEvaluacion">
+                  {% for evaluacion in fechas %}
+                  <option value="{{ evaluacion.id }}" selected>
+                    {% if evaluacion.mes == 1 %}
+                        Diciembre /{{ evaluacion.anio|add:"-1"}}
+                    {% elif evaluacion.mes == 2 %}
+                        Enero/{{ evaluacion.anio }}
+                    {% elif evaluacion.mes == 3 %} 
+                        Febrero/{{ evaluacion.anio }}
+                    {% elif evaluacion.mes == 4 %}
+                        Marzo/{{ evaluacion.anio }}
+                    {% elif evaluacion.mes == 5 %}
+                        Abril/{{ evaluacion.anio }}
+                    {% elif evaluacion.mes == 6 %}
+                        Mayo/{{ evaluacion.anio }}
+                    {% elif evaluacion.mes == 7 %}
+                        Junio/{{ evaluacion.anio }}
+                    {% elif evaluacion.mes == 8 %}
+                        Julio/{{ evaluacion.anio }}
+                    {% elif evaluacion.mes == 9 %}
+                        Agosto/{{ evaluacion.anio }}
+                    {% elif evaluacion.mes == 10 %}
+                        Septiembre/{{ evaluacion.anio }}
+                    {% elif evaluacion.mes == 11 %}
+                        Octubre/{{ evaluacion.anio }}
+                    {% elif evaluacion.mes == 12 %}
+                        Noviembre/{{ evaluacion.anio }}
+                    {% else %}
+                    {{ evaluacion.mes }}/{{ evaluacion.anio }}
+                    {% endif %}
+                  </option>
+                  {% endfor %}
+                </select><br />
+                
+
+               
+          </div> 
+          <button class="btn btn-enviar nota reporteNuevo" id="reporteNuevo" onclick="solicitarReporteNuevo()"> Ver reporte </button>
+
+          
+          <bR/>
+          
+
+        </div>
+        {% else %}
+        
+        <span>No hay evaluaciones</span>
+        {% endif %}
+        
+      </div>
+    </div>
+
+    <div id="modalError" class="modalError">
+    <div class="modal-content">
+      <span class="closeError">&times;</span>
+      <img src="{% static 'img/advertencia.png' %}" alt="Imagen" width="35px" height="35px">
+      <p id="modal-messageError"></p>
+    </div>
+  </div>
+
+<script>
+
+
+  $(document).ready(function() {
+    $("#numEvaluacion").css({
+      "background-color": "#00953a",  // Fondo gris oscuro
+      "color": "#fff"  // Texto blanco
+    });
+    $("#numEvaluacionAntiguo").css({
+      "background-color": "#d9d9d6",  // Fondo verde
+      "color": "#fff"  // Texto negro
+    });
+    $("#reporteNuevo").prop("disabled", false);
+    $("#reporteAntiguo").prop("disabled", true);
+
+
+    $("#numEvaluacion").change(function() {
+        $("#numEvaluacionAntiguo").css({
+            "background-color": "#d9d9d6",  // Fondo verde
+            "color": "#fff"  // Texto negro
+        });
+        $("#numEvaluacion").css({
+            "background-color": "#00953a",  // Fondo gris oscuro
+            "color": "#fff"  // Texto blanco
+        });
+        $("#reporteNuevo").prop("disabled", false);
+        $("#reporteAntiguo").prop("disabled", true);
+       // actualizarTablas();
+    });
+
+    $("#numEvaluacionAntiguo").change(function() {
+        $("#numEvaluacionAntiguo").css({
+            "background-color": "#00953a",  // Fondo gris oscuro
+            "color": "#fff"  // Texto blanco
+        });
+        $("#numEvaluacion").css({
+            "background-color": "#d9d9d6",  // Fondo verde
+            "color": "#fff"  // Texto negro
+        });
+         // Habilitar botón de reporte antiguo y deshabilitar el nuevo
+    $("#reporteAntiguo").prop("disabled", false);
+    $("#reporteNuevo").prop("disabled", true);
+        actualizarTablasAntiguo();
+    });
+});
+
+{% comment %}
+  function actualizarTablas(){
+
+     var id = $("#numEvaluacion").val();
+    $.ajax({
+      url: '/obtener_reporte_empleados/',
+      data: {
+        'evaluacion_id': id
+      },
+      dataType: 'json',
+      success: function(data) {
+
+        var tEmpleado = document.querySelector('.tEmpleado tbody');
+        var row = document.createElement('tr');
+        row.innerHTML = `<td>${data.no_emp} </td><td>${data.nombre}</td><td>${data.puesto}</td><td>${data.periodo}</td><td>${data.calificacionAutoevaluado}</td><td>${data.etapa}</td>`;
+        tEmpleado.innerHTML = '';
+        tEmpleado.appendChild(row);
+
+        var tEvaluadores = document.querySelector('.tEvaluadores tbody');
+        tEvaluadores.innerHTML = '';
+        
+        if (data.e1_no_Emp != 1)
+        {
+            var row = document.createElement('tr');
+            if (data.e1_calificacion == -1){
+              row.innerHTML = `<td>${data.e1_no_Emp}</td><td>${data.e1_nombre}</td><td>${data.e1_puesto}</td><td>${0}</td>`;
+            }else{
+                row.innerHTML = `<td>${data.e1_no_Emp}</td><td>${data.e1_nombre}</td><td>${data.e1_puesto}</td><td>${data.e1_calificacion}</td>`;
+            }
+            tEvaluadores.appendChild(row);
+        }
+        if (data.e2_no_Emp != 1)
+        {
+            var row = document.createElement('tr');
+            if (data.e2_calificacion == -1){
+                row.innerHTML = `<td>${data.e2_no_Emp}</td><td>${data.e2_nombre}</td><td>${data.e2_puesto}</td><td>${0}</td>`;
+            }else{
+            row.innerHTML = `<td>${data.e2_no_Emp}</td><td>${data.e2_nombre}</td><td>${data.e2_puesto}</td><td>${data.e2_calificacion}</td>`;
+            }
+            tEvaluadores.appendChild(row);
+        }
+        if (data.e3_no_Emp != 1)
+        {
+            var row = document.createElement('tr');
+            if (data.e3_calificacion == -1){
+                row.innerHTML = `<td>${data.e3_no_Emp}</td><td>${data.e3_nombre}</td><td>${data.e3_puesto}</td><td>${0}</td>`;
+            }else{
+            row.innerHTML = `<td>${data.e3_no_Emp}</td><td>${data.e3_nombre}</td><td>${data.e3_puesto}</td><td>${data.e3_calificacion}</td>`;
+            }
+            tEvaluadores.appendChild(row);
+        }
+        if (data.e4_no_Emp != 1)
+        {
+            var row = document.createElement('tr');
+            if (data.e4_calificacion == -1){
+                row.innerHTML = `<td>${data.e4_no_Emp}</td><td>${data.e4_nombre}</td><td>${data.e4_puesto}</td><td>${0}</td>`;
+            }else{
+            row.innerHTML = `<td>${data.e4_no_Emp}</td><td>${data.e4_nombre}</td><td>${data.e4_puesto}</td><td>${data.e4_calificacion}</td>`;
+            }
+            tEvaluadores.appendChild(row);
+        }
+        // Actualiza el contenido de las tablas con los datos recibidos
+        
+
+        intendencia=false;
+
+        if (data.tipo == 2){
+            intendencia=true;
+        }
+        //Actualizar tabla de los OKRs
+        var tableOKR = document.querySelector('.tablaEvaluacion1 tbody');
+        var descOKR = document.querySelector('.descOKR');
+        var valorOKR = document.querySelector('.valorOKR');
+        var calificacionOKR = document.querySelector('.calificacionOKR');
+        tableOKR.innerHTML = '';
+        if (data.OKR.length > 0) {
+            // Recorre el arregloOKRs y crea las filas de la tabla
+            var sOKR=0.0;
+            var ssOKR=0.0;
+            data.OKR.forEach(function(cl) {
+                var row = document.createElement('tr');
+                row.innerHTML = `<td>${cl.objetivo}</td><td>${cl.metrica}</td><td>${cl.valor}</td>`;
+                var inputCell = document.createElement('td');
+                 
+                var comentariosHeader = document.createElement('h6');
+                var commentsAndInputCell = document.createElement('td');
+                var comentarios = ''; // Variable para almacenar los comentarios
+
+                var cal = document.createElement('h6');
+                var calificacionesInput = document.createElement('td');
+                var calificaciones = ''; 
+
+                data.coment_OKR.forEach(function(comentario) {
+                    if (comentario.objetivo_id == cl.id)
+                    {   
+                        data.empleados.forEach(function(empleado) {
+                            if (empleado.no_emp == comentario.quienComenta_id)
+                            {
+                                comentarios += `<span style="color: #295caa;">${empleado.nombre} ${empleado.apellido_paterno}</span>: `;
+                            }
+                        });
+                        comentarios += `${comentario.comentario}<br>`;
+                    }
+                });
+
+                 data.cal_OKR.forEach(function(calificacion) {
+                  if (calificacion.objetivo_id == cl.id)
+                  {   
+                      data.empleados.forEach(function(empleado) {
+                          if (empleado.no_emp == calificacion.quienCalifica_id)
+                          {
+                              calificaciones += `<span style="color: #295caa;">${empleado.nombre} ${empleado.apellido_paterno}</span>: `;
+                          }
+                      });
+                      if (calificacion.calificacion == 0){
+                        calificaciones += `<span style="color: red;">No</span><br>`;
+                      }else{
+                        if (calificacion.quienCalifica_id == data.no_emp)
+                    {
+                        ssOKR += calificacion.calificacion;
+                    }
+                        calificaciones += `<span style="color: green;">Sí</span><br>`;
+                      }
+                  }
+              }); 
+
+                comentariosHeader.innerHTML = comentarios;
+                commentsAndInputCell.appendChild(comentariosHeader);
+
+                cal.innerHTML = calificaciones;
+                calificacionesInput.appendChild(cal);
+
+                row.appendChild(commentsAndInputCell);
+                row.appendChild(calificacionesInput);
+                
+                tableOKR.appendChild(row);
+                sOKR = sOKR + cl.valor;
+            });
+            if (!intendencia){
+                descOKR.innerHTML = 'OKRs';
+            }else{
+                descOKR.innerHTML = 'Actividades diarias';
+            }
+            valorOKR.innerHTML = 'Valor: ' + sOKR + '%';
+            calificacionOKR.innerHTML = 'Autocalificacion: ' + ssOKR ;
+            document.querySelector('.tablaEvaluacion1').style.display = 'table';
+        } else {
+            document.querySelector('.tablaEvaluacion1').style.display = 'none';7
+            descOKR.innerHTML = '';
+        }
+
+        //Actualizar tabla de los KPIs
+        var tableKPI = document.querySelector('.tablaEvaluacion2 tbody');
+        var descKPI = document.querySelector('.descKPI');
+        var valorKPI = document.querySelector('.valorKPI');
+        var calificacionKPI = document.querySelector('.calificacionKPI');
+        tableKPI.innerHTML = '';
+        if (data.KPI.length > 0) {
+            // Recorre el arregloKPIs y crea las filas de la tabla
+            sKPI= 0.0;
+            ssKPI=0.0;
+            data.KPI.forEach(function(cl) {
+                var row = document.createElement('tr');
+                row.innerHTML = `<td>${cl.objetivo}</td><td>${cl.metrica}</td><td>${cl.valor}</td>`;
+                var comentariosHeader = document.createElement('h6');
+                var commentsAndInputCell = document.createElement('td');
+                var comentarios = ''; // Variable para almacenar los comentarios
+
+                var cal = document.createElement('h6');
+                var calificacionesInput = document.createElement('td');
+                var calificaciones = '';
+
+                data.coment_KPI.forEach(function(comentario) {
+                    if (comentario.objetivo_id == cl.id)
+                    {   
+                        data.empleados.forEach(function(empleado) {
+                            if (empleado.no_emp == comentario.quienComenta_id)
+                            {
+                              comentarios += `<span style="color: #295caa;">${empleado.nombre} ${empleado.apellido_paterno}</span>: `;
+                            }
+                        });
+                        comentarios += `${comentario.comentario}<br>`;
+                    }
+                });
+
+                data.cal_KPI.forEach(function(calificacion) {
+                  if (calificacion.objetivo_id == cl.id)
+                  {   
+                    data.empleados.forEach(function(empleado) {
+                  if (empleado.no_emp == calificacion.quienCalifica_id)
+                  {
+                  calificaciones += `<span style="color: #295caa;">${empleado.nombre} ${empleado.apellido_paterno}</span>: `;
+                  }
+                  });
+                  if (calificacion.calificacion == 0){
+                  calificaciones += `<span style="color: red;">No</span><br>`;
+                  }else{
+                    if (calificacion.quienCalifica_id == data.no_emp)
+                    {
+                        ssKPI += calificacion.calificacion;
+                    }
+                  calificaciones += `<span style="color: green;">Sí</span><br>`;
+                  }
+                  }
+                  }); 
+
+                comentariosHeader.innerHTML = comentarios;
+                commentsAndInputCell.appendChild(comentariosHeader);
+
+                cal.innerHTML = calificaciones;
+                calificacionesInput.appendChild(cal);
+
+              
+                row.appendChild(commentsAndInputCell);
+                row.appendChild(calificacionesInput);
+                tableKPI.appendChild(row);
+                sKPI= sKPI + cl.valor;
+            });
+            if (!intendencia){
+              descKPI.innerHTML = 'KPIs';
+          }else{
+              descKPI.innerHTML = 'Politicas del personal';
+          }
+            valorKPI.innerHTML = 'Valor: ' + sKPI + '%';
+            calificacionKPI.innerHTML = 'Autocalificacion: ' + ssKPI ;
+            document.querySelector('.tablaEvaluacion2').style.display = 'table';
+        }
+        else {
+            document.querySelector('.tablaEvaluacion2').style.display = 'none';
+            descKPI.innerHTML = '';
+        }
+
+
+
+        //Actualizar tabla de la cultura laboral
+        var descCL = document.querySelector('.descCL');
+        if (!intendencia){
+        var tableCL = document.querySelector('.tablaEvaluacion3 tbody');
+        var valorCL = document.querySelector('.valorCL');
+        var calificacionCL = document.querySelector('.calificacionCL');
+        tableCL.innerHTML = '';
+        if (data.CL.length > 0) {
+            // Recorre el arregloCL y crea las filas de la tabla
+            sCL   = 0.0;
+            ssCL  = 0.0;
+            var obj ="";
+            var met = "";
+            var val= 0.0;
+            id=0;
+            var comentarios = ''; // Variable para almacenar los comentarios
+            var calificaciones = '';
+
+            data.CL.forEach(function(cl) {
+                obj += cl.objetivo;
+                met += cl.metrica;
+                sCL = cl.valor;
+                id = cl.id;
+
+                data.coment_CL.forEach(function(comentario) {
+                  if (comentario.objetivo_id == cl.id)
+                  {   
+                      data.empleados.forEach(function(empleado) {
+                          if (empleado.no_emp == comentario.quienComenta_id)
+                          {
+                            comentarios += `<span style="color: #295caa;">${empleado.nombre} ${empleado.apellido_paterno}</span>: `;
+                          }
+                      });
+                      comentarios += `${comentario.comentario}<br>`;
+                  }
+              });
+
+              data.cal_CL.forEach(function(calificacion) {
+                if (calificacion.objetivo_id == cl.id)
+                {   
+                  data.empleados.forEach(function(empleado) {
+                if (empleado.no_emp == calificacion.quienCalifica_id )
+                {
+                calificaciones += `<span style="color: #295caa;">${empleado.nombre} ${empleado.apellido_paterno}</span>: `;
+                }
+                });
+
+                if (calificacion.calificacion == 0){
+                calificaciones += `<span style="color: red;">No</span><br>`;
+                }else{
+                    if (calificacion.quienCalifica_id == data.no_emp)
+                    {
+                        ssCL += calificacion.calificacion;
+                    }
+                calificaciones += `<span style="color: green;">Sí</span><br>`;
+                }
+                }
+                }); 
+
+
+            });
+
+
+            var row = document.createElement('tr');
+            row.innerHTML = `<td>${obj}</td><td>${met}</td><td>${sCL}</td>`;
+
+            var comentariosHeader = document.createElement('h6');
+            var commentsAndInputCell = document.createElement('td');
+
+            var cal = document.createElement('h6');
+            var calificacionesInput = document.createElement('td');
+               
+                
+                comentariosHeader.innerHTML = comentarios;
+                commentsAndInputCell.appendChild(comentariosHeader);
+
+
+             cal.innerHTML = calificaciones;
+            calificacionesInput.appendChild(cal);
+
+            row.appendChild(commentsAndInputCell);
+            row.appendChild(calificacionesInput);
+
+            
+            tableCL.appendChild(row);
+            valorCL.innerHTML = 'Valor: ' + sCL + '%';
+            calificacionCL.innerHTML = 'Autocalificacion: ' + ssCL ;
+            document.querySelector('.tablaEvaluacion3').style.display = 'table';
+        }
+        else {
+            document.querySelector('.tablaEvaluacion3').style.display = 'none';
+            descCL.innerHTML = '';
+        }
+      } else {
+        descCL.innerHTML = '';
+        document.querySelector('.tablaEvaluacion3').style.display = 'none';
+      }
+
+        //Actualizar tabla del bono extra
+        var tableBONO = document.querySelector('.tablaEvaluacion4 tbody');
+        var descBONO = document.querySelector('.descBONO');
+        var valorBONO = document.querySelector('.valorBONO');
+        var calificacionBONO = document.querySelector('.calificacionBONO');
+
+        tableBONO.innerHTML = '';
+        if (data.BONO.length > 0) {
+            var ssBONO = 0.0;
+            descBONO.innerHTML = 'Bono Extra';
+            // Recorre el arregloBONO y crea las filas de la tabla
+            data.BONO.forEach(function(cl) {
+                var row = document.createElement('tr');
+                row.innerHTML = `<td>${cl.objetivo}</td><td>${cl.metrica}</td><td>$${cl.valor}.00</td>`;
+                
+                var comentariosHeader = document.createElement('h6');
+                var commentsAndInputCell = document.createElement('td');
+                var comentarios = ''; // Variable para almacenar los comentarios
+
+                var cal = document.createElement('h6');
+                var calificacionesInput = document.createElement('td');
+                var calificaciones = '';
+
+                data.coment_BONO.forEach(function(comentario) {
+                    if (comentario.objetivo_id == cl.id)
+                    {   
+                        data.empleados.forEach(function(empleado) {
+                            if (empleado.no_emp == comentario.quienComenta_id)
+                            {
+                              comentarios += `<span style="color: #295caa;">${empleado.nombre} ${empleado.apellido_paterno}</span>: `;
+                            }
+                        });
+                        comentarios += `${comentario.comentario}<br>`;
+                    }
+                });
+
+                data.cal_BONO.forEach(function(calificacion) {
+                  if (calificacion.objetivo_id == cl.id)
+                  {   
+                    data.empleados.forEach(function(empleado) {
+                  if (empleado.no_emp == calificacion.quienCalifica_id)
+                  {
+                  calificaciones += `<span style="color: #295caa;">${empleado.nombre} ${empleado.apellido_paterno}</span>: `;
+                  }
+                  });
+                  if (calificacion.calificacion == 0){
+                  calificaciones += `<span style="color: red;">No</span><br>`;
+                  }else{
+                    if (calificacion.quienCalifica_id == data.no_emp)
+                    {
+                        ssBONO += calificacion.calificacion;
+                    }
+                  calificaciones += `<span style="color: green;">Sí</span><br>`;
+                  }
+                  }
+                  });
+                comentariosHeader.innerHTML = comentarios;
+
+                commentsAndInputCell.appendChild(comentariosHeader);
+
+
+                cal.innerHTML = calificaciones;
+                calificacionesInput.appendChild(cal);
+
+                row.appendChild(commentsAndInputCell);
+                row.appendChild(calificacionesInput);
+
+                tableBONO.appendChild(row);
+            });
+           calificacionBONO.innerHTML = 'Autocalificacion: ' + ssBONO;
+            document.querySelector('.tablaEvaluacion4').style.display = 'table';
+        }
+        else {
+            document.querySelector('.tablaEvaluacion4').style.display = 'none';
+            descBONO.innerHTML = '';
+        }
+        
+        //Actualizar tabla de los resultados
+        var tableRESULTADOS = document.querySelector('.tablaEvaluacion5 tbody');
+        var descRESULTADOS = document.querySelector('.descRESULTADOS');
+        tableRESULTADOS.innerHTML = '';
+        if (data.RESULTADOS.length > 0) {
+            descRESULTADOS.innerHTML = 'Resultados';
+            // Recorre el arregloRESULTADOS y crea las filas de la tabla
+            data.RESULTADOS.forEach(function(cl) {
+                var row = document.createElement('tr');
+                row.innerHTML = `<td>${cl.objetivo}</td><td>${cl.metrica}</td><td>${cl.valor}</td>`;
+
+                var comentariosHeader = document.createElement('h6');
+                var commentsAndInputCell = document.createElement('td');
+                var comentarios = ''; // Variable para almacenar los comentarios
+
+                var cal = document.createElement('h6');
+                var calificacionesInput = document.createElement('td');
+                var calificaciones = '';
+
+                data.coment_RESULTADOS.forEach(function(comentario) {
+                    if (comentario.objetivo_id == cl.id)
+                    {   
+                        data.empleados.forEach(function(empleado) {
+                            if (empleado.no_emp == comentario.quienComenta_id)
+                            {
+                              comentarios += `<span style="color: #295caa;">${empleado.nombre} ${empleado.apellido_paterno}</span>: `;
+                            }
+                        });
+                        comentarios += `${comentario.comentario}<br>`;
+                    }
+                });
+
+                data.cal_RESULTADOS.forEach(function(calificacion) {
+                  if (calificacion.objetivo_id == cl.id)
+                  {   
+                    data.empleados.forEach(function(empleado) {
+                  if (empleado.no_emp == calificacion.quienCalifica_id)
+                  {
+                  calificaciones += `<span style="color: #295caa;">${empleado.nombre} ${empleado.apellido_paterno}</span>: `;
+                  }
+                  });
+                  if (calificacion.calificacion == 0){
+                  calificaciones += `<span style="color: red;">No</span><br>`;
+                  }else{
+                  calificaciones += `<span style="color: green;">Sí</span><br>`;
+                  }
+                  }
+                  }); 
+                comentariosHeader.innerHTML = comentarios;
+
+                commentsAndInputCell.appendChild(comentariosHeader);
+                cal.innerHTML = calificaciones;
+                calificacionesInput.appendChild(cal);
+
+                row.appendChild(commentsAndInputCell);
+                row.appendChild(calificacionesInput);
+
+                tableRESULTADOS.appendChild(row);
+            });
+            document.querySelector('.tablaEvaluacion5').style.display = 'table';
+        }
+        else {
+            document.querySelector('.tablaEvaluacion5').style.display = 'none';
+            descRESULTADOS.innerHTML = '';
+        }
+        //Actualizar logros
+        var logros = document.querySelector('.logros');
+        logros.innerHTML = '';
+        var logrosHTML = '';
+        if (data.logros != ""){
+          logrosHTML += `<span style="color: #295caa;">Autoevaluado: </span> ${data.logros}<br>`;
+        }
+        logros.innerHTML = logrosHTML;
+
+        var comentariosGenerales = document.querySelector('.comentariosGenerales');
+        comentariosGenerales.innerHTML = '';
+        var comentariosGeneralesHTML = '';
+        if (data.c_evaluador1){
+        if (data.c_evaluador1 != ""){
+          comentariosGeneralesHTML += `<span style="color: #295caa;"> Evaluador 1: </span> ${data.c_evaluador1}<br>`;
+        }
+        }
+        if (data.c_evaluador2 != ""){
+          comentariosGeneralesHTML += `<span style="color: #295caa;">Evaluador 2: </span> ${data.c_evaluador2}<br>`;
+        }
+        if (data.c_evaluador3 != ""){
+          comentariosGeneralesHTML += `<span style="color: #295caa;">Evaluador 3: </span> ${data.c_evaluador3}<br>`;
+        }
+        if (data.c_evaluador4 != ""){
+          comentariosGeneralesHTML += `<span style="color: #295caa;">Evaluador 4: </span> ${data.c_evaluador4}<br>`;
+        }
+        if (data.c_autoevaluado != ""){
+          comentariosGeneralesHTML += `<span style="color: #295caa;">Autoevaluado: </span> ${data.c_autoevaluado}<br>`;
+        }
+        if (data.c_calidad != ""){
+          comentariosGeneralesHTML += `<span style="color: #295caa;">Calidad: </span> ${data.c_calidad}<br>`;
+        }
+        if (data.c_capitalHumano != ""){
+          comentariosGeneralesHTML += `<span style="color: #295caa;">Capital humano: </span> ${data.c_capitalHumano}<br>`;
+        }
+        if (data.c_director != ""){
+          comentariosGeneralesHTML += `<span style="color: #295caa;">Director: </span> ${data.c_director}<br>`;
+        }
+        comentariosGenerales.innerHTML = comentariosGeneralesHTML;
+
+      }
+    });
+
+  }
+ {% endcomment %}
+
+ 
+
+
+  function actualizarTablasAntiguo(){
+    var id = $("#numEvaluacionAntiguo").val();
+    $.ajax({
+      url: '/obtener_reporte_empleados_antiguo/',
+      data: {
+        'evaluacion_id': id
+      },
+      dataType: 'json',
+      success: function(data) {
+
+        console.log ("trae datos")
+        var tEmpleado = document.querySelector('.tEmpleado tbody');
+        var row = document.createElement('tr');
+        row.innerHTML = `<td>${data.no_emp} </td><td>${data.nombre}</td><td>${data.puesto}</td><td>${data.periodo}</td><td>${data.calificacionAutoevaluado}</td><td>${data.etapa}</td>`;
+        tEmpleado.innerHTML = '';
+        tEmpleado.appendChild(row);
+
+        var tEvaluadores = document.querySelector('.tEvaluadores tbody');
+        tEvaluadores.innerHTML = '';
+        
+        if (data.e1_no_Emp != 1)
+        {
+            var row = document.createElement('tr');
+            if (data.e1_calificacion == -1){
+              row.innerHTML = `<td>${data.e1_no_Emp}</td><td>${data.e1_nombre}</td><td>${data.e1_puesto}</td><td>${0}</td>`;
+            }else{
+                row.innerHTML = `<td>${data.e1_no_Emp}</td><td>${data.e1_nombre}</td><td>${data.e1_puesto}</td><td>${data.e1_calificacion}</td>`;
+            }
+            tEvaluadores.appendChild(row);
+        }
+        if (data.e2_no_Emp != 1)
+        {
+            var row = document.createElement('tr');
+            if (data.e2_calificacion == -1){
+                row.innerHTML = `<td>${data.e2_no_Emp}</td><td>${data.e2_nombre}</td><td>${data.e2_puesto}</td><td>${0}</td>`;
+            }else{
+            row.innerHTML = `<td>${data.e2_no_Emp}</td><td>${data.e2_nombre}</td><td>${data.e2_puesto}</td><td>${data.e2_calificacion}</td>`;
+            }
+            tEvaluadores.appendChild(row);
+        }
+        if (data.e3_no_Emp != 1)
+        {
+            var row = document.createElement('tr');
+            if (data.e3_calificacion == -1){
+                row.innerHTML = `<td>${data.e3_no_Emp}</td><td>${data.e3_nombre}</td><td>${data.e3_puesto}</td><td>${0}</td>`;
+            }else{
+            row.innerHTML = `<td>${data.e3_no_Emp}</td><td>${data.e3_nombre}</td><td>${data.e3_puesto}</td><td>${data.e3_calificacion}</td>`;
+            }
+            tEvaluadores.appendChild(row);
+        }
+        if (data.e4_no_Emp != 1)
+        {
+            var row = document.createElement('tr');
+            if (data.e4_calificacion == -1){
+                row.innerHTML = `<td>${data.e4_no_Emp}</td><td>${data.e4_nombre}</td><td>${data.e4_puesto}</td><td>${0}</td>`;
+            }else{
+            row.innerHTML = `<td>${data.e4_no_Emp}</td><td>${data.e4_nombre}</td><td>${data.e4_puesto}</td><td>${data.e4_calificacion}</td>`;
+            }
+            tEvaluadores.appendChild(row);
+        }
+        // Actualiza el contenido de las tablas con los datos recibidos
+
+
+
+        //Actualizar tabla de los OKRs
+        //Actualizar tabla de los OKRs
+        var tableOKR = document.querySelector('.tablaEvaluacion1 tbody');
+        var descOKR = document.querySelector('.descOKR');
+        var valorOKR = document.querySelector('.valorOKR');
+        var calificacionOKR = document.querySelector('.calificacionOKR');
+        tableOKR.innerHTML = '';
+        if (data.OKR.length > 0) {
+            // Recorre el arregloOKRs y crea las filas de la tabla
+            var sOKR=0.0;
+            var ssOKR=0.0;
+            data.OKR.forEach(function(cl) {
+                console.log ("si entra si trae datos")
+                var row = document.createElement('tr');
+                row.innerHTML = `<td>${cl.objetivo}</td><td>${cl.metrica1}</td><td>${cl.valor}</td>`;
+                var inputCell = document.createElement('td');
+                 
+                var comentariosHeader = document.createElement('h6');
+                var commentsAndInputCell = document.createElement('td');
+                var comentarios = ''; // Variable para almacenar los comentarios
+
+                var cal = document.createElement('h6');
+                var calificacionesInput = document.createElement('td');
+                var calificaciones = '';
+
+                data.coment_OKR.forEach(function(comentario) {
+                    if (comentario.id_obj == cl.id_obj)
+                    {
+                        if (comentario.comentarios_emp != ""){
+                            comentarios += `<span style="color: #295caa;"> Evaluado : </span>${comentario.comentarios_emp}<br>`;
+                        }
+                        if (comentario.comentarios_jefe != ""){
+                            comentarios += `<span style="color: #295caa;"> Jefe :</span> ${comentario.comentarios_jefe}<br>`;
+                        }
+                    }
+                });
+
+                data.coment_OKR.forEach(function(calificacion) {
+                    if (calificacion.id_obj == cl.id_obj)
+                    {   
+                        
+                        if (calificacion.evalua_auto != ""){
+                            calificaciones += `<span style="color: #295caa;"> Empleado: </span>: `;
+                            if (calificacion.evalua_auto == 'No'){
+                                calificaciones += `<span style="color: red;">No</span><br>`;
+                            }else{
+                                calificaciones += `<span style="color: green;">Sí</span><br>`;
+                            }
+                            ssOKR += calificacion.valorcalif_auto;
+                        }
+
+                        if (calificacion.evalua_jefe != ""){
+                            calificaciones += `<span style="color: #295caa;"> Evaluador1: </span>: `;
+                            if (calificacion.evalua_jefe == 'No'){
+                                calificaciones += `<span style="color: red;">No</span><br>`;
+                            }else{
+                                calificaciones += `<span style="color: green;">Sí</span><br>`;
+                            }
+                        }
+
+                        if (calificacion.evalua_jefe_jefe != ""){
+                            calificaciones += `<span style="color: #295caa;"> Evluador2: </span>: `;
+                            if (calificacion.evalua_jefe_jefe == 'No'){
+                                calificaciones += `<span style="color: red;">No</span><br>`;
+                            }else{
+                                calificaciones += `<span style="color: green;">Sí</span><br>`;
+                            }
+                        }
+
+                    }
+                }); 
+                comentariosHeader.innerHTML = comentarios;
+                commentsAndInputCell.appendChild(comentariosHeader);
+                cal.innerHTML = calificaciones;
+                calificacionesInput.appendChild(cal);
+
+
+                row.appendChild(commentsAndInputCell);
+                row.appendChild(calificacionesInput);
+
+                tableOKR.appendChild(row);
+                sOKR = sOKR + cl.valor;
+            });
+            descOKR.innerHTML = 'OKRs';
+
+            valorOKR.innerHTML = 'Valor: ' + sOKR + '%';
+
+            calificacionOKR.innerHTML = 'Autocalificacion: ' + ssOKR ;
+            document.querySelector('.tablaEvaluacion1').style.display = 'table';
+        } else {
+            document.querySelector('.tablaEvaluacion1').style.display = 'none';
+            descOKR.innerHTML = '';
+        }
+        
+
+        //Actualizar tabla de los KPIs
+
+        var tableKPI = document.querySelector('.tablaEvaluacion2 tbody');
+        var descKPI = document.querySelector('.descKPI');
+        var valorKPI = document.querySelector('.valorKPI');
+        var calificacionKPI = document.querySelector('.calificacionKPI');
+        tableKPI.innerHTML = '';
+        if (data.KPI.length > 0) {
+            // Recorre el arregloKPIs y crea las filas de la tabla
+            var sKPI=0.0;
+            var ssKPI=0.0;
+            data.KPI.forEach(function(cl) {
+                var row = document.createElement('tr');
+                row.innerHTML = `<td>${cl.objetivo}</td><td>${cl.metrica1}</td><td>${cl.valor}</td>`;
+                var inputCell = document.createElement('td');
+                 
+                var comentariosHeader = document.createElement('h6');
+                var commentsAndInputCell = document.createElement('td');
+                var comentarios = ''; // Variable para almacenar los comentarios
+
+                var cal = document.createElement('h6');
+                var calificacionesInput = document.createElement('td');
+                var calificaciones = '';
+
+                data.coment_KPI.forEach(function(comentario) {
+                    if (comentario.id_obj == cl.id_obj)
+                    {
+                        if (comentario.comentarios_emp != ""){
+                            comentarios += `<span style="color: #295caa;"> Evaluado : </span>${comentario.comentarios_emp}<br>`;
+                        }
+                        if (comentario.comentarios_jefe != ""){
+                            comentarios += `<span style="color: #295caa;"> Jefe :</span> ${comentario.comentarios_jefe}<br>`;
+                        }
+                    }
+                });
+
+                data.coment_KPI.forEach(function(calificacion) {
+                    if (calificacion.id_obj == cl.id_obj)
+                    {   
+                        
+                        if (calificacion.evalua_auto != ""){
+                            calificaciones += `<span style="color: #295caa;"> Empleado: </span>: `;
+                            if (calificacion.evalua_auto == 'No'){
+                                calificaciones += `<span style="color: red;">No</span><br>`;
+                            }else{
+                                calificaciones += `<span style="color: green;">Sí</span><br>`;
+                            }
+                            ssKPI += calificacion.valorcalif_auto;
+                        }
+
+                        if (calificacion.evalua_jefe != ""){
+                            calificaciones += `<span style="color: #295caa;"> Evaluador1: </span>: `;
+                            if (calificacion.evalua_jefe == 'No'){
+                                calificaciones += `<span style="color: red;">No</span><br>`;
+                            }else{
+                                calificaciones += `<span style="color: green;">Sí</span><br>`;
+                            }
+                        }
+
+                        if (calificacion.evalua_jefe_jefe != ""){
+                            calificaciones += `<span style="color: #295caa;"> Evluador2: </span>: `;
+                            if (calificacion.evalua_jefe_jefe == 'No'){
+                                calificaciones += `<span style="color: red;">No</span><br>`;
+                            }else{
+                                calificaciones += `<span style="color: green;">Sí</span><br>`;
+                            }
+                        }
+
+                    }
+                }); 
+                comentariosHeader.innerHTML = comentarios;
+                commentsAndInputCell.appendChild(comentariosHeader);
+                cal.innerHTML = calificaciones;
+                calificacionesInput.appendChild(cal);
+
+
+                row.appendChild(commentsAndInputCell);
+                row.appendChild(calificacionesInput);
+
+                tableKPI.appendChild(row);
+                sKPI = sKPI + cl.valor;
+            });
+            descKPI.innerHTML = 'KPIs';
+
+            valorKPI.innerHTML = 'Valor: ' + sKPI + '%';
+
+            calificacionKPI.innerHTML = 'Autocalificacion: ' + ssKPI ;
+            document.querySelector('.tablaEvaluacion2').style.display = 'table';
+        } else {
+            document.querySelector('.tablaEvaluacion2').style.display = 'none';7
+            descKPI.innerHTML = '';
+        }
+
+
+        //Actualizar tabla de la cultura laboral
+        
+        var tableCL = document.querySelector('.tablaEvaluacion3 tbody');
+        var descCL = document.querySelector('.descCL');
+        var valorCL = document.querySelector('.valorCL');
+        var calificacionCL = document.querySelector('.calificacionCL');
+        tableCL.innerHTML = '';
+        if (data.CL.length > 0) {
+            // Recorre el arregloCLs y crea las filas de la tabla
+            var sCL=0.0;
+            var ssCL=0.0;
+            data.CL.forEach(function(cl) {
+                var row = document.createElement('tr');
+                row.innerHTML = `<td>${cl.objetivo}</td><td>${cl.metrica1}</td><td>${cl.valor}</td>`;
+                var inputCell = document.createElement('td');
+                 
+                var comentariosHeader = document.createElement('h6');
+                var commentsAndInputCell = document.createElement('td');
+                var comentarios = ''; // Variable para almacenar los comentarios
+
+                var cal = document.createElement('h6');
+                var calificacionesInput = document.createElement('td');
+                var calificaciones = '';
+
+                data.coment_CL.forEach(function(comentario) {
+                    if (comentario.id_obj == cl.id_obj)
+                    {
+                        if (comentario.comentarios_emp != ""){
+                            comentarios += `<span style="color: #295caa;"> Evaluado : </span>${comentario.comentarios_emp}<br>`;
+                        }
+                        if (comentario.comentarios_jefe != ""){
+                            comentarios += `<span style="color: #295caa;"> Jefe :</span> ${comentario.comentarios_jefe}<br>`;
+                        }
+                    }
+                });
+
+                data.coment_CL.forEach(function(calificacion) {
+                    if (calificacion.id_obj == cl.id_obj)
+                    {   
+                        
+                        if (calificacion.evalua_auto != ""){
+                            calificaciones += `<span style="color: #295caa;"> Empleado: </span>: `;
+                            if (calificacion.evalua_auto == 'No'){
+                                calificaciones += `<span style="color: red;">No</span><br>`;
+                            }else{
+                                calificaciones += `<span style="color: green;">Sí</span><br>`;
+                            }
+                            ssCL += calificacion.valorcalif_auto;
+                        }
+
+                        if (calificacion.evalua_jefe != ""){
+                            calificaciones += `<span style="color: #295caa;"> Evaluador1: </span>: `;
+                            if (calificacion.evalua_jefe == 'No'){
+                                calificaciones += `<span style="color: red;">No</span><br>`;
+                            }else{
+                                calificaciones += `<span style="color: green;">Sí</span><br>`;
+                            }
+                        }
+
+                        if (calificacion.evalua_jefe_jefe != ""){
+                            calificaciones += `<span style="color: #295caa;"> Evluador2: </span>: `;
+                            if (calificacion.evalua_jefe_jefe == 'No'){
+                                calificaciones += `<span style="color: red;">No</span><br>`;
+                            }else{
+                                calificaciones += `<span style="color: green;">Sí</span><br>`;
+                            }
+                        }
+
+                    }
+                }); 
+                comentariosHeader.innerHTML = comentarios;
+                commentsAndInputCell.appendChild(comentariosHeader);
+                cal.innerHTML = calificaciones;
+                calificacionesInput.appendChild(cal);
+
+
+                row.appendChild(commentsAndInputCell);
+                row.appendChild(calificacionesInput);
+
+                tableCL.appendChild(row);
+                sCL = sCL + cl.valor;
+            });
+            descCL.innerHTML = 'CLs';
+
+            valorCL.innerHTML = 'Valor: ' + sCL + '%';
+
+            calificacionCL.innerHTML = 'Autocalificacion: ' + ssCL ;
+            document.querySelector('.tablaEvaluacion3').style.display = 'table';
+        } else {
+            document.querySelector('.tablaEvaluacion3').style.display = 'none';7
+            descCL.innerHTML = '';
+        }
+        
+        //Actualizar tabla del bono extra
+        var tableBONO = document.querySelector('.tablaEvaluacion4 tbody');
+        var descBONO = document.querySelector('.descBONO');
+        var valorBONO = document.querySelector('.valorBONO');
+        var calificacionBONO = document.querySelector('.calificacionBONO');
+        tableBONO.innerHTML = '';
+        if (data.BONO.length > 0) {
+            // Recorre el arregloBONOs y crea las filas de la tabla
+            var sBONO=0.0;
+            var ssBONO=0.0;
+            data.BONO.forEach(function(cl) {
+                var row = document.createElement('tr');
+                row.innerHTML = `<td>${cl.objetivo}</td><td>${cl.metrica1}</td><td>${cl.valor}</td>`;
+                var inputCell = document.createElement('td');
+                 
+                var comentariosHeader = document.createElement('h6');
+                var commentsAndInputCell = document.createElement('td');
+                var comentarios = ''; // Variable para almacenar los comentarios
+
+                var cal = document.createElement('h6');
+                var calificacionesInput = document.createElement('td');
+                var calificaciones = '';
+
+                data.coment_BONO.forEach(function(comentario) {
+                    if (comentario.id_obj == cl.id_obj)
+                    {
+                        if (comentario.comentarios_emp != ""){
+                            comentarios += `<span style="color: #295caa;"> Evaluado : </span>${comentario.comentarios_emp}<br>`;
+                        }
+                        if (comentario.comentarios_jefe != ""){
+                            comentarios += `<span style="color: #295caa;"> Jefe :</span> ${comentario.comentarios_jefe}<br>`;
+                        }
+                    }
+                });
+
+                data.coment_BONO.forEach(function(calificacion) {
+                    if (calificacion.id_obj == cl.id_obj)
+                    {   
+                        
+                        if (calificacion.evalua_auto != ""){
+                            calificaciones += `<span style="color: #295caa;"> Empleado: </span>: `;
+                            if (calificacion.evalua_auto == 'No'){
+                                calificaciones += `<span style="color: red;">No</span><br>`;
+                            }else{
+                                calificaciones += `<span style="color: green;">Sí</span><br>`;
+                            }
+                            ssBONO += calificacion.valorcalif_auto;
+                        }
+
+                        if (calificacion.evalua_jefe != ""){
+                            calificaciones += `<span style="color: #295caa;"> Evaluador1: </span>: `;
+                            if (calificacion.evalua_jefe == 'No'){
+                                calificaciones += `<span style="color: red;">No</span><br>`;
+                            }else{
+                                calificaciones += `<span style="color: green;">Sí</span><br>`;
+                            }
+                        }
+
+                        if (calificacion.evalua_jefe_jefe != ""){
+                            calificaciones += `<span style="color: #295caa;"> Evluador2: </span>: `;
+                            if (calificacion.evalua_jefe_jefe == 'No'){
+                                calificaciones += `<span style="color: red;">No</span><br>`;
+                            }else{
+                                calificaciones += `<span style="color: green;">Sí</span><br>`;
+                            }
+                        }
+
+                    }
+                }); 
+                comentariosHeader.innerHTML = comentarios;
+                commentsAndInputCell.appendChild(comentariosHeader);
+                cal.innerHTML = calificaciones;
+                calificacionesInput.appendChild(cal);
+
+
+                row.appendChild(commentsAndInputCell);
+                row.appendChild(calificacionesInput);
+
+                tableBONO.appendChild(row);
+                sBONO = sBONO + cl.valor;
+            });
+            descBONO.innerHTML = 'BONO';
+
+            valorBONO.innerHTML = 'Valor: ' + sBONO + '%';
+
+            calificacionBONO.innerHTML = 'Autocalificacion: ' + ssBONO ;
+            document.querySelector('.tablaEvaluacion4').style.display = 'table';
+        } else {
+            document.querySelector('.tablaEvaluacion4').style.display = 'none';7
+            descBONO.innerHTML = '';
+        }
+
+        
+        
+        //Actualizar tabla de los Resultados
+
+        //Actualizar logros
+        var logros = document.querySelector('.logros');
+        logros.innerHTML = '';
+        var logrosHTML = '';
+        if (data.logros != ""){
+          logrosHTML += `<span style="color: #295caa;">Autoevaluado: </span> ${data.logros}<br>`;
+        }
+        logros.innerHTML = logrosHTML;
+
+        var comentariosGenerales = document.querySelector('.comentariosGenerales');
+        comentariosGenerales.innerHTML = '';
+        var comentariosGeneralesHTML = '';
+        if (data.c_evaluador1){
+        if (data.c_evaluador1 != ""){
+          comentariosGeneralesHTML += `<span style="color: #295caa;"> Evaluador 1: </span> ${data.c_evaluador1}<br>`;
+        }
+    }
+        if (data.c_evaluador2 != ""){
+          comentariosGeneralesHTML += `<span style="color: #295caa;">Evaluador 2: </span> ${data.c_evaluador2}<br>`;
+        }
+        if (data.c_evaluador3 != ""){
+          comentariosGeneralesHTML += `<span style="color: #295caa;">Evaluador 3: </span> ${data.c_evaluador3}<br>`;
+        }
+        if (data.c_evaluador4 != ""){
+          comentariosGeneralesHTML += `<span style="color: #295caa;">Evaluador 4: </span> ${data.c_evaluador4}<br>`;
+        }
+        if (data.c_autoevaluado != ""){
+          comentariosGeneralesHTML += `<span style="color: #295caa;">Autoevaluado: </span> ${data.c_autoevaluado}<br>`;
+        }
+        if (data.c_calidad != ""){
+          comentariosGeneralesHTML += `<span style="color: #295caa;">Calidad: </span> ${data.c_calidad}<br>`;
+        }
+        if (data.c_capitalHumano != ""){
+          comentariosGeneralesHTML += `<span style="color: #295caa;">Capital humano: </span> ${data.c_capitalHumano}<br>`;
+        }
+        if (data.c_director != ""){
+          comentariosGeneralesHTML += `<span style="color: #295caa;">Director: </span> ${data.c_director}<br>`;
+        }
+        comentariosGenerales.innerHTML = comentariosGeneralesHTML;
+
+      }
+        
+    });
+  }
+
+  function solicitarReporteAntiguo()
+  {
+    var id = $("#numEvaluacionAntiguo").val();
+    var id = $("#numEvaluacionAntiguo").val();
+    window.location.href = '/obtenerEvaluacionAntigua/' + id + '/';
+  }
+
+  function solicitarReporteNuevo() {
+    var id = parseInt($("#numEvaluacion").val(), 10);
+    
+
+    var tipo = 0;
+    var  evaluacion = id
+    if (id >= 20) {
+        tipo=2;
+    } else {
+        tipo=1;
+    }
+
+    $.ajax({
+          type: 'GET',
+          url: '/validarEvaluacion/' + id + '/' + tipo + '/' ,// La URL de tu vista Django
+          data: {
+              'evaluacion_id': evaluacion
+          },
+          success: function(response) {
+            console.log("respuesta: ", response.bandera);
+              if (response.bandera === 1) {
+                console.log("si trae datos");
+                 if (id >= 20) {
+                valor= response.evs;
+
+                window.location.href = '/obtenerEvaluacionAreas/' + id + '/';
+                } else {
+                window.location.href = '/obtenerEvaluacionOKR/' + id + '/';
+                }
+              } else {
+                  showModalError("No tuviste evaluación registarda en esa fecha");
+              } 
+          }
+      });
+
+  }
+
+  // Obtener el modal de errores
+  var modal = document.getElementById("modalError");
+
+  // Obtener el botón que cierra el modal
+  var spanError = document.getElementsByClassName("closeError")[0];
+
+  // Función para mostrar el modal con un mensaje específico
+  function showModalError(message) {
+  document.getElementById("modal-messageError").innerText = message;
+  modal.style.display = "block";
+  }
+
+  spanError.onclick = function() {
+  modal.style.display = "none";
+  }
+
+  window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+    }
+
+  
+
+
+
+</script>
+  </body>
+</html>
+{% endblock %}

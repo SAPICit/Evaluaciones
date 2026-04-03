@@ -1,0 +1,165 @@
+{% load static %}
+<body>
+  <div id="lateral" class="lateral" style="overflow-y:auto;">
+
+
+    <ul>
+      <li class="opcionImg">
+        <img src={% static 'img/usuario.png' %} alt="Imagen" width="35px" height="35px">
+        {% if request.user.is_authenticated %}
+          <a href="{% url 'informacion' %}">{{ user.first_name }} {{user.last_name}}</a>
+        {% else %}
+          <a href="">No usuario</a>
+        {% endif %}
+      </li>
+      <br />
+
+      <div class="separacion"></div>
+        <li class="opcionImg">
+            <img src={% static 'img/tareas.png' %} alt="Imagen" width="35px" height="35px">
+            <a href="{% url 'dashboard' %}">Panel</a>
+        </li>
+      <li class="opcion">
+        
+      </li>
+      {% comment %} <li class="opcion autoevaluacio">
+        <a href="{% url 'autoevaluacion' %}">Autoevaluación</a>
+      </li> {% endcomment %}
+      <li class="opcion misEvaluaciones">
+        <a href="{% url 'reportesEmpleado' %}"> Reportes</a>
+      </li>
+      {% comment %} {% if %} {% endcomment %}
+      <li class="opcion porEvaluar" style= "display: none;">
+        <a href="{% url 'porEvaluar' %}">Calificar</a>
+      </li>
+      {% comment %} {% endif %} {% endcomment %}
+      <li class="opcion apartadoComentarios" style= "display: none;">
+        {% comment %} <a href="{% url 'comentariosInicio' %}">Comentarios</a> {% endcomment %}
+      </li>
+
+      <br />
+
+      <div class="separacion capitalHumano" style= "display: none;"></div>
+      <li class="opcionImg apartadoEmp" style= "display: none;">
+        <img src={% static 'img/usuarios.png' %} alt="Imagen" width="35px" height="35px">
+        <a href="{% url 'listaEmpleados' %}">Empleados</a>
+      </li>
+      <li class="opcion">
+        
+      </li>
+      <li class="opcion apartadoEvaluaciones1" style= "display: none;">
+        <a href="{% url 'evaluaciones' %}" >Evaluaciones</a>
+        <div class ="apartadoEvaluaciones">
+          <ul class="submenu" id="submenuEvaluaciones">
+          {% comment %} <li class="crearEvaluacion"><a href="{% url 'crearEvaluacion2' %}">Crear evaluación</a></li>
+          <li class="editarEvaluacion"><a href="{% url 'editarEvaluacion' %}">Editar evaluacion</a></li>
+          <li class="crearRuta"><a href="{% url 'rutaEvaluacion' %}">Crear ruta</a></li>
+          <li class="asignarEvaluacion"><a href="{% url 'asignarEvaluacion' %}">Asignar evaluacion</a></li> {% endcomment %}
+        </ul>
+        </div>
+      </li>
+      <li class="opcion informes" style= "display: none;">
+        <a href="{% url 'reportesGenerales' %}">Informes</a>
+      </li>
+      <li class="opcion calendario" style= "display: none;">
+        <a href="{% url 'calendario' %}">Calendario</a>
+      </li>
+      <br />
+
+      <div class="separacion capitalHumano2" style= "display: none;"></div>
+      <br />
+      <li class="cerrarSesion">
+        {% if request.user.is_authenticated %}
+        <a href="{% url 'salir' %}">Cerrar sesión</a>
+        <img src={% static 'img/salida.png' %} alt="Imagen" width="35px" height="35px">
+        {% else %}
+          <a href="{% url 'login' %}">Iniciar sesión</a>
+        {% endif %}
+      </li>
+    </ul>
+  </div>
+  <div id="panel" class="panel">
+    <div class="interiorG">
+      {% comment %}
+      <button id="toggleMenuBtn">Mostrar/Ocultar Menú</button>
+       <div class="apartado okrOpc"> 
+        <h1>OKR </h1>
+        
+        <select id="checkOKR" name="checkOKR" style= "color:green">
+            {% for valor in valores %}
+                {% if valor == 20%}
+                    <option value="{{ valor }}" selected>{{ valor }}% </option>
+                {% else %}
+                    <option value="{{ valor }}">{{ valor }}% </option>
+                {% endif %}
+            {% endfor %}
+        </select>
+        <h1 class="sumasOKR" id="sumasOKR"> </h1>
+        <a href="#"> {% endcomment %}
+            <img src="{% static 'img/menu4.png' %}" alt="Empleados" width="30px" height="30px"  id="toggleMenuBtn">
+        {% comment %} </a>
+    </div> {% endcomment %}
+      
+
+
+  <script>
+    traerDatos();
+    function traerDatos(){
+    $.ajax({
+      url: "{% url 'traerDatosEmpleado' %}",
+      data: {
+        'no_emp': {{user.no_emp}},
+      },  
+      type: 'GET',
+      success: function(data) {
+        var calendario = document.getElementsByClassName('calendario');
+        var evaluaciones = document.getElementsByClassName('apartadoEvaluaciones');
+        var evaluaciones1 = document.getElementsByClassName('apartadoEvaluaciones1');
+        var informes = document.getElementsByClassName('informes');
+        var empleados = document.getElementsByClassName('apartadoEmp');
+        var capitalHumano = document.getElementsByClassName('capitalHumano');
+        var porEvaluar = document.getElementsByClassName('porEvaluar');
+        var comentarios = document.getElementsByClassName('apartadoComentarios');
+        var capitalHumano2 = document.getElementsByClassName('capitalHumano2');
+
+        {% comment %} if (data.empleado.rango != 1) {
+          calendario[0].style.display = 'none';
+        } {% endcomment %}
+
+        if (data.empleado.departamento == 11 || data.empleado.no_emp == 101 || data.empleado.departamento == 39) {
+          evaluaciones1[0].style.display = 'block';
+          comentarios[0].style.display = 'block';
+        }
+
+        if(data.empleado.departamento == 11 || data.empleado.departamento == 39)
+        {
+          empleados[0].style.display = 'block';
+          calendario[0].style.display = 'block';
+          evaluaciones[0].style.display = 'block';
+        }
+
+        if (data.empleado.rango == 1 || data.empleado.rango == 2 || data.empleado.rango == 3 || data.empleado.rango == 5 || data.empleado.rango == 6) {
+          capitalHumano2[0].style.display = 'block';
+          capitalHumano[0].style.display = 'block';
+          porEvaluar[0].style.display = 'block';
+          comentarios[0].style.display = 'block';
+          informes[0].style.display = 'block';
+        }
+        
+
+      }
+    });
+  }
+  document.addEventListener('DOMContentLoaded', function () {
+    const toggleMenuBtn = document.getElementById('toggleMenuBtn');
+    const lateralMenu = document.getElementById('lateral');
+    const panel = document.getElementById('panel');
+
+    toggleMenuBtn.addEventListener('click', function () {
+      console.log('click');
+      lateralMenu.classList.toggle('mostrar-menu');
+      panel.classList.toggle('ajustar-panel'); // Ajusta el panel
+    });
+  });
+  </script>
+

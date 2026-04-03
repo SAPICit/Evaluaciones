@@ -1,0 +1,135 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <title>Login</title>
+    <style>
+        body {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f0f0;
+        }
+
+        html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    
+        .contenedor {
+            background-color: rgba(18, 40, 76, 0.9); /* Color de fondo con transparencia */
+            color: white;
+            width: 80%;
+            padding: 20px;
+            border-radius: 8px; 
+            height: 70%; 
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* Distribuye los elementos dentro del contenedor */
+        }
+    
+        td {
+            color: white; 
+        }
+    
+        .formulario {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 10px;
+            background-color: #cccccc;
+            padding: 15px;
+        }
+    
+        .formulario form {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+    
+        .formulario label,
+        .formulario input {
+            margin-bottom: 5px;
+        }
+    
+        .btn-enviar {
+            margin-left: auto;
+        }
+
+        /* Aplicar el desenfoque a la imagen de fondo */
+        body::before {
+            content: "";
+            background-image: url("{% static 'img/imgPrueba.jpg' %}");
+            background-size: cover;
+            background-position: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -1;
+             filter: blur(2px);
+        }
+
+        .btn-enviar {
+            background-color: #12284c; 
+            color: white;
+            border-color: #12284c;
+            align-items : center;
+        }
+
+        label {
+            color: #000;
+        }
+
+
+    </style>
+    
+
+</head>
+
+
+<body>
+    <div class="contenedor">
+            <h1>Evaluación de desempeño</h1>
+            <div class="formulario">
+                <form method="post" action="{% url 'login' %}">
+                    {% csrf_token %}
+                    <label class="form-label" for="id_username">Correo</label>
+                    <input type="text" name="username" class="form-control" id="id_username" required>
+            
+                    <label class="form-label mt-2" for="id_password">Contraseña</label>
+                    <input type="password" name="password" class="form-control" id="id_password" required>
+
+                    <div class="form-check">
+                    <input type="checkbox" id="verContraseña" onclick="mostrarContrasena()"> 
+                    <label class="form-label mt-2" for="verContraseña">Mostrar contraseña</label>
+                    </div>
+                <br/>
+                <button type="submit" value="login" class="btn btn-primary btn-enviar">Ingresar</button>
+        <input type="hidden" name="next" value="{{ next }}">
+    </form>
+</div>
+        
+    <div>
+
+    <script>
+        function mostrarContrasena() {
+            var tipo = document.getElementById("id_password");
+            if (tipo.type == "password") {
+                tipo.type = "text";
+            } else {
+                tipo.type = "password";
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+{% extends "plantilla/master.html" %}
+{% load static %}
+
+
+{% block contenido %}
+
+
+
+    {% comment %} <div id="panel" class="panel">
+      <div class="interiorG"> {% endcomment %}
+        <div id="titulo" class="titulo">
+          <h1>Calificar</h1>
+        </div>
+        
+        <div class="eva">
+          {% if evaSegui %}
+          <p>Si hay empleados por calificar</p>
+          <form id="formularioPersonaEvaluar" action="{% url 'personaEvaluar' %}" method="post">
+          {% csrf_token %}
+          <label for="numeroEvaluacion">Calificar a...</label>
+          <select required class="form-control" id="numeroEvaluacion" name="numeroEvaluacion">
+          {%for evS in evaSegui%}
+            <option value="{{ evS.id }}" selected>
+            {% if evS.estado.id == 5 %}
+                {{ evS.empleado.nombre }} {{ evS.empleado.apellido_paterno }} - AVANCE GUARDADO
+            {% else %}
+                {{ evS.empleado.nombre }} {{ evS.empleado.apellido_paterno }} 
+            {% endif %}
+            </option>
+          {%endfor%}
+          </select><br/>
+          <button onclick="" class="btn btn-enviar nota" >Calificar</button>
+          </form>
+          <br/>
+          {%else%}
+          {% if error == 0%}
+          <p>Dentro de fechas pero sin empleado por calificar</p>
+          {%else%}
+          {% if error == 1%}
+          <p>Fuera de fechas, regresa en la fecha indicada por capital humano</p>
+          {%else%}
+          {% if error == 3 %}
+          <p>No cuentas con empleados para calificarseeeee</p>
+          {% else %}
+          {% if  error == 4%}
+          <p>No cuentas con empleados para calificarse</p>
+          {% endif %}
+          {%endif%}
+          {%endif%}
+          {%endif%}
+          {%endif%}
+        </div>
+        
+      </div>
+    </div>
+
+    <Script>
+      function calificarEmpleado(){
+        var id = document.getElementById("numeroEvaluacion").value;
+        window.location.href = "/personaEvaluar/"+id;
+      }
+    </Script>
+  </body>
+</html>
+{% endblock %}

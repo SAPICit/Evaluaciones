@@ -1,0 +1,331 @@
+{% extends "plantilla/master.html" %}
+{% load static %}
+
+
+{% block contenido %}
+
+
+
+    {% comment %} <div id="panel" class="panel">
+      <div class="interiorG"> {% endcomment %}
+        <div id="titulo" class="titulo">
+          <h1>Evaluacion</h1>
+        </div>
+        
+        <div class="eva">
+
+            <table class="table table-bordered table-responsive" style="text-align:center">
+                <thead>
+                    <tr>
+                        <th>No.emp </th>
+                        <th>Evaluado</th>
+                        <th>Puesto</th>
+                        <th>Periodo evaluado</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr >
+                        <td>{{empleado.no_emp}}</td>
+                        <td>{{empleado.nombre}} {{empleado.apellido_paterno}} {{empleado.apellido_materno}}</td>
+                        <td>{{empleado.puesto}} - {{empleado.departamento}}</td>
+                        {% if evaluacion.fecha.mes == 1%}
+                        <td>diciembre/{{evaluacion.fecha.anio|add:"-1"}}</td>
+                        {% else %}
+                        {%if evaluacion.fecha.mes == 2%}
+                        <td>enero/{{evaluacion.fecha.anio}}</td>
+                        {% else %}
+                        {%if evaluacion.fecha.mes == 3%}
+                        <td>febrero/{{evaluacion.fecha.anio}}</td>
+                        {% else %}
+                        {%if evaluacion.fecha.mes == 4%}
+                        <td>marzo/{{evaluacion.fecha.anio}}</td>
+                        {% else %}
+                        {%if evaluacion.fecha.mes == 5%}
+                        <td>abril/{{evaluacion.fecha.anio}}</td>
+                        {% else %}
+                        {%if evaluacion.fecha.mes == 6%}
+                        <td>mayo/{{evaluacion.fecha.anio}}</td>
+                        {% else %}
+                        {%if evaluacion.fecha.mes == 7%}
+                        <td>junio/{{evaluacion.fecha.anio}}</td>
+                        {% else %}
+                        {%if evaluacion.fecha.mes == 8%}
+                        <td>julio/{{evaluacion.fecha.anio}}</td>
+                        {% else %}
+                        {%if evaluacion.fecha.mes == 9%}
+                        <td>agosto/{{evaluacion.fecha.anio}}</td>
+                        {% else %}
+                        {%if evaluacion.fecha.mes == 10%}
+                        <td>septiembre/{{evaluacion.fecha.anio}}</td>
+                        {% else %}
+                        {%if evaluacion.fecha.mes == 11%}
+                        <td>octubre/{{evaluacion.fecha.anio}}</td>
+                        {% else %}
+                        {%if evaluacion.fecha.mes == 12%}
+                        <td>noviembre/{{evaluacion.fecha.anio}}</td>
+                        {%else %}
+                        <td>{{evaluacion.fecha.mes}}/{{evaluacion.fecha.anio}}</td>
+                        {%endif%}
+                        {%endif%}
+                        {%endif%}
+                        {%endif%}
+                        {%endif%}
+                        {%endif%}
+                        {%endif%}
+                        {%endif%}
+                        {%endif%}
+                        {%endif%}
+                        {%endif%}
+                        {%endif%}
+                        <td>{{evaluacion.estado.nombre}}</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <table class="table table-bordered table-responsive" style="text-align:center">
+                <input type="hidden" id="empleadoLog" value="{{empleadoLogueado.no_emp}}">
+                <thead>
+                    <tr>
+                        <th>No. emp</th>
+                        <th>Evaluador</th>
+                        <th>Puesto</th>
+                        <th>Calificación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{seguimiento.evaluador.no_emp}}</td>
+                        <td>{{seguimiento.evaluador.nombre}} {{seguimiento.evaluador.apellido_paterno}} {{seguimiento.evaluador.apellido_materno}}</td>
+                        <td>{{seguimiento.evaluador.puesto}} - {{seguimiento.evaluador.departamento}}</td>
+                        <td>{{resultados.calificacion_evaluador}}</td>
+                    </tr>
+                    
+                </tbody>
+            </table>
+
+          <div class="evaluacion table-responsive" id="evaluacion">
+            {% comment %} Para ver que numero de evaluacion tiene {{evaluacion.0.id}} {% endcomment %}
+            <input type="hidden" id="numeroEvaluacion" value="{{evaluacion.id}}">
+            {% comment %} <h1 class="descOKR "> OKRs - {{sumOKR}}%</h1> {% endcomment %}
+            <h1 class="descOKR "> Áreas de efectividad</h1>
+            <h1 id="resultadoOKR"></h1>
+            <table id="tablaEvaluacion1" class="tablaEvaluacion1 table table-striped table-responsive table-bordered">
+                <thead>
+                    <tr style= "background-color: #00953a;">
+                        <th colspan="2">Áreas de efectividad </th>
+                        <th colspan="2" class="valorOKR">Valor: {{sumAreas}}</th>
+                        <th colspan="2" class="calificacionOKR">Calificación: {{suma_cal_Areas}}</th>
+                    </tr>
+                    <tr>
+                        <th>Área de efectividad</th>
+                        <th>Método de medición</th>
+                        <th>Objetivo</th>
+                        <th>Valor</th>
+                        <th>Comentarios</th>
+                        <th>Calificación</th>
+                    </tr>
+                </thead>
+  
+                <tbody>
+                    {%for obj in obj%}
+                    {% if obj.apartado_id == 6 %}
+                    <tr>
+                        <td>{{obj.area}}</td>
+                        <td>{{obj.metodo}}</td>
+                        <td>
+                            {{obj.objetivo}}
+                            {% for pocentaje in obj.porcentajes_set.all %}
+                            {% if pocentaje.evaluacion_id == evaluacion.id %}
+                            <h6><span style= "color: #295caa;">Valor obtenido: {{pocentaje.porcentaje}} </span> </h6>
+                            {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td>{{obj.valor}}</td>
+                        <td>
+                            {% for comentario in obj.comentariosareas_set.all %}
+                            {% if comentario.evaluacion_id == evaluacion.id%}
+                            <h6><span style= "color: #295caa;">Evaluador: </span> {{comentario.comentario}}</h6>
+                            {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {% for calificacion in obj.calificacionesareas_set.all %}
+                            {% if calificacion.evaluacion_id == evaluacion.id %}
+                            {% if calificacion.calificacion > 0 %}
+                            <h6 style="color:#00953a">Evaluador: Si</h6>
+                            {% else %}
+                            <h6  style="color: #f00;">Evaluador: No</h6>
+                            {% endif %}
+                            {% endif %}
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {%endfor%}
+                </tbody>
+            </table>
+            
+            {% if sumCalidad != None %}
+            <h1 class="descOKR "> Calidad Operativa </h1>
+            <h1 id="resultadoOKR"></h1>
+            <table id="tablaEvaluacion1" class="tablaEvaluacion1 table table-striped table-responsive table-bordered">
+                <thead>
+                    <tr style= "background-color: #00953a;">
+                        <th colspan="2">Calidad Operativa </th>
+                        <th colspan="2" class="valorOKR">Valor: {{sumCalidad}}</th>
+                        <th colspan="2" class="calificacionOKR">Calificación: {{suma_cal_calidad}}</th>
+                    </tr>
+                    <tr>
+                        <th>Área de efectividad</th>
+                        <th>Método de medición</th>
+                        <th>Objetivo</th>
+                        <th>Valor</th>
+                        <th>Comentarios</th>
+                        <th>Calificación</th>
+                    </tr>
+                </thead>
+  
+                <tbody>
+                    {%for obj in obj%}
+                    {% if obj.apartado_id == 8 %}
+                    <tr>
+                        <td>{{obj.area}}</td>
+                        <td>{{obj.metodo}}</td>
+                        <td>
+                            {{obj.objetivo}}
+                            {% for pocentaje in obj.porcentajes_set.all %}
+                            {% if pocentaje.evaluacion_id == evaluacion.id %}
+                            <h6><span style= "color: #295caa;">Valor obtenido: {{pocentaje.porcentaje}} </span> </h6>
+                            {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td>{{obj.valor}}</td>
+                        <td>
+                            {% for comentario in obj.comentariosareas_set.all %}
+                            {% if comentario.evaluacion_id == evaluacion.id%}
+                            <h6><span style= "color: #295caa;">Evaluador: </span> {{comentario.comentario}}</h6>
+                            {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {% for calificacion in obj.calificacionesareas_set.all %}
+                            {% if calificacion.evaluacion_id == evaluacion.id %}
+                            {% if calificacion.calificacion > 0 %}
+                            <h6 style="color:#00953a">Evaluador: Si</h6>
+                            {% else %}
+                            <h6  style="color: #f00;">Evaluador: No</h6>
+                            {% endif %}
+                            {% endif %}
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {%endfor%}
+                </tbody>
+            </table>
+            {% endif %}
+
+            {% if tipo != 2%}
+            <h1 class="descCL "> Cultura laboral</h1>
+            <table id="tablaEvaluacion3" class="tablaEvaluacion3 table table-striped table-responsive table-bordered" >
+                <thead>
+                    <tr style= "background-color: #00953a;">
+                        <th colspan="2">Cultura laboral</th>
+                        <th colspan="2" class="valorCL">Valor: {{sumCL}}</th>
+                        <th colspan="2" class="calificacionCL">Calificación: {{suma_cal_CL}}</th>
+                    </tr>
+                    <tr>
+                        <th>Área de efectividad</th>
+                        <th>Método de medición</th>
+                        <th>Objetivo</th>
+                        <th>Valor</th>
+                        <th>Comentarios</th>
+                        <th>Calificación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {%for obj in obj%}
+                    {% if obj.apartado_id == 7 %}
+                    <tr>
+
+                        <td>{{obj.area}}</td>
+                        <td>{{obj.metodo}}</td>
+                        <td>
+                            {{obj.objetivo}}
+                            {% for pocentaje in obj.porcentajes_set.all %}
+                            {% if pocentaje.evaluacion_id == evaluacion.id %}
+                            <h6><span style= "color: #295caa;">Valor obtenido: {{pocentaje.porcentaje}} </span> </h6>
+                            {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td>{{obj.valor}}</td>
+                        <td>
+                            {% for comentario in obj.comentariosareas_set.all %}
+                            {% if comentario.evaluacion_id == evaluacion.id%}
+                            <h6><span style= "color: #295caa;">Evaluador: </span> {{comentario.comentario}}</h6>
+                            {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {% for calificacion in obj.calificacionesareas_set.all %}
+                            {% if calificacion.evaluacion_id == evaluacion.id %}
+                            {% if calificacion.calificacion > 0 %}
+                            <h6 style="color:#00953a">Evaluador: Si</h6>
+                            {% else %}
+                            <h6  style="color: #f00;">Evaluador: No</h6>
+                            {% endif %}
+                            {% endif %}
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {%endfor%}
+                </tbody>
+            </table>
+            {% endif %}
+  
+  
+
+            <br/>
+            <div class="comentariosGenerales">
+                <label for="comentariosGenerales">Comentarios generales</label>
+                {% for com in comentariosGenerales %}
+                {% if com.comentario_evaluador != "" %}
+                         <h6><span style= "color: #295caa;">Evaluador : </span> {{com.comentario_evaluador}}</h6>
+                {% endif %}
+                {% endfor %}
+            </div>
+            <br/>
+            <button class="btn btn-primary btn-enviar nota" onclick="guardarCalificacion()" btn-enviar>Guardar calificación</button>
+          </div>
+
+
+        </div>
+
+
+        
+      </div>
+    </div>
+    <div id="modalError" class="modalError">
+        <div class="modal-content">
+          <span class="closeError">&times;</span>
+          <img src="{% static 'img/advertencia.png' %}" alt="Imagen" width="35px" height="35px">
+          <p id="modal-messageError"></p>
+        </div>
+      </div>
+    
+    
+      <div id="modalEnviar" class="modalEnviar">
+        <div class="modal-content">
+          <span class="closeEnviar">&times;</span>
+          <img src="{% static 'img/comprobado.png' %}" alt="Imagen" width="35px" height="35px">
+          <p id="modal-messageEnviar"></p>
+        </div>
+      </div>
+     <script>
+        
+      </script>
+  </body>
+</html>
+{% endblock %}

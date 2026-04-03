@@ -1,0 +1,1098 @@
+{% extends "plantilla/master.html" %}
+{% load static %}
+
+
+{% block contenido %}
+
+      <div class="eva">
+          <div class="primeraFila row">
+              <div class="meses" style="overflow-x:auto; overflow-y:auto;" >
+                {% if evaluaciones1.2.fecha.mes  == 1 %}
+                    <h3>diciembre {{evaluaciones1.2.fecha.anio|add:"-1"}}</h3>
+                {% else %}
+                  {% if evaluaciones1.2.fecha.mes  == 2 %}
+                    <h3>enero {{evaluaciones1.2.fecha.anio}}</h3>
+                  {% else %}
+                    {% if evaluaciones1.2.fecha.mes  == 3 %}
+                      <h3>febrero {{evaluaciones1.2.fecha.anio}}</h3>
+                    {% else %}
+                      {% if evaluaciones1.2.fecha.mes  == 4 %}
+                        <h3>marzo {{evaluaciones1.2.fecha.anio}}</h3>
+                      {% else %}
+                        {% if evaluaciones1.2.fecha.mes  == 5 %}
+                          <h3>abril {{evaluaciones1.2.fecha.anio}}</h3>
+                        {% else %}
+                          {% if evaluaciones1.2.fecha.mes  == 6 %}
+                            <h3>mayo {{evaluaciones1.2.fecha.anio}}</h3>
+                          {% else %}
+                            {% if evaluaciones1.2.fecha.mes  == 7 %}
+                                <h3>junio {{evaluaciones1.2.fecha.anio}}</h3>
+                            {% else %}
+                              {% if evaluaciones1.2.fecha.mes  == 8 %}
+                                  <h3>julio {{evaluaciones1.2.fecha.anio}}</h3>
+                              {% else %}
+                                {% if evaluaciones1.2.fecha.mes  == 9 %}
+                                  <h3>agosto {{evaluaciones1.2.fecha.anio}}</h3>
+                                {% else %}
+                                  {% if evaluaciones1.2.fecha.mes  == 10 %}
+                                      <h3>septiembre {{evaluaciones1.2.fecha.anio}}</h3>
+                                  {% else %}
+                                    {% if evaluaciones1.2.fecha.mes  == 11 %}
+                                        <h3>octubre {{evaluaciones1.2.fecha.anio}}</h3>
+                                      {% else %}
+                                        {% if evaluaciones1.2.fecha.mes  == 12 %}
+                                          <h3>noviembre {{evaluaciones1.2.fecha.anio}}</h3>
+                                        {% else %}
+                                          <h3> {{evaluaciones1.2.fecha.mes}} {{evaluaciones1.2.fecha.anio}} </h3>
+                                        {% endif %}
+                                    {% endif %}
+                                  {% endif %}
+                                {% endif %}
+                              {% endif %}
+                            {% endif %}
+                          {% endif %}
+                        {% endif %}
+                      {% endif %}
+                    {% endif %}
+                  {% endif %}
+                {% endif %}
+                {% if resultados2.0 %}
+                  <canvas id="mes1"></canvas>
+                  <p> Evaluador: </p>
+                  {% if seguimiento2.evaluador_id != 1%}
+                    <p>{{seguimiento2.evaluador.nombre}}: {%if resultados2.0.calificacion_evaluador != -1%}  {{resultados2.0.calificacion_evaluador}} {% else %} Sin calificar {% endif %} </p>
+                  {% endif %}
+
+                {% else %}
+                  <p> Sin registros </p>
+                {% endif %}
+
+
+              </div>
+
+              <div class="meses" style="overflow-x:auto; overflow-y:auto;" >
+                {% if evaluaciones1.1.fecha.mes  == 1 %}
+                    <h3>diciembre {{evaluaciones1.1.fecha.anio|add:"-1"}}</h3>
+                {% else %}
+                  {% if evaluaciones1.1.fecha.mes  == 2 %}
+                    <h3>enero {{evaluaciones1.1.fecha.anio}}</h3>
+                  {% else %}
+                    {% if evaluaciones1.1.fecha.mes  == 3 %}
+                      <h3>febrero {{evaluaciones1.1.fecha.anio}}</h3>
+                    {% else %}
+                      {% if evaluaciones1.1.fecha.mes  == 4 %}
+                        <h3>marzo {{evaluaciones1.1.fecha.anio}}</h3>
+                      {% else %}
+                        {% if evaluaciones1.1.fecha.mes  == 5 %}
+                          <h3>abril {{evaluaciones1.1.fecha.anio}}</h3>
+                        {% else %}
+                          {% if evaluaciones1.1.fecha.mes  == 6 %}
+                            <h3>mayo {{evaluaciones1.1.fecha.anio}}</h3>
+                          {% else %}
+                            {% if evaluaciones1.1.fecha.mes  == 7 %}
+                                <h3>junio {{evaluaciones1.1.fecha.anio}}</h3>
+                            {% else %}
+                              {% if evaluaciones1.1.fecha.mes  == 8 %}
+                                  <h3>julio {{evaluaciones1.1.fecha.anio}}</h3>
+                              {% else %}
+                                {% if evaluaciones1.1.fecha.mes  == 9 %}
+                                  <h3>agosto {{evaluaciones1.1.fecha.anio}}</h3>
+                                {% else %}
+                                  {% if evaluaciones1.1.fecha.mes  == 10 %}
+                                      <h3>septiembre {{evaluaciones1.1.fecha.anio}}</h3>
+                                  {% else %}
+                                    {% if evaluaciones1.1.fecha.mes  == 11 %}
+                                        <h3>octubre {{evaluaciones1.1.fecha.anio}}</h3>
+                                      {% else %}
+                                        {% if evaluaciones1.1.fecha.mes  == 12 %}
+                                          <h3>noviembre {{evaluaciones1.1.fecha.anio}}</h3>
+                                        {% else %}
+                                          <h3> {{evaluaciones1.1.fecha.mes}} {{evaluaciones1.1.fecha.anio}} </h3>
+                                        {% endif %}
+                                    {% endif %}
+                                  {% endif %}
+                                {% endif %}
+                              {% endif %}
+                            {% endif %}
+                          {% endif %}
+                        {% endif %}
+                      {% endif %}
+                    {% endif %}
+                  {% endif %}
+                {% endif %}
+                {% if resultados1.0 %}
+                <canvas id="mesm"></canvas>
+                  <p> Evaluador: </p>
+                  {% if seguimiento1.evaluador_id != 1%}
+                    <p>{{seguimiento1.evaluador.nombre}}: {%if resultados1.0.calificacion_evaluador != -1%}  {{resultados1.0.calificacion_evaluador}} {% else %} Sin calificar {% endif %} </p>
+                  {% endif %}
+
+
+                {% else %}
+                  <p> Sin registros </p>
+                {% endif %}
+              </div>
+              <div class="meses" style="overflow-x:auto; overflow-y:auto;" >
+                {% if evaluaciones1.0.fecha.mes  == 1 %}
+                    <h3>diciembre {{evaluaciones1.0.fecha.anio|add:"-1"}} </h3>
+                {% else %}
+                  {% if evaluaciones1.0.fecha.mes  == 2 %}
+                    <h3>enero {{evaluaciones1.0.fecha.anio}}</h3>
+                  {% else %}
+                    {% if evaluaciones1.0.fecha.mes  == 3 %}
+                      <h3>febrero {{evaluaciones1.0.fecha.anio}}</h3>
+                    {% else %}
+                      {% if evaluaciones1.0.fecha.mes  == 4 %}
+                        <h3>marzo {{evaluaciones1.0.fecha.anio}}</h3>
+                      {% else %}
+                        {% if evaluaciones1.0.fecha.mes  == 5 %}
+                          <h3>abril {{evaluaciones1.0.fecha.anio}}</h3>
+                        {% else %}
+                          {% if evaluaciones1.0.fecha.mes  == 6 %}
+                            <h3>mayo {{evaluaciones1.0.fecha.anio}}</h3>
+                          {% else %}
+                            {% if evaluaciones1.0.fecha.mes  == 7 %}
+                                <h3>junio {{evaluaciones1.0.fecha.anio}}</h3>
+                            {% else %}
+                              {% if evaluaciones1.0.fecha.mes  == 8 %}
+                                  <h3>julio {{evaluaciones1.0.fecha.anio}}</h3>
+                              {% else %}
+                                {% if evaluaciones1.0.fecha.mes  == 9 %}
+                                  <h3>agosto {{evaluaciones1.0.fecha.anio}}</h3>
+                                {% else %}
+                                  {% if evaluaciones1.0.fecha.mes  == 10 %}
+                                      <h3>septiembre {{evaluaciones1.0.fecha.anio}}</h3>
+                                  {% else %}
+                                    {% if evaluaciones1.0.fecha.mes  == 11 %}
+                                        <h3>octubre {{evaluaciones1.0.fecha.anio}}</h3>
+                                      {% else %}
+                                        {% if evaluaciones1.0.fecha.mes  == 12 %}
+                                          <h3>noviembre 2024</h3>
+                                        {% else %}
+                                          <h3> {{evaluaciones1.0.fecha.mes}} {{evaluaciones1.0.fecha.anio}} </h3>
+                                        {% endif %}
+                                    {% endif %}
+                                  {% endif %}
+                                {% endif %}
+                              {% endif %}
+                            {% endif %}
+                          {% endif %}
+                        {% endif %}
+                      {% endif %}
+                    {% endif %}
+                  {% endif %}
+                {% endif %}
+
+                {% if resultados0.0 %}
+                <canvas id="mess"></canvas>
+                  <p> Evaluador: </p>
+                  {% if seguimiento0.evaluador_id != 1%}
+                    <p>{{seguimiento0.evaluador.nombre}}: {%if resultados0.0.calificacion_evaluador != -1%}  {{resultados0.0.calificacion_evaluador}} {% else %} Sin calificar {% endif %} </p>
+                  {% endif %}
+
+                {% else %}
+                  <p> Sin registros </p>
+                {% endif %}
+              </div>
+          </div>
+          <br/>
+          <div class="segundaFila row" >
+              <div class="individual" style="overflow-x:auto; overflow-y:auto;" >
+                  <div class="split">
+                      <div class="split-half">
+                        <h3></h3>
+                      </div>
+                       <div class="split-half">
+                          <h3>  </h3>
+                      </div>
+                  </div>
+              </div>
+              <div class="individual" style="overflow-x:auto; overflow-y:auto;" >
+                  <h3>Cantidad de empleados por departamento</h3>
+                  {% comment %} <div style= "background-color: white;"> {% endcomment %}
+                    <canvas id="myChart"></canvas>
+              </div>
+              <div class="individual" style="overflow-x:auto; overflow-y:auto;" >
+                  <h3>Calendario</h3>
+                  {% if calendario%}
+                  <h5 class="calDashboardTit" style="color: #ee5ba1;">Concentrado de resultados al drive</h5>
+                  <h6 class="calDashboard" style="color: #ee5ba1;"> {{calendario.comentariosInicialesInicio}} - {{calendario.comentariosInicialesFin}} </h6>
+                  <h5 class="calDashboardTit" style="color: #00953a;">Vaciar información al sistema</h5>
+                  <h6 class="calDashboard" style="color: #00953a;" > {{calendario.empleadosInicio}} - {{calendario.empleadosFin}} </h6>
+                  <h5 class="calDashboardTit" style="color: #163e80;">Evaluación de Líderes con equipo</h5>
+                  <h6 class="calDashboard" style="color: #163e80;"> {{calendario.jefesInicio}} - {{calendario.jefesFin}} </h6>
+                  <h5 class="calDashboardTit" style="color: #b3ab05;">Evaluación de Lideres con comité</h5>
+                  <h6 class="calDashboard" style="color: #b3ab05;"> {{calendario.gerentesInicio}} - {{calendario.gerentesFin}} </h6>
+                  {% else %}
+                  <h6>Aún no se ha creado el calendario para este mes.</h6>
+                  {% endif %}
+              </div>
+          </div>
+          <br />
+          <div class="terceraFila row">
+            
+              <div class="general" style="overflow-x:auto; overflow-y:auto;" >
+                {% if empleado.departamento_id == 11 or empleado.no_emp == 101 %}
+                <h3>Calificación promedio empresa</h3>
+                <canvas id="promedioEmpresa"></canvas>
+                <br/>
+                {% for promedio in promedios %}
+                  {% if promedio.1  == 1 %}
+                    <h6>diciembre : {{promedio.0}}</h6>
+                {% else %}
+                  {% if promedio.1  == 2 %}
+                    <h6>enero : {{promedio.0}}</h6>
+                  {% else %}
+                    {% if promedio.1  == 3 %}
+                      <h6>febrero : {{promedio.0}}</h6>
+                    {% else %}
+                      {% if promedio.1  == 4 %}
+                        <h6>marzo : {{promedio.0}}</h6>
+                      {% else %}
+                        {% if promedio.1  == 5 %}
+                          <h6>abril : {{promedio.0}}</h6>
+                        {% else %}
+                          {% if promedio.1  == 6 %}
+                            <h6>mayo : {{promedio.0}}</h6>
+                          {% else %}
+                            {% if promedio.1  == 7 %}
+                                <h6>junio : {{promedio.0}}</h6>
+                            {% else %}
+                              {% if promedio.1  == 8 %}
+                                  <h6>julio : {{promedio.0}}</h6>
+                              {% else %}
+                                {% if promedio.1  == 9 %}
+                                  <h6>agosto : {{promedio.0}}</h6>
+                                {% else %}
+                                  {% if promedio.1  == 10 %}
+                                      <h6>septiembre : {{promedio.0}}</h6>
+                                  {% else %}
+                                    {% if promedio.1  == 11 %}
+                                        <h6>octubre : {{promedio.0}}</h6>
+                                      {% else %}
+                                        {% if promedio.1  == 12 %}
+                                          <h6>noviembre : {{promedio.0}}</h6>
+                                        {% else %}
+                                          <h6> {{promedio.1}} : {{promedio.0}} </h6>
+                                        {% endif %}
+                                    {% endif %}
+                                  {% endif %}
+                                {% endif %}
+                              {% endif %}
+                            {% endif %}
+                          {% endif %}
+                        {% endif %}
+                      {% endif %}
+                    {% endif %}
+                  {% endif %}
+                {% endif %}
+
+                {% endfor %}
+                {% endif %}
+              </div>
+
+
+              <div class="general faltantesDeContestar" style="overflow-x:auto; overflow-y:auto; align-items: center;">
+                  <h3>Calificación promedio departamento</h3>
+                  
+                  <div class="chart-container" style="position:relative; margin:auto; height:40vh; width:20vw">
+                    <canvas id="promedioDepartamento" style="height:600px"></canvas>
+                  </div>
+                  <br/>
+                    <table  class="tablaPromDep table table-success table-striped table-responsive table-bordered">
+                      <thead>
+                        <tr>
+                          <th>Depa</th>
+                          <th> Mes 1 </th>
+                          <th> Mes 2 </th>
+                          <th> Mes 3 </th>
+                        <tr>
+                      </thead>
+                      <tbody>
+                        {% for dep in departamentos %}
+                          <tr>
+                            {% if dep.id == empleado.departamento_id or empleado.departamento_id == 11 or empleado.no_emp == 101 or dep.id == 6 and empleado.departamento_id == 25 or dep.id == 8 and empleado.departamento_id == 25 %}
+                            <td>{{dep.nombre}}</td>
+
+                            {% for fecha in fechas %}
+                            
+                              {% for p in promedios_departamento %}
+                              
+                                {% if p.1 == fecha.mes and p.2 == fecha.anio and p.4 == dep.id %}
+                                <td>  
+                                  {{p.0}}
+                                </td>  
+                                {% endif %}
+                              
+                              {% endfor %}
+
+                              
+                            {% endfor %}
+                          {% endif %}
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+              </div>
+              {% if empleado.departamento_id == 11 or empleado.rango_id == 1  or empleado.rango_id == 2 or empleado.rango_id == 3 or empleado.rango_id == 5%}
+              <div class="general faltantesDeContestar" style="overflow-x:auto; overflow-y:auto;" >
+                  <h3>Evaluaciones pendientes de calificar</h3>
+                  <div style="overflow-x:auto;">
+                    <table style="width:100%;"  class="tablaNoContestado table  table-success table-striped table-responsive table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Departamento</th>
+                                <th>Nombre</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                          {% if evaluacionesNuevas %}
+                            {% for evaluacion in evaluacionesNuevas %}
+                            <tr>
+                                {% for departamento in departamentos %}
+                                {% if departamento.id == evaluacion.empleado.departamento_id %}
+                                <td>{{departamento.nombre}}</td>
+                                {% endif %}
+                                {% endfor %}
+                                <td>{{evaluacion.empleado.nombre}}</td>
+                            </tr>
+                            {% endfor %}
+                            {% else %}
+                            <tr>
+                                <td colspan="2">No hay empleados sin contestar</td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+        
+              </div>
+              {% endif %}
+          </div>
+      </div>
+  </div>
+ 
+                  
+                  <script>
+                    {% if empleado.departamento_id == 11 or empleado.no_emp == 101 %}
+                    const ctx5 = document.getElementById('promedioEmpresa');{
+                      new Chart(ctx5, {
+                        type: 'line',
+                        data: {
+                          labels: [{% for promedio in promedios %} 
+                          {% if promedio.1 == 1 %}
+                            'Diciembre'
+                          {% elif promedio.1 == 2 %}
+                          'Enero'
+                          {% elif promedio.1 == 3 %}  
+                          'Febrero'
+                          {% elif promedio.1 == 4 %}
+                          'Marzo'
+                          {% elif promedio.1 == 5 %}
+                          'Abril'
+                          {% elif promedio.1 == 6 %}
+                          'Mayo'
+                          {% elif promedio.1 == 7 %}
+                          'Junio'
+                          {% elif promedio.1 == 8 %}
+                          'Julio'
+                          {% elif promedio.1 == 9 %}
+                          'Agosto'
+                          {% elif promedio.1 == 10 %}
+                          'Septiembre'
+                          {% elif promedio.1 == 11 %}
+                          'Octubre'
+                          {% elif promedio.1 == 12 %}
+                          'Noviembre'
+                          {% else %}
+                            'NA'
+                          {% endif %}
+
+                          , {% endfor %}],
+                          datasets: [
+                            {
+                            label: 'Promedios',
+                            data: [{% for promedio in promedios %} {{promedio.0}}, {% endfor %}],
+                            borderWidth: 2,
+                            barPercentage: 2,
+                            barThickness: 10,
+                            maxBarThickness:10,
+                            minBarLength: 2,
+                            backgroundColor: [
+                              'rgba(0, 149, 58, 1)'
+                              ],
+                              borderColor: 'rgba(0, 149, 58, 1)',
+                          },
+                          ]
+                        },
+                        options: {
+                          scales: {
+                             y: {
+                              beginAtZero: true,
+                              max: 100     // ← fuerza el eje Y hasta 100
+                            },
+                            x: {
+                                stacked: true
+                            },
+                        }
+                        }
+                      });
+                    }
+                    {% endif %}
+
+
+                    const ctx6 = document.getElementById('promedioDepartamento');{
+                      new Chart(ctx6, {
+                        type: 'line',
+                        data: {
+                          labels: [{% for prom in fechas%} '{{prom.mes}}', {% endfor %}],
+                          datasets: [
+                            {% if empleado.departamento_id == 2 or empleado.departamento_id == 11  %}
+                            {
+                            label: 'Cal',
+                            data: [
+                              {% for fecha in fechas %}
+                            
+                              {% for p in promedios_departamento %}
+                              
+                                {% if p.1 == fecha.mes and p.2 == fecha.anio and p.4 == 2 %}
+                                  '{{p.0}}',
+                                {% endif %}
+                              
+                              {% endfor %}
+                            
+                            {% endfor %}
+                            ],
+                            borderWidth: 2,
+                            backgroundColor: 'rgb(0, 202, 248)',
+                            borderColor: 'rgb(0, 202, 248)',
+                          },
+                          {% endif %} 
+                            {% if empleado.departamento_id == 3 or empleado.departamento_id == 11  %}
+                            {
+                              label: 'Sop',
+                              data: [
+                                {% for fecha in fechas %}
+                            
+                              {% for p in promedios_departamento %}
+                              
+                                {% if p.1 == fecha.mes and p.2 == fecha.anio and p.4 == 3 %}
+                                  '{{p.0}}',
+                                {% endif %}
+                              
+                              {% endfor %}
+                            
+                            {% endfor %}
+                              ],
+                              borderWidth: 1,
+                              backgroundColor: [
+                                'rgb(0, 201, 87)',
+                                ],
+                                borderColor: 'rgb(0, 201, 87)',
+                            },
+                            {% endif %}
+
+                            {% if empleado.departamento_id == 4 or empleado.departamento_id == 11  %}
+                              {
+                                label: 'Des',
+                                data: [
+                                  {% for fecha in fechas %}
+                            
+                              {% for p in promedios_departamento %}
+                              
+                                {% if p.1 == fecha.mes and p.2 == fecha.anio and p.4 == 4 %}
+                                  '{{p.0}}',
+                                {% endif %}
+                              
+                              {% endfor %}
+                            
+                            {% endfor %}
+                                ],
+                                borderWidth: 2,
+                                backgroundColor: [
+                                  'rgb(255, 165, 0)',
+                                  ],
+                                  borderColor: 'rgb(255, 165, 0)',
+                              },
+                              {% endif %}
+
+                              {% if empleado.departamento_id == 26 or empleado.departamento_id == 27 or empleado.departamento_id == 11  %}
+                              {
+                                label: 'Abs',
+                                data: [
+                                  {% for fecha in fechas %}
+                            
+                              {% for p in promedios_departamento %}
+                              
+                                {% if p.1 == fecha.mes and p.2 == fecha.anio and p.4 == 5 %}
+                                  '{{p.0}}',
+                                {% endif %}
+                              
+                              {% endfor %}
+                            
+                            {% endfor %}
+                                ],
+                                borderWidth: 2,
+                                backgroundColor: [
+                                  'rgb(255, 0, 255)',
+                                  ],
+                                  borderColor: 'rgb(255, 0, 255)',
+                              },
+                              {% endif %}
+
+                              {% if empleado.departamento_id == 6 or empleado.departamento_id == 11  or empleado.no_emp == 142 %}
+                              {
+                                label: 'SyOP',
+                                data: [
+                                  {% for fecha in fechas %}
+                            
+                              {% for p in promedios_departamento %}
+                              
+                                {% if p.1 == fecha.mes and p.2 == fecha.anio and p.4 == 6 %}
+                                  '{{p.0}}',
+                                {% endif %}
+                              
+                              {% endfor %}
+                            
+                            {% endfor %}
+                                ],
+                                borderWidth: 2,
+                                backgroundColor: [
+                                  'rgb(0, 128, 128)',
+                                  ],
+                                  borderColor: 'rgb(0, 128, 128)',
+                              },
+                              {% endif %}
+
+                              {% if empleado.departamento_id == 40 or empleado.departamento_id == 11  %}
+                              {
+                                label: 'IN',
+                                data: [
+                                  {% for fecha in fechas %}
+                            
+                              {% for p in promedios_departamento %}
+                              
+                                {% if p.1 == fecha.mes and p.2 == fecha.anio and p.4 == 7 %}
+                                  '{{p.0}}',
+                                {% endif %}
+                              
+                              {% endfor %}
+                            
+                            {% endfor %}
+                                ],
+                                borderWidth: 2,
+                                backgroundColor: [
+                                  'rgb(255, 0, 0)',
+                                  ],
+                                  borderColor: 'rgb(255, 0, 0)',
+                              },
+                              {% endif %}
+
+                              {% if empleado.departamento_id == 8 or empleado.departamento_id == 11 or empleado.no_emp == 142 %}
+                              {
+                                label: 'TeyD',
+                                data: [
+                                  {% for fecha in fechas %}
+                            
+                              {% for p in promedios_departamento %}
+                              
+                                {% if p.1 == fecha.mes and p.2 == fecha.anio and p.4 == 8 %}
+                                  '{{p.0}}',
+                                {% endif %}
+                              
+                              {% endfor %}
+                            
+                            {% endfor %}
+                                ],
+                                borderWidth: 2,
+                                backgroundColor: [
+                                  'rgb(255, 20, 147)',
+                                  ],
+                                  borderColor: 'rgb(255, 20, 147)',
+                              },
+                              {% endif %}
+
+                              {% if empleado.departamento_id == 9 or empleado.departamento_id == 11  %}
+                              {
+                                label: 'PUB',
+                                data: [
+                                  {% for fecha in fechas %}
+                            
+                              {% for p in promedios_departamento %}
+                              
+                                {% if p.1 == fecha.mes and p.2 == fecha.anio and p.4 == 9 %}
+                                  '{{p.0}}',
+                                {% endif %}
+                              
+                              {% endfor %}
+                            
+                            {% endfor %}
+                                ],
+                                borderWidth: 2,
+                                backgroundColor: [
+                                  'rgb(138, 43, 226)',
+                                  ],
+                                  borderColor: 'rgb(138, 43, 226)',
+                              },
+                              {% endif %}
+
+                              {% if empleado.departamento_id == 37 or empleado.departamento_id == 11  %}
+                              {
+                                label: 'CON',
+                                data: [
+                                  {% for fecha in fechas %}
+                            
+                              {% for p in promedios_departamento %}
+                              
+                                {% if p.1 == fecha.mes and p.2 == fecha.anio and p.4 == 10 %}
+                                  '{{p.0}}',
+                                {% endif %}
+                              
+                              {% endfor %}
+                            
+                            {% endfor %}
+                                ],
+                                borderWidth: 2,
+                                backgroundColor: [
+                                  'rgb(255, 127, 80)',
+                                  ],
+                                  borderColor: 'rgb(255, 127, 80)',
+                              },
+                              {% endif %}
+
+                              {% if empleado.departamento_id == 11  %}
+                              {
+                                label: 'CH',
+                                data: [
+                                  {% for fecha in fechas %}
+                            
+                              {% for p in promedios_departamento %}
+                              
+                                {% if p.1 == fecha.mes and p.2 == fecha.anio and p.4 == 11 %}
+                                  '{{p.0}}',
+                                {% endif %}
+                              
+                              {% endfor %}
+                            
+                            {% endfor %}
+                                ],
+                                borderWidth: 2,
+                                backgroundColor: [
+                                  '(128, 0, 0)',
+                                  ],
+                                  borderColor: '(128, 0, 0)',
+                              },
+                              {% endif %}
+
+                              {% if empleado.departamento_id == 12 or empleado.departamento_id == 11  %}
+                              {
+                                label: 'ALM',
+                                data: [
+                                  {% for fecha in fechas %}
+                            
+                              {% for p in promedios_departamento %}
+                              
+                                {% if p.1 == fecha.mes and p.2 == fecha.anio and p.4 == 12 %}
+                                  '{{p.0}}',
+                                {% endif %}
+                              
+                              {% endfor %}
+                            
+                            {% endfor %}
+                                ],
+                                borderWidth: 2,
+                                backgroundColor: [
+                                  'rgb(70, 130, 180)',
+                                  ],
+                                  borderColor: 'rgb(70, 130, 180)',
+                              },
+                              {% endif %}
+
+
+                              {% if empleado.departamento_id == 29 or empleado.departamento_id == 11  %}
+                              {
+                                label: 'Bajío Norte',
+                                data: [
+                                  {% for fecha in fechas %}
+                            
+                              {% for p in promedios_departamento %}
+                              
+                                {% if p.1 == fecha.mes and p.2 == fecha.anio and p.4 == 14 %}
+                                  '{{p.0}}',
+                                {% endif %}
+                              
+                              {% endfor %}
+                            
+                            {% endfor %}
+                                ],
+                                borderWidth: 2,
+                                backgroundColor: [
+                                  'rgb(0, 255, 0)',
+                                  ],
+                                  borderColor: 'rgb(0, 255, 0)',
+                              },
+                              {% endif %}
+
+                              {% if empleado.departamento_id == 30 or empleado.departamento_id == 11  %}
+                              {
+                                label: 'Bajío Sur',
+                                data: [
+                                  {% for fecha in fechas %}
+                            
+                              {% for p in promedios_departamento %}
+                              
+                                {% if p.1 == fecha.mes and p.2 == fecha.anio and p.4 == 15 %}
+                                  '{{p.0}}',
+                                {% endif %}
+                              
+                              {% endfor %}
+                            
+                            {% endfor %}
+                                ],
+                                borderWidth: 2,
+                                backgroundColor: [
+                                  'rgb(72, 61, 139)',
+                                  ],
+                                  borderColor: 'rgb(72, 61, 139)',
+                              },
+                              {% endif %}
+
+                              {% if empleado.departamento_id == 31 or empleado.departamento_id == 11  %}
+                              {
+                                label: 'Centro',
+                                data: [
+                                  {% for fecha in fechas %}
+                            
+                              {% for p in promedios_departamento %}
+                              
+                                {% if p.1 == fecha.mes and p.2 == fecha.anio and p.4 == 16 %}
+                                  '{{p.0}}',
+                                {% endif %}
+                              
+                              {% endfor %}
+                            
+                            {% endfor %}
+                                ],
+                                borderWidth: 2,
+                                backgroundColor: [
+                                  'rgb(0, 191, 255)',
+                                  ],
+                                  borderColor: 'rgb(0, 191, 255)',
+                              },
+                              {% endif %}
+
+                              {% if empleado.departamento_id == 32 or empleado.departamento_id == 11  %}
+                              {
+                                label: 'Noreste I',
+                                data: [
+                                  {% for fecha in fechas %}
+                            
+                              {% for p in promedios_departamento %}
+                              
+                                {% if p.1 == fecha.mes and p.2 == fecha.anio and p.4 == 17 %}
+                                  '{{p.0}}',
+                                {% endif %}
+                              
+                              {% endfor %}
+                            
+                            {% endfor %}
+                                ],
+                                borderWidth: 2,
+                                backgroundColor: [
+                                  'rgb(220, 20, 60)',
+                                  ],
+                                  borderColor: 'rgb(220, 20, 60)',
+                              },
+                              {% endif %}
+
+                              {% if empleado.departamento_id == 33 or empleado.departamento_id == 11  %}
+                              {
+                                label: 'Noreste II',
+                                data: [
+                                  {% for fecha in fechas %}
+                            
+                              {% for p in promedios_departamento %}
+                              
+                                {% if p.1 == fecha.mes and p.2 == fecha.anio and p.4 == 18 %}
+                                  '{{p.0}}',
+                                {% endif %}
+                              
+                              {% endfor %}
+                            
+                            {% endfor %}
+                                ],
+                                borderWidth: 2,
+                                backgroundColor: [
+                                  'rgb(0, 206, 209)',
+                                  ],
+                                  borderColor: 'rgb(0, 206, 209)',
+                              },
+                              {% endif %}
+
+                              {% if empleado.departamento_id == 34 or empleado.departamento_id == 11  %}
+                              {
+                                label: 'Noroeste',
+                                data: [
+                                  {% for fecha in fechas %}
+                            
+                              {% for p in promedios_departamento %}
+                              
+                                {% if p.1 == fecha.mes and p.2 == fecha.anio and p.4 == 19 %}
+                                  '{{p.0}}',
+                                {% endif %}
+                              
+                              {% endfor %}
+                            
+                            {% endfor %}
+                                ],
+                                borderWidth: 2,
+                                backgroundColor: [
+                                  'rgb(255, 105, 180)',
+                                  ],
+                                  borderColor: 'rgb(255, 105, 180)',
+                              },
+                              {% endif %}
+
+                              {% if empleado.departamento_id == 35 or empleado.departamento_id == 11  %}
+                              {
+                                label: 'Occidente',
+                                data: [
+                                  {% for fecha in fechas %}
+                            
+                              {% for p in promedios_departamento %}
+                              
+                                {% if p.1 == fecha.mes and p.2 == fecha.anio and p.4 == 20 %}
+                                  '{{p.0}}',
+                                {% endif %}
+                              
+                              {% endfor %}
+                            
+                            {% endfor %}
+                                ],
+                                borderWidth: 2,
+                                backgroundColor: [
+                                  'rgb(221, 160, 221)',
+                                  ],
+                                  borderColor: 'rgb(221, 160, 221)',
+                              },
+                              {% endif %}
+
+                              {% if empleado.departamento_id == 36 or empleado.departamento_id == 11  %}
+                              {
+                                label: 'Sur',
+                                data: [
+                                  {% for fecha in fechas %}
+                            
+                              {% for p in promedios_departamento %}
+                              
+                                {% if p.1 == fecha.mes and p.2 == fecha.anio and p.4 == 21 %}
+                                  '{{p.0}}',
+                                {% endif %}
+                              
+                              {% endfor %}
+                            
+                            {% endfor %}
+                                ],
+                                borderWidth: 2,
+                                backgroundColor: [
+                                  'rgb(255, 229, 180)',
+                                  ],
+                                  borderColor: 'rgb(255, 229, 180)',
+                              },
+                              {% endif %}
+
+
+
+                              {% if empleado.departamento_id == 39 or empleado.departamento_id == 11  %}
+                              {
+                                label: 'UN',
+                                data: [
+                                  {% for fecha in fechas %}
+                            
+                              {% for p in promedios_departamento %}
+                              
+                                {% if p.1 == fecha.mes and p.2 == fecha.anio and p.4 == 25 %}
+                                  '{{p.0}}',
+                                {% endif %}
+                              
+                              {% endfor %}
+                            
+                            {% endfor %}
+                                ],
+                                borderWidth: 2,
+                                backgroundColor: [
+                                  'rgb(255, 255, 0)',
+                                  ],
+                                  borderColor: 'rgb(255, 255, 0)',
+                              },
+                              {% endif %}
+                          ]
+                        },
+                        options: {
+                          maintainAspectRatio: false,
+                          scales: {
+                            x: {
+                                stacked: true,
+                                grid: {
+                                  display: false,
+                                }
+                            },
+                        }
+                        }
+                      });
+                    }
+
+
+                    const ctx2 = document.getElementById('myChart');
+                    new Chart(ctx2, {
+                      type: 'bar',
+                      data: {
+                        labels: [{% for departamento in departamentos %} '{{departamento.nombre}}', {%endfor%}],
+                        datasets: [{
+                          label: 'Empleados',
+                          data: [{% for item in cantidad %} {{ item.cantidad }}, {% endfor %}],
+                          borderWidth: 1,
+                          backgroundColor: [
+                            'rgba(0, 149, 58, 1)',
+                            'rgba(18, 40, 76, 1)',
+                            'rgba(18, 196, 88, 1)'
+                            ],
+                        }]
+                      },
+                      options: {
+                        scales: {
+                          y: {
+                            beginAtZero: true
+                          },
+                          x: {
+                            display: false // Oculta los labels del eje x
+                        }
+                        }
+                      }
+                    });
+
+                    {% if resultados2.0 %}
+                    const ctx = document.getElementById('mes1');{
+                      new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                          labels: ['{{seguimiento2.evaluador.nombre}}'],
+                          datasets: [{
+                            label: 'Calificación',
+                            barPercentage: 0.5,
+                            barThickness: 6,
+                            maxBarThickness: 8,
+                            minBarLength: 2,
+                            data: [ {% if resultados2.0.calificacion_evaluador != -1 %} {{resultados2.0.calificacion_evaluador}} {% else %} 0 {% endif %}],
+                            borderWidth: 1,
+                            backgroundColor: [
+                              'rgba(0, 149, 58, 1)',
+                              'rgba(18, 40, 76, 1)',
+                              'rgba(18, 196, 88, 1)'
+                              ],
+                          }]
+                        },
+                        options: {
+                          indexAxis: 'y',
+                          scales: {
+                            x: {
+                                stacked: true,
+                                max: 100,         // ← Esto forza el eje a llegar hasta 100
+                                beginAtZero: true
+                            },
+                            y: {
+                                stacked: true
+                            }
+                        }
+                        }
+                      }); 
+                    }
+                    {% else %}
+                    console.log('no existe');
+                    {% endif %}
+
+                    {% if resultados1.0 %}
+                      console.log('existe');
+                    const ctxc = document.getElementById('mesm');{
+                      new Chart(ctxc, {
+                        type: 'bar',
+                        data: {
+                          labels: ['{{seguimiento1.evaluador.nombre}}'],
+                          datasets: [{
+                            label: 'Calificación',
+                            barPercentage: 0.5,
+                            barThickness: 6,
+                            maxBarThickness: 8,
+                            minBarLength: 2,
+                            data: [{% if resultados1.0.calificacion_evaluador != -1 %} {{resultados1.0.calificacion_evaluador}} {% else %} 0 {% endif %}],
+                            borderWidth: 1,
+                            backgroundColor: [
+                              'rgba(0, 149, 58, 1)',
+                              'rgba(18, 40, 76, 1)',
+                              'rgba(18, 196, 88, 1)'
+                              ],
+                          }]
+                        },
+                        options: {
+                          indexAxis: 'y',
+                          scales: {
+                            x: {
+                                stacked: true,
+                                max: 100,         // ← Esto forza el eje a llegar hasta 100
+                                beginAtZero: true
+                            },
+                            y: {
+                                stacked: true
+                            }
+                        }
+                        }
+                      }); 
+                    }
+                    {% else %}
+                    console.log('no existe');
+                    {% endif %}
+                  
+                    {% if resultados0.0 %}
+                    const ctxx = document.getElementById('mess');{
+                      new Chart(ctxx, {
+                        type: 'bar',
+                        data: {
+                          labels: ['{{seguimiento0.evaluador.nombre}}'],
+                          datasets: [{
+                            label: 'Calificación',
+                            barPercentage: 0.5,
+                            barThickness: 6,
+                            maxBarThickness: 8,
+                            minBarLength: 2,
+                            data: [{% if resultados0.0.calificacion_evaluador != -1 %} {{resultados0.0.calificacion_evaluador}} {% else %} 0 {% endif %}],
+                            borderWidth: 1,
+                            backgroundColor: [
+                              'rgba(0, 149, 58, 1)',
+                              'rgba(18, 40, 76, 1)',
+                              'rgba(18, 196, 88, 1)'
+                              ],
+                          }]
+                        },
+                        options: {
+                          indexAxis: 'y',
+                          scales: {
+                            x: {
+                                stacked: true,
+                                max: 100,         // ← Esto forza el eje a llegar hasta 100
+                                beginAtZero: true
+                            },
+                            y: {
+                                stacked: true
+                            }
+                        }
+                        }
+                      }); 
+                    }
+                    {% else %}
+                    console.log('no existe');
+                    {% endif %}
+
+                  </script> 
+  </body>
+</html>
+{% endblock %}

@@ -1,0 +1,874 @@
+{% extends "plantilla/master.html" %}
+{% load static %}
+
+
+{% block contenido %}
+
+
+
+    {% comment %} <div id="panel" class="panel">
+      <div class="interiorG"> {% endcomment %}
+        <div id="titulo" class="titulo">
+          <h1>Calificar</h1>
+        </div>
+        
+        <div class="eva">
+            <table class="table table-bordered table-responsive" style="text-align:center">
+                <thead>
+                    <tr>
+                        <th>No.emp</th>
+                        <th>Evaluado</th>
+                        <th>Puesto</th>
+                        <th>Periodo evaluado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr >
+                        <td>{{empleado.no_emp}}</td>
+                        <td>{{empleado.nombre}} {{empleado.apellido_paterno}} {{empleado.apellido_materno}}</td>
+                        <td>{{empleado.puesto}} - {{empleado.departamento}}</td>
+                        {% if evaluacion.fecha.mes == 1%} 
+                        <td>diciembre/{{ evaluacion.fecha.anio|add:"-1" }}</td>
+                        {% else %}
+                        {%if evaluacion.fecha.mes == 2%}
+                        <td>enero/{{evaluacion.fecha.anio}}</td>
+                        {% else %}
+                        {%if evaluacion.fecha.mes == 3%}
+                        <td>febrero/{{evaluacion.fecha.anio}}</td>
+                        {% else %}
+                        {%if evaluacion.fecha.mes == 4%}
+                        <td>marzo/{{evaluacion.fecha.anio}}</td>
+                        {% else %}
+                        {%if evaluacion.fecha.mes == 5%}
+                        <td>abril/{{evaluacion.fecha.anio}}</td>
+                        {% else %}
+                        {%if evaluacion.fecha.mes == 6%}
+                        <td>mayo/{{evaluacion.fecha.anio}}</td>
+                        {% else %}
+                        {%if evaluacion.fecha.mes == 7%}
+                        <td>junio/{{evaluacion.fecha.anio}}</td>
+                        {% else %}
+                        {%if evaluacion.fecha.mes == 8%}
+                        <td>julio/{{evaluacion.fecha.anio}}</td>
+                        {% else %}
+                        {%if evaluacion.fecha.mes == 9%}
+                        <td>agosto/{{evaluacion.fecha.anio}}</td>
+                        {% else %}
+                        {%if evaluacion.fecha.mes == 10%}
+                        <td>septiembre/{{evaluacion.fecha.anio}}</td>
+                        {% else %}
+                        {%if evaluacion.fecha.mes == 11%}
+                        <td>octubre/{{evaluacion.fecha.anio}}</td>
+                        {% else %}
+                        {%if evaluacion.fecha.mes == 12%}
+                        <td>noviembre/{{evaluacion.fecha.anio}}</td>
+                        {%else %}
+                        <td>{{evaluacion.fecha.mes}}/{{evaluacion.fecha.anio}}</td>
+                        {%endif%}
+                        {%endif%}
+                        {%endif%}
+                        {%endif%}
+                        {%endif%}
+                        {%endif%}
+                        {%endif%}
+                        {%endif%}
+                        {%endif%}
+                        {%endif%}
+                        {%endif%}
+                        {%endif%}
+                    </tr>
+                </tbody>
+            </table>
+            
+            <table class="table table-bordered table-responsive" style="text-align:center">
+                <input type="hidden" id="empleadoLog" value="{{empleadoLogueado.no_emp}}">
+                <thead>
+                    <tr>
+                        <th>No. emp</th>
+                        <th>Evaluador</th>
+                        <th>Puesto</th>
+                        <th>Calificacion</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{seguimiento.evaluador.no_emp}}</td>
+                        <td>{{seguimiento.evaluador.nombre}} {{seguimiento.evaluador.apellido_paterno}} {{seguimiento.evaluador.apellido_materno}}</td>
+                        <td>{{seguimiento.evaluador.puesto}} - {{seguimiento.evaluador.departamento}}</td>
+                        {% if empleadoLogueado.no_emp == seguimiento.evaluador.no_emp%}
+                        <td class="calificacionFinal" id="calificacionFinal">0</td>
+                        {% else %}
+                        {% if resultados.calificacion_evaluador == -1 %}
+                        <td>0</td>
+                        {% else %}
+                        <td>{{resultados.calificacion_evaluador}}</td>
+                        {% endif %}
+                        {% endif %}
+                    </tr>
+                </tbody>
+            </table>
+
+        
+          
+          <div class="evaluacion table-responsive" id="evaluacion">
+            {% comment %} Para ver que numero de evaluacion tiene {{evaluacion.0.id}} {% endcomment %}
+            <input type="hidden" id="numeroEvaluacion" value="{{evaluacion.id}}">
+            {% comment %} <h1 class="descOKR "> OKRs - {{sumOKR}}%</h1> {% endcomment %}
+            <h1 class="descOKR "> Areas efectividad </h1>
+            <h1 id="resultadoOKR"></h1>
+            <table id="tablaEvaluacion1" class="tablaEvaluacion1 table table-striped table-responsive table-bordered">
+                <thead>
+                    <tr style= "background-color: #00953a;">
+                        <th colspan="2">Áreas efectividad</th>
+                        <th colspan="2" class="valorOKR">Valor: {{sumAreas}}</th>
+                        <th colspan="2" class="calificacionOKR">Calificación: 0</th>
+                    </tr>
+                    <tr>
+                        <th>Área efectividad</th>
+                        <th>Método de medición</th>
+                        <th>Objetivo</th>
+                        <th>Valor</th>
+                        <th>Comentarios</th>
+                        <th>Calificacion</th>
+                    </tr>
+                </thead>
+  
+                <tbody>
+                    {%for obj in obj%}
+                    {% if obj.apartado_id == 6 %}
+                    <tr>
+                        <td>{{obj.area}}</td>
+                        <td>{{obj.metodo}}</td>
+                        <td>
+                            {{obj.objetivo}} 
+                            {% for pocentaje in obj.porcentajes_set.all %}
+                            {% if pocentaje.evaluacion_id == evaluacion.id %}
+                            <h6><span style= "color: #295caa;">Valor obtenido: {{pocentaje.porcentaje}} </span> </h6>
+                            {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {{obj.valor}}
+                        </td>
+                        <td>
+                            {% for comentario in obj.comentariosareas_set.all %}
+                            {% if comentario.evaluacion_id == evaluacion.id%}
+                            <h6><span style= "color: #295caa;">Evaluador: </span> {{comentario.comentario}}</h6>
+                            {% endif %}
+                            {% endfor %}
+                            <textarea name="comentario" class="form-control {{ obj.id }} comentarioOKR" id="{{ obj.id }}"></textarea>
+                        </td>
+                        <td>
+                            {% comment %} {% for calificacion in obj.calificacionesareas_set.all %}
+                            {% if calificacion.evaluacion_id == evaluacion.id %}
+                            {% if calificacion.calificacion > 0 %}
+                            <h6 style="color:#00953a">Evaluador: Si</h6>
+                            {% else %}
+                            <h6  style="color: #f00;">Evaluador: No</h6>
+                            {% endif %}
+                            {% endif %}
+                            {% endfor %} {% endcomment %}
+
+                            {% comment %} <input class="opcOKR form-check-input" type="radio" name="{{obj.id}}" value="{{obj.valor}}" id="resultadoOKR" required/>
+                            <label class="form-check-label" for="radio">
+                               Si
+                            </label>
+                            <input class="opcOKR" type="radio" name="{{obj.id}}" value="0" id="resultadoOKR" required/>
+                            <label class="form-check-label" for="radio">
+                                No
+                            </label> {% endcomment %}
+                            {% if obj.tiene_calificacion %}
+                                {% for calificacion in obj.calificacionesareas_set.all %}
+                                {% if calificacion.evaluacion_id == evaluacion.id %}
+                                    {% if calificacion.calificacion > 0 %}
+                                        <input class="opcOKR form-check-input" type="radio" name="{{obj.id}}" value="{{obj.valor}}" id="resultadoOKR"  required checked/>
+                                        <label class="form-check-label" for="radio" >
+                                            Si
+                                        </label>
+                                        <input class="opcOKR" type="radio" name="{{obj.id}}" value="0" id="resultadoOKR" required/>
+                                        <label class="form-check-label" for="radio">
+                                            No
+                                        </label>
+                                    {% else %}
+                                        <input class="opcOKR form-check-input" type="radio" name="{{obj.id}}" value="{{obj.valor}}" id="resultadoOKR" required/>
+                                        <label class="form-check-label" for="radio">
+                                        Si
+                                        </label>
+                                        <input class="opcOKR" type="radio" name="{{obj.id}}" value="0" id="resultadoOKR" required checked/>
+                                        <label class="form-check-label" for="radio" >
+                                            No
+                                        </label>
+                                    {% endif %}
+                                {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <input class="opcOKR form-check-input" type="radio" name="{{obj.id}}" value="{{obj.valor}}" id="resultadoOKR" required/>
+                                <label class="form-check-label" for="radio">
+                                Si
+                                </label>
+                                <input class="opcOKR" type="radio" name="{{obj.id}}" value="0" id="resultadoOKR" required/>
+                                <label class="form-check-label" for="radio">
+                                    No
+                                </label>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {%endfor%}
+                </tbody>
+            </table>
+
+
+            {% if sumCalidad != None %}
+            <h1 class="descOKR "> Calidad operativa </h1>
+            <h1 id="resultadoOKR"></h1>
+            <table id="tablaEvaluacion2" class="tablaEvaluacion2 table table-striped table-responsive table-bordered">
+                <thead>
+                    <tr style= "background-color: #00953a;">
+                        <th colspan="2">Calidad operativa</th>
+                        <th colspan="2" class="valorKPI">Valor: {{sumCalidad}}</th>
+                        <th colspan="2" class="calificacionKPI">Calificación: 0</th>
+                    </tr>
+                    <tr>
+                        <th>Área efectividad</th>
+                        <th>Método de medición</th>
+                        <th>Objetivo</th>
+                        <th>Valor</th>
+                        <th>Comentarios</th>
+                        <th>Calificacion</th>
+                    </tr>
+                </thead>
+  
+                <tbody>
+                    {%for obj in obj%}
+                    {% if obj.apartado_id == 8 %}
+                    <tr>
+                        <td>{{obj.area}}</td>
+                        <td>{{obj.metodo}}</td>
+                        <td>
+                            {{obj.objetivo}} 
+                            {% for pocentaje in obj.porcentajes_set.all %}
+                            {% if pocentaje.evaluacion_id == evaluacion.id %}
+                            <h6><span style= "color: #295caa;">Valor obtenido: {{pocentaje.porcentaje}} </span> </h6>
+                            {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {{obj.valor}}
+                        </td>
+                        <td>
+                            {% for comentario in obj.comentariosareas_set.all %}
+                            {% if comentario.evaluacion_id == evaluacion.id%}
+                            <h6><span style= "color: #295caa;">Evaluador: </span> {{comentario.comentario}}</h6>
+                            {% endif %}
+                            {% endfor %}
+                            <textarea name="comentario" class="form-control {{ obj.id }} comentarioKPI" id="{{ obj.id }}"></textarea>
+                        </td>
+                        <td>
+                            {% comment %} {% for calificacion in obj.calificacionesareas_set.all %}
+                            {% if calificacion.evaluacion_id == evaluacion.id %}
+                            {% if calificacion.calificacion > 0 %}
+                            <h6 style="color:#00953a">Evaluador: Si</h6>
+                            {% else %}
+                            <h6  style="color: #f00;">Evaluador: No</h6>
+                            {% endif %}
+                            {% endif %}
+                            {% endfor %}
+                            <input class="opcKPI form-check-input" type="radio" name="{{obj.id}}" value="{{obj.valor}}" id="resultadoKPI" required/>
+                            <label class="form-check-label" for="radio">
+                               Si
+                            </label>
+                            <input class="opcKPI" type="radio" name="{{obj.id}}" value="0" id="resultadoKPI" required/>
+                            <label class="form-check-label" for="radio">
+                                No
+                            </label> {% endcomment %}
+                            {% if obj.tiene_calificacion %}
+                                {% for calificacion in obj.calificacionesareas_set.all %}
+                                {% if calificacion.evaluacion_id == evaluacion.id %}
+                                    {% if calificacion.calificacion > 0 %}
+                                        <input class="opcKPI form-check-input" type="radio" name="{{obj.id}}" value="{{obj.valor}}" id="resultadoKPI"  required checked/>
+                                        <label class="form-check-label" for="radio" >
+                                            Si
+                                        </label>
+                                        <input class="opcKPI" type="radio" name="{{obj.id}}" value="0" id="resultadoKPI" required/>
+                                        <label class="form-check-label" for="radio">
+                                            No
+                                        </label>
+                                    {% else %}
+                                        <input class="opcKPI form-check-input" type="radio" name="{{obj.id}}" value="{{obj.valor}}" id="resultadoKPI" required/>
+                                        <label class="form-check-label" for="radio">
+                                        Si
+                                        </label>
+                                        <input class="opcKPI" type="radio" name="{{obj.id}}" value="0" id="resultadoKPI" required checked/>
+                                        <label class="form-check-label" for="radio" >
+                                            No
+                                        </label>
+                                    {% endif %}
+                                {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <input class="opcKPI form-check-input" type="radio" name="{{obj.id}}" value="{{obj.valor}}" id="resultadoKPI" required/>
+                                <label class="form-check-label" for="radio">
+                                Si
+                                </label>
+                                <input class="opcKPI" type="radio" name="{{obj.id}}" value="0" id="resultadoKPI" required/>
+                                <label class="form-check-label" for="radio">
+                                    No
+                                </label>
+                            {% endif %}
+
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {%endfor%}
+                </tbody>
+            </table>
+            {% endif %}
+
+            {% comment %} <h1 class="descKPI "> KPIs</h1>
+            <table id="tablaEvaluacion2" class="tablaEvaluacion2 table table-striped table-responsive table-bordered" >
+                <thead>
+                    <tr style= "background-color: #00953a;">
+                        <th colspan="2">KPI</th>
+                        <th colspan="2" class="valorKPI">Valor: {{sumKPI}}</th>
+                        <th colspan="2" class="calificacionKPI">Calificación: 0</th>
+                    </tr>
+                    <tr>
+                        <th>Objetivo</th>
+                        <th>Metrica</th>
+                        <th>Valor</th>
+                        <th>Comentarios</th>
+                        <th>Calificaciones</th>
+                    </tr>
+                </thead>
+  
+                <tbody>
+                    {%for obj in obj%}
+                    {% if obj.apartado_id == 2 %}
+                    <tr>
+                        <td>{{obj.objetivo}}</td>
+                        <td>{{obj.metrica}}</td>
+                        <td>{{obj.valor}}</td>
+                        <td>
+                            {% for comentario in obj.comentariosobjetivos_set.all %}
+                            {% if comentario.evaluacion_id == evaluacion.id%}
+                            <h6><span style= "color: #295caa;">{{comentario.quienComenta}}: </span> {{comentario.comentario}}</h6>
+                            {% endif %}
+                            {% endfor %}
+                            <textarea name="comentario" class="form-control {{ obj.id }} comentarioKPI" id="{{ obj.id }}"></textarea>
+                        </td>
+                        <td>
+                            {% for calificacion in obj.calificacionesobjetivos_set.all %}
+                            {% if calificacion.evaluacion_id == evaluacion.id %}
+                            {% if calificacion.calificacion > 0 %}
+                            <h6 style="color:#00953a">{{calificacion.quienCalifica.nombre}}: Si</h6>
+                            {% else %}
+                            <h6  style="color: #f00;">{{calificacion.quienCalifica.nombre}}: No</h6>
+                            {% endif %}
+                            {% endif %}
+                            {% endfor %}
+                            <input type="radio" name="{{obj.id}}" value="{{obj.valor}}" id="resultadoKPI" required/>
+                            <label class="form-check-label" for="radio">
+                                Si
+                             </label>
+                            <input type="radio" name="{{obj.id}}" value="0" id="resultadoKPI" required/>
+                            <label class="form-check-label" for="radio">
+                                No
+                             </label>
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {%endfor%}
+
+                </tbody>
+            </table> {% endcomment %}
+            
+            
+
+            <h1 class="descCL "> Cultura laboral </h1>
+            <table id="tablaEvaluacion3" class="tablaEvaluacion3 table table-striped table-responsive table-bordered" >
+                <thead>
+                    <tr style= "background-color: #00953a;">
+                        <th colspan="2">Cultura laboral</th>
+                        <th colspan="2" class="valorCL">Valor: {{sumCL}}</th>
+                        <th colspan="2" class="calificacionCL">Calificación: 0</th>
+                    </tr>
+                    <tr>
+                        <th>Área efectividad</th>
+                        <th>Método de medición</th>
+                        <th>Objetivo</th>
+                        <th>Valor</th>
+                        <th>Comentarios</th>
+                        <th>Calificacion</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {%for obj in obj%}
+                    {% if obj.apartado_id == 7 %}
+                    <tr>
+                        <td>{{obj.area}}</td>
+                        <td>{{obj.metodo}}</td>
+                        <td>
+                            {{obj.objetivo}}
+                            {% for pocentaje in obj.porcentajes_set.all %}
+                            {% if pocentaje.evaluacion_id == evaluacion.id %}
+                            <h6><span style= "color: #295caa;">Valor obtenido: {{pocentaje.porcentaje}} </span> </h6>
+                            {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td>{{obj.valor}}</td>
+
+                        <td>
+                            {% for comentario in obj.comentariosareas_set.all %}
+                            {% if comentario.evaluacion_id == evaluacion.id%}
+                            <h6><span style= "color: #295caa;">Evaluador: </span> {{comentario.comentario}}</h6>
+                            {% endif %}
+                            {% endfor %}
+                            <textarea name="comentario" class="form-control {{ obj.id }} comentarioCL" id="{{ obj.id }}"></textarea>
+                        </td>
+
+                        <td>
+                            {% for calificacion in obj.calificacionesareas_set.all %}
+                            {% if calificacion.evaluacion_id == evaluacion.id %}
+                            {% if calificacion.calificacion > 0 %}
+                            <h6 style="color:#00953a">Evaluador: Si</h6>
+                            {% else %}
+                            <h6  style="color: #f00;">Evaluador: No</h6>
+                            {% endif %}
+                            {% endif %}
+                            {% endfor %}
+
+
+                            {% for calificacion in obj.calificacionesareas_set.all %}
+                            {% if calificacion.evaluacion_id == evaluacion.id %}
+                            {% if calificacion.calificacion > 0 %}
+                                <input class="opcCL form-check-input" type="radio" name="-3" value="{{obj.valor}}" id="resultadoCL"  required checked disabled/>
+                                <label class="form-check-label" for="radio" >
+                                    Si
+                                </label>
+                                <input class="opcCL" type="radio" name="-3" value="0" id="resultadoCL" required disabled/>
+                                <label class="form-check-label" for="radio">
+                                    No
+                                </label>
+                            {% else %}
+                                <input class="opcCL form-check-input" type="radio" name="-3" value="{{obj.valor}}" id="resultadoCL" required disabled/>
+                                <label class="form-check-label" for="radio">
+                                Si
+                                </label>
+                                <input class="opcCL" type="radio" name="-3" value="0" id="resultadoCL" required checked disabled/>
+                                <label class="form-check-label" for="radio" >
+                                    No
+                                </label>
+                            {% endif %}
+                            {% endif %}
+                            {% endfor %}
+
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {%endfor%}
+                </tbody>
+            </table>
+
+
+  
+            {% comment %} <div class="logros">
+                <label for="logros">¿Cual fue tu mayor logro este mes?</label>
+                {% if comentariosGenerales.logros != "" %}
+                <h6>Autoevaluado: {{comentariosGenerales.logros}}</h6>
+                {% endif %}
+                <textarea class="form-control logros" id="logros" name="logros" rows="3" required></textarea>
+            </div>
+            <br/> {% endcomment %}
+            <div class="comentariosGenerales">
+                 <label for="comentariosGenerales">Comentarios generales</label>
+               {% comment %} {% if comentariosGenerales.comentario_evaluador1 != "" %}
+                <h6><span style= "color: #295caa;">Evaluador 1: </span> {{comentariosGenerales.comentario_evaluador1}}</h6>
+                {% endif %}
+                {% if comentariosGenerales.comentario_director != "" %}
+                <h6><span style= "color: #295caa;">Director: </span> {{comentariosGenerales.comentario_director}}</h6>
+                {% endif %}
+                {% if comentariosGenerales.comentario_capitalHumano != "" %}
+                <h6><span style= "color: #295caa;">Capital humano: </span> {{comentariosGenerales.comentario_capitalHumano}}</h6>
+                {% endif %}
+                {% if comentariosGenerales.comentario_calidad != "" %}
+                <h6><span style= "color: #295caa;">Calidad: </span> {{comentariosGenerales.comentario_calidad}}</h6>
+                {% endif %} {% endcomment %}
+                <textarea class="form-control comentariosGenerales" id="comentariosGenerales" name="comentariosGenerales" rows="3"></textarea>
+            </div>
+            <br/>
+            <button id="btnEnviar" class="btn btn-primary btn-enviar nota" onclick="guardarCalificacion()" btn-enviar>Finalizar evaluacion</button>
+
+            <button id="btnAvance" class="btn btn-success editarBtn" onclick="guardarAvance()" btn-enviar>Guardar avance</button>
+          </div>
+
+
+        </div>
+
+
+        
+      </div>
+    </div>
+    <div id="modalError" class="modalError">
+        <div class="modal-content">
+          <span class="closeError">&times;</span>
+          <img src="{% static 'img/advertencia.png' %}" alt="Imagen" width="35px" height="35px">
+          <p id="modal-messageError"></p>
+        </div>
+      </div>
+    
+    
+      <div id="modalEnviar" class="modalEnviar">
+        <div class="modal-content">
+          <span class="closeEnviar">&times;</span>
+          <img src="{% static 'img/comprobado.png' %}" alt="Imagen" width="35px" height="35px">
+          <p id="modal-messageEnviar"></p>
+        </div>
+      </div>
+     <script>
+        var suma = 0;  
+        // Agregar un evento 'change' al elemento select
+    document.addEventListener('DOMContentLoaded', function() {
+        $(document).ready(function() {
+            
+            function sumarTotal(){
+                suma = 0;
+                $('#tablaEvaluacion1 input[type=radio]:checked, #tablaEvaluacion2 input[type=radio]:checked, #tablaEvaluacion3 input[type=radio]:checked').each(function() {
+                    suma += parseFloat($(this).val());
+                });
+                $('.calificacionFinal').text(suma);
+            }
+
+            // Función para calcular la calificación y actualizarla para la tabla OKR
+            function calcularCalificacionOKR() {
+                var sumaOKR = 0;
+                $('#tablaEvaluacion1 input[type=radio]:checked').each(function() {
+                    sumaOKR += parseFloat($(this).val());
+                });
+                $('.calificacionOKR').text("Calificación: " + sumaOKR);
+                sumarTotal();
+            }
+    
+            // Función para calcular la calificación y actualizarla para la tabla KPI
+            function calcularCalificacionKPI() {
+                var sumaKPI = 0;
+                $('#tablaEvaluacion2 input[type=radio]:checked').each(function() {
+                    sumaKPI += parseFloat($(this).val());
+                });
+                $('.calificacionKPI').text("Calificación: " + sumaKPI);
+                sumarTotal();
+            }
+
+            // Función para calcular la calificación y actualizarla para la tabla CL
+            function calcularCalificacionCL() {
+                var sumaCL = 0;
+                $('#tablaEvaluacion3 input[type=radio]:checked').each(function() {
+                    sumaCL += parseFloat($(this).val());
+                });
+                $('.calificacionCL').text("Calificación: " + sumaCL);
+                sumarTotal();
+            }
+
+            // Función para calcular la calificación y actualizarla para la tabla BONO
+            function calcularCalificacionBONO() {
+                var sumaBONO = 0;
+                $('#tablaEvaluacion4 input[type=radio]:checked').each(function() {
+                    sumaBONO += parseFloat($(this).val());
+                });
+                $('.calificacionBONO').text("Total: $" + sumaBONO + ".00");
+                sumarTotal();
+            }
+    
+            // Manejar el evento de cambio en los radios para la tabla OKR
+            $('#tablaEvaluacion1 input[type=radio]').change(function() {
+                calcularCalificacionOKR();
+            });
+    
+            // Manejar el evento de cambio en los radios para la tabla KPI
+            $('#tablaEvaluacion2 input[type=radio]').change(function() {
+                calcularCalificacionKPI();
+            });
+
+            // Manejar el evento de cambio en los radios para la tabla CL
+            $('#tablaEvaluacion3 input[type=radio]').change(function() {
+                calcularCalificacionCL();
+            });
+
+            // Manejar el evento de cambio en los radios para la tabla BONO
+            $('#tablaEvaluacion4 input[type=radio]').change(function() {
+                calcularCalificacionBONO();
+            });
+
+    
+            // Llamar a las funciones de cálculo inicial
+            calcularCalificacionOKR();
+            calcularCalificacionKPI();
+            calcularCalificacionCL();
+        });
+});   
+
+       
+  
+        
+  
+  
+      // Obtener el modal de errores
+    var modal = document.getElementById("modalError");
+    var modalEnviar = document.getElementById("modalEnviar");
+  
+    // Obtener el botón que cierra el modal
+    var spanError = document.getElementsByClassName("closeError")[0];
+    var spanEnviar = document.getElementsByClassName("closeEnviar")[0];
+  
+    // Función para mostrar el modal con un mensaje específico
+    function showModalError(message) {
+    document.getElementById("modal-messageError").innerText = message;
+    modal.style.display = "block";
+    }
+  
+    function showModalEnviar(message) {
+    document.getElementById("modal-messageEnviar").innerText = message;
+    modalEnviar.style.display = "block";
+    }
+  
+  
+    spanError.onclick = function() {
+    modal.style.display = "none";
+    }
+  
+    window.onclick = function(event) {
+      if (event.target == modal) {
+          modal.style.display = "none";
+      }
+      }
+  
+  
+    spanEnviar.onclick = function() {
+        var url = '/porEvaluar/';
+        window.location.href = url;
+    }
+  
+    window.onclick = function(event) {
+        console.log("cuando da click afuera")
+        if (event.target == modalEnviar) {
+        {% comment %} var url = '/autoevaluacion/';
+        window.location.href = url; {% endcomment %}
+        }
+    }
+        var select = document.querySelector('select[name="opcionesOKR"]');
+
+    
+    function guardarCalificacion(){
+        
+        var boton = document.getElementById("btnEnviar");
+        boton.disabled = true;
+
+        var comentarios = [];
+        $('.comentarioOKR, .comentarioKPI, .comentarioCL').each(function() {
+            var id = $(this).attr('id');
+            var comentario = $(this).val();
+            if (comentario.trim() !== '') {
+                comentarios.push({ id: id, comentario: comentario });
+            }
+        });
+
+        var comentariosGenerales = [];
+        $('.comentariosGenerales').each(function() {
+            var comentario = $(this).val();
+            if (comentario.trim() !== '') {
+                comentariosGenerales.push({ id: 0, comentario: comentario });
+            }
+        }
+        );
+
+
+    var respuestas = [];
+    var contestadas=0;
+    var total = 0;
+    var calificacion = 0;
+
+    $('input[type=radio]:checked').each(function() {
+        var id = $(this).attr('name');
+        var respuesta = $(this).val();
+        contestadas++;
+        if (respuesta.trim() === '') {
+        }
+        calificacion += parseFloat(respuesta);
+        respuestas.push({ id: id, respuesta: respuesta });
+    });
+
+    calificacion =suma;
+
+    $('input[type=radio]').each(function() {
+        total++;
+    });
+
+    total=total/2;
+    console.log(contestadas);
+    console.log(total);
+
+    if ((contestadas != total) ) {
+
+        if (contestadas != total) {
+        showModalError("Selecciona una respuesta para todas las preguntas por favor");
+        boton.disabled = false; // Reactivar el botón si hay error
+        return;
+        }
+
+    } else {
+        numeroEvaluacion = $("#numeroEvaluacion").val();
+        usuarioLogueado= {{empleadoLogueado.no_emp}};
+        $.ajax({
+
+            url: '/guardarCalificacion/',
+            method: 'POST',
+            data: { 
+              comentarios: JSON.stringify(comentarios),
+              numeroEvaluacion: numeroEvaluacion,
+              total : calificacion,
+              comentariosGenerales: JSON.stringify(comentariosGenerales),
+              respuestas: JSON.stringify(respuestas),
+              usuarioLogueado: usuarioLogueado,
+              csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            success: function(response) {
+                console.log(response);
+                console.log ("trae los datos correctos")
+                if (response.code == 0) {
+                    console.log ("la evaluacion es 0 no se manda correo por que no es ultimo evaluador")
+                    showModalEnviar("Calificación guardada exitosamente. Evaluaste con " + calificacion + " puntos");
+                } else {
+                    console.log ("la evaluacion es 1 se manda correo por que es el ultimo evaluador")
+                    //Aqui enviare el correo
+                    numeroEvaluacion = $("#numeroEvaluacion").val();
+
+                    $.ajax({
+                        url: '/enviarCorreoFin/',
+                        method: 'POST',
+                        data: {
+                        numeroEvaluacion: numeroEvaluacion,
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                        },
+                        success: function(response) {
+                            console.log(response);
+                            showModalEnviar("Calificación guardada exitosamente. Evaluaste con " + calificacion + " puntos");
+                        },
+                        error: function(xhr, status, error) {
+                            showModalEnviar("Calificación guardada con exito. Evaluaste con " + calificacion + " puntos.");
+                        }
+                    });
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error(error);
+                showModalError("Ocurrió un error al guardar la calificación.");
+                boton.disabled = false;
+            }
+        });
+    }
+
+    
+
+        console.log(comentarios);
+        console.log(comentariosGenerales);
+        console.log(respuestas);
+
+    }
+
+
+
+
+    function guardarAvance(){
+        
+        var boton = document.getElementById("btnAvance");
+        boton.disabled = true;
+
+        var comentarios = [];
+        $('.comentarioOKR, .comentarioKPI, .comentarioCL').each(function() {
+            var id = $(this).attr('id');
+            var comentario = $(this).val();
+            if (comentario.trim() !== '') {
+                comentarios.push({ id: id, comentario: comentario });
+            }
+        });
+
+        var comentariosGenerales = [];
+        $('.comentariosGenerales').each(function() {
+            var comentario = $(this).val();
+            if (comentario.trim() !== '') {
+                comentariosGenerales.push({ id: 0, comentario: comentario });
+            }
+        }
+        );
+
+
+    var respuestas = [];
+    var contestadas=0;
+    var total = 0;
+    var calificacion = 0;
+
+    $('input[type=radio]:checked').each(function() {
+        var id = $(this).attr('name');
+        var respuesta = $(this).val();
+        contestadas++;
+        if (respuesta.trim() === '') {
+        }
+        calificacion += parseFloat(respuesta);
+        respuestas.push({ id: id, respuesta: respuesta });
+    });
+
+    calificacion =suma;
+
+    $('input[type=radio]').each(function() {
+        total++;
+    });
+
+    total=total/2;
+    console.log(contestadas);
+    console.log(total);
+    if ((contestadas > 1) ) {
+        numeroEvaluacion = $("#numeroEvaluacion").val();
+        usuarioLogueado= {{empleadoLogueado.no_emp}};
+        $.ajax({
+
+            url: '/guardarAvance/',
+            method: 'POST',
+            data: { 
+              comentarios: JSON.stringify(comentarios),
+              numeroEvaluacion: numeroEvaluacion,
+              total : calificacion,
+              comentariosGenerales: JSON.stringify(comentariosGenerales),
+              respuestas: JSON.stringify(respuestas),
+              usuarioLogueado: usuarioLogueado,
+              csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            success: function(response) {
+                console.log(response);
+                console.log ("trae los datos correctos")
+                    console.log ("la evaluacion es 0 no se manda correo por que no es ultimo evaluador")
+                    showModalEnviar("Avance guardado con exito, ingresa al modulo de calificar para continuar con el proceso");
+            },
+            error: function(xhr, status, error) {
+                console.error(error);
+                showModalError("Ocurrió un error al guardar la calificación.");
+                boton.disabled = false;
+            }
+        });
+    } else {
+        boton.disabled = false;
+        showModalError("Seleccione al menos una respuesta para guardar el avance.");
+    }
+
+    
+
+        console.log(comentarios);
+        console.log(comentariosGenerales);
+        console.log(respuestas);
+
+    }
+
+
+      </script>
+  </body>
+</html>
+{% endblock %}

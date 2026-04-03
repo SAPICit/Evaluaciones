@@ -1,0 +1,395 @@
+{% extends "plantilla/master.html" %}
+{% load static %}
+
+
+{% block contenido %}
+
+
+
+    {% comment %} <div id="panel" class="panel">
+      <div class="interiorG"> {% endcomment %}
+        <div id="titulo" class="titulo">
+          <h1>Reporte OKR</h1>
+         </div>
+         <div class="eva">
+           <table class="tablaReportes table table-striped table-responsive table-bordered">
+             <thead>
+               <tr style="text-align: center;">
+                 {% if no_emp%}
+                   <th> No.emp </th>
+                 {% endif %}
+                 {% if nombre %}
+                   <th> Nombre </th>
+                 {% endif %}
+                 {% if apellidos %}
+                   <th> Apellidos </th>
+                 {% endif %}
+                 {% if departamento %}
+                   <th> Departamento </th>
+                 {% endif %}
+                 {% if mes %}
+                   <th> Mes </th>
+                 {% endif %}
+                 {% if anio %}
+                   <th> Año </th>
+                 {% endif %}
+                 {% if autocalificacion %}
+                   <th> Autocalificacion </th>
+                 {% endif %}
+                 {% if evaluador1 %}
+                   <th> Evaluador1 </th>
+                 {% endif %}
+                 {% if evaluador2 %}
+                   <th> Evaluador2 </th>
+                 {% endif %}
+                 {% if evaluador3 %}
+                   <th> Evaluador3 </th>
+                 {% endif %}
+                 {% if evaluador4 %}
+                   <th> Evaluador4 </th>
+                 {% endif %}
+                 {% if director %}
+                   <th> Director </th>
+                 {% endif %}
+                 {% if bempleado %}
+                   <th> Bono empleado </th>
+                 {% endif %}
+                 {% if bjefe %}
+                   <th> Bono jefe </th>
+                 {% endif %}
+                 {% if evaluadores %}
+                 <th> Evaluadores </th>
+                 {% endif %}
+                 {% if comentariosGenerales%}
+                 <th> Comentario generales </th>
+                 {% endif %}
+               </tr>
+             <thead>
+               <tbody style="text-align: center;">
+                 {% for dat in datos %}
+                 <tr>
+                   <td> {{ dat.empleado_id }} </td>
+                   {% comment %} <td> {{ dat.empleado_id }}  {{dat.id}}</td> {% endcomment %}
+                   <td>
+                   <a href="{% url 'reporteEvaluacionOKR' dat.id %}">
+                     {{ dat.empleado.nombre }}
+                   </a>
+                   </td>
+                   
+                   {% if apellidos %}
+                     <td> {{ dat.empleado.apellido_paterno }} {{ dat.empleado.apellido_materno}} </td>
+                   {% endif %}
+                   {% if departamento %}
+                     <td> {{ dat.empleado.departamento }} </td>
+                   {% endif %}
+                   {% if mes %}
+                     {% if dat.fecha.mes == 1 %}
+                         <td> Diciembre</td>
+                     {% elif dat.fecha.mes == 2 %}
+                         <td> Enero</td>
+                     {% elif dat.fecha.mes == 3 %}
+                         <td> Febrero </td>
+                     {% elif dat.fecha.mes == 4 %}
+                         <td> Marzo</td>
+                     {% elif dat.fecha.mes == 5 %}
+                         <td> Abril </td>
+                     {% elif dat.fecha.mes == 6 %}
+                         <td> Mayo </td>
+                     {% elif dat.fecha.mes == 7 %}
+                         <td> Junio </td>
+                     {% elif dat.fecha.mes == 8 %}
+                         <td> Julio </td>
+                     {% elif dat.fecha.mes == 9 %}
+                         <td> Agosto </td>
+                     {% elif dat.fecha.mes == 10 %}
+                         <td> Septiembre </td>
+                     {% elif dat.fecha.mes == 11 %}
+                         <td> Octubre </td>
+                     {% elif dat.fecha.mes == 12 %}
+                         <td> Noviembre </td>
+                     {% else %}
+                         <td>NA</td>
+                     {% endif %}
+                   {% endif %}
+ 
+                   {% if anio %}
+                     {% if dat.fecha.mes == 1 %}
+                     <td> {{ dat.fecha.anio|add:"-1" }} </td>
+                     {% else %}
+                     <td> {{ dat.fecha.anio }} </td>
+                     {% endif %}
+                   {% endif %}
+                    {% if dat.estatus < 3 %}
+                   {% if autocalificacion %}
+                     <td> - </td>
+                   {% endif %}
+                   {% if evaluador1 %}
+                     <td> - </td>
+                   {% endif %}
+                   {% if evaluador2 %}
+                     <td> - </td>
+                   {% endif %}
+                   {% if evaluador3 %}
+                     <td> - </td>
+                   {% endif %}
+                   {% if evaluador4 %}
+                     <td> - </td>
+                   {% endif %}
+                   {% if director %}
+                     <td> - </td>
+                   {% endif %} 
+                    {% else %} 
+                     {% if calificaciones %}
+                       {% for cal in calificaciones %}
+                         {% if cal.evaluacion_id == dat.id %}
+                         {% if autocalificacion %}
+                           <td> {% if cal.calificacion_autoevaluado == -1 %}  {% else %} {{ cal.calificacion_autoevaluado }} {% endif %} </td>
+                         {% endif %}
+                         {% if evaluador1 %}
+                           <td> {% if cal.calificacion_evaluador1 == -1 %}  {% else %} {{ cal.calificacion_evaluador1 }} {% endif %} </td>
+                         {% endif %}
+                         {% if evaluador2 %}  
+                           <td> {% if cal.calificacion_evaluador2 == -1 %}  {% else %} {{ cal.calificacion_evaluador2 }} {% endif %} </td>
+                         {% endif %}
+                         {% if evaluador3 %}
+                           <td> {% if cal.calificacion_evaluador3 == -1 %}  {% else %} {{ cal.calificacion_evaluador3 }} {% endif %} </td>
+                         {% endif %}
+                         {% if evaluador4 %}
+                           <td> {% if cal.calificacion_evaluador4 == -1 %}  {% else %} {{ cal.calificacion_evaluador4 }} {% endif %} </td>
+                         {% endif %}
+                         {% if director %}
+                           <td> {% if cal.calificacion_director == -1 %}  {% else %} {{ cal.calificacion_director }} {% endif %} </td>
+                         {% endif %}
+                         {% endif %}
+                       {% endfor %}
+                     {% endif %}
+                    {% endif %} 
+                   {% if bempleado %}
+                     <td>
+                     {% comment %} {% for bono in calificaciones_objetivos %}   
+ 
+                       {% if bono.evaluacion.id == dat.id and bono.quienCalifica_id == dat.empleado_id%}
+                         {{bono.calificacion}}
+                       {% endif %}
+ 
+                     {% endfor %} {% endcomment %}
+ 
+                     {% for bono in bonos %}
+                       {% if bono.0 == dat.id %}
+                           {{ bono.1 }}
+                       {% endif %}
+                     {% endfor %}
+ 
+                     </td>  
+                   {% endif %}
+                   {% if bjefe %}
+                     <td>
+                       {% for bono in bonosJ %}
+                       {% if bono.0 == dat.id %}
+                           {{ bono.1 }}
+                       {% endif %}
+                     {% endfor %}
+                     </td> 
+                   {% endif %}
+                   {% if evaluadores %}
+                     <td>
+                       {{ dat.seguimiento.evaluador1.nombre }} 
+                     
+                     {% if dat.seguimiento.evaluador2_id != 1 %} <br/> {{ dat.seguimiento.evaluador2.nombre }} {% endif %}
+                      
+                     {% if dat.seguimiento.evaluador3_id != 1 %} <br/> {{ dat.seguimiento.evaluador3.nombre }}  {% endif %}
+                     
+                     {% if dat.seguimiento.evaluador4_id != 1 %} <br/>  {{ dat.seguimiento.evaluador4.nombre }} {% endif %}
+                   </td>
+ 
+                   {% endif %}
+                   {% if comentariosGenerales %}
+                     <td>  
+                       {% for com in comentarios %}
+                         {% if com.evaluacion_id == dat.id%}
+                           {% if com.comentario_autoevaluado != ""%}
+                             <span> Autoevaluado: {{ com.comentario_autoevaluado }} </span> <br/>
+                           {% endif %}
+                           {% if com.comentario_evaluador1 != "" %}
+                             <span> Evaluador1: {{ com.comentario_evaluador1 }} </span> <br/>
+                           {% endif %}
+                           {% if com.comentario_evaluador2 != "" %}
+                             <span> Evaluador2: {{ com.comentario_evaluador2 }} </span> <br/>
+                           {% endif %}
+                           {% if com.comentario_evaluador3 != "" %}
+                             <span> Evaluador3: {{ com.comentario_evaluador3 }} </span> <br/>
+                           {% endif %}
+                           {% if com.comentario_evaluador4 != "" %}
+                             <span> Evaluador4: {{ com.comentario_evaluador4 }} </span> <br/>
+                           {% endif %}
+                           {% if com.comentario_director != "" %}
+                           <span> Director: {{ com.comentario_director}} </span> <br/>
+                           {% endif %}
+                           {% if com.comentario_capitalHumano != "" %}
+                           <span> CH: {{ com.comentario_capitalHumano}} </span> <br/>
+                           {% endif %}
+                           {% if com.comentario_calidad != "" %}
+                           <span> Calidad: {{ com.comentario_calidad}} </span> <br/>
+                           {% endif %}
+                           {% if com.logros != "" %}
+                           <span> Logros: {{ com.logros}} </span> <br/>
+                           {% endif %}
+                         {% endif %}
+                       {% endfor %}
+                     </td>
+                   {% endif %}
+ 
+ 
+                     
+                   
+                 </tr>
+                 {% endfor %}
+               </tbody>
+           </table>
+
+
+         
+      
+
+
+     <div id="titulo" class="titulo">
+      <h1>Reporte Areas efectividad</h1>
+     </div>
+       <table class="tablaReportes table table-striped table-responsive table-bordered">
+         <thead>
+           <tr style="text-align: center;">
+             {% if no_emp%}
+               <th> No.emp </th>
+             {% endif %}
+             {% if nombre %}
+               <th> Nombre </th>
+             {% endif %}
+             {% if apellidos %}
+               <th> Apellidos </th>
+             {% endif %}
+             {% if departamento %}
+               <th> Departamento </th>
+             {% endif %}
+             {% if mes %}
+               <th> Mes </th>
+             {% endif %}
+             {% if anio %}
+               <th> Año </th>
+             {% endif %}
+             {% if evaluador1 %}
+               <th> Calificacion </th>
+             {% endif %}
+             {% if evaluadores %}
+             <th> Evaluador </th>
+             {% endif %}
+             {% if comentariosGenerales%}
+             <th> Comentario generales </th>
+             {% endif %}
+           </tr>
+         <thead>
+           <tbody style="text-align: center;">
+             {% for dat in datosareas %}
+             <tr>
+               <td> {{ dat.empleado_id }} </td>
+               {% comment %} <td> {{ dat.empleado_id }}  {{dat.id}}</td> {% endcomment %}
+               <td>
+               <a href="{% url 'reporteEvaluacion' dat.id %}">
+                 {{ dat.empleado.nombre }}
+               </a>
+               </td>
+               
+               {% if apellidos %}
+                 <td> {{ dat.empleado.apellido_paterno }} {{ dat.empleado.apellido_materno}} </td>
+               {% endif %}
+               {% if departamento %}
+                 <td> {{ dat.empleado.departamento }} </td>
+               {% endif %}
+               {% if mes %}
+                 {% if dat.fecha.mes == 1 %}
+                     <td> Diciembre</td>
+                 {% elif dat.fecha.mes == 2 %}
+                     <td> Enero</td>
+                 {% elif dat.fecha.mes == 3 %}
+                     <td> Febrero </td>
+                 {% elif dat.fecha.mes == 4 %}
+                     <td> Marzo</td>
+                 {% elif dat.fecha.mes == 5 %}
+                     <td> Abril </td>
+                 {% elif dat.fecha.mes == 6 %}
+                     <td> Mayo </td>
+                 {% elif dat.fecha.mes == 7 %}
+                     <td> Junio </td>
+                 {% elif dat.fecha.mes == 8 %}
+                     <td> Julio </td>
+                 {% elif dat.fecha.mes == 9 %}
+                     <td> Agosto </td>
+                 {% elif dat.fecha.mes == 10 %}
+                     <td> Septiembre </td>
+                 {% elif dat.fecha.mes == 11 %}
+                     <td> Octubre </td>
+                 {% elif dat.fecha.mes == 12 %}
+                     <td> Noviembre </td>
+                 {% else %}
+                     <td>NA</td>
+                 {% endif %}
+               {% endif %}
+
+               {% if anio %}
+                 {% if dat.fecha.mes == 1 %}
+                 <td> {{ dat.fecha.anio|add:"-1" }} </td>
+                 {% else %}
+                 <td> {{ dat.fecha.anio }} </td>
+                 {% endif %}
+               {% endif %}
+
+                {% if dat.estado_id < 3 %}
+              {% if evaluador1 %}
+                 <td> - </td>
+               {% endif %}
+                {% else %} 
+                 {% if calificacionesAreas %}
+                   {% for cal in calificacionesAreas %}
+                     {% if cal.evaluacion_id == dat.id %}
+                       <td> {% if cal.calificacion_evaluador == -1 %}  {% else %} {{ cal.calificacion_evaluador }} {% endif %} </td>
+                     {% endif %}
+                   {% endfor %}
+                 {% endif %} 
+                {% endif %} 
+
+
+
+               {% if evaluadores %}
+                 <td>
+                   {{ dat.ruta.evaluador.nombre }}
+               </td>
+
+               {% endif %}
+               {% if comentariosAreas %}
+                 <td>  
+                   {% for com in comentariosAreas %}
+                     {% if com.evaluacion_id == dat.id%}
+                         <span> Evaluador: {{ com.comentario_evaluador }} </span>
+                     {% endif %}
+                   {% endfor %}
+                 </td>
+               {% endif %}
+
+
+                 
+               
+             </tr>
+             {% endfor %}
+           </tbody>
+       </table>
+     </div>
+     
+   </div>
+ </div>
+    
+</div>
+         
+</div>
+    
+  </body>
+</html>
+{% endblock %}

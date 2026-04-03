@@ -1,0 +1,380 @@
+{% extends "plantilla/master.html" %}
+{% load static %}
+
+
+{% block contenido %}
+    {% comment %} <div id="panel" class="panel">
+      <div class="interiorG"> {% endcomment %}
+        <div id="titulo" class="titulo">
+          <h1>Reportes</h1>
+        </div>
+        
+        <div class="eva">
+
+          <table class="table table-bordered table-responsive tEmpleado" style="text-align:center">
+            <thead>
+                <tr>
+                    <th>No.emp</th>
+                    <th>Autoevaluado</th>
+                    <th>Puesto</th>
+                    <th>Periodo evaluado</th>
+                    <th>Calificación</th>
+                    <th>Etapa</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{no_emp}}</td>
+                    <td>{{nombre}}</td>
+                    <td>{{puesto}}</td>
+                    <td>{{periodo}}</td>
+                    <td>{{calificacionAutoevaluado}}</td>
+                    <td>{{etapa}}</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <table class="table table-bordered table-responsive tEvaluadores" style="text-align:center">
+            <thead>
+                <tr>
+                    <th>No. emp</th>
+                    <th>Evaluador</th>
+                    <th>Puesto</th>
+                    <th>Autocalificación</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if e1_no_Emp != 1 %}
+                <tr>
+                    <td>{{e1_no_Emp}}</td>
+                    <td>{{e1_nombre}}</td>
+                    <td>{{e1_puesto}}</td>
+                    {% if e1.calificacion == -1 %}
+                        <td>0</td>
+                    {% else %}
+                        <td>{{e1_calificacion}}</td>
+                    {% endif %}
+                </tr>
+                {% endif %}
+
+                {% if e2_no_Emp != 1 %}
+                <tr>
+                    <td>{{ e2_no_Emp }}</td>
+                    <td>{{e2_nombre}}</td>
+                    <td>{{e2_puesto}}</td>
+                    {% if e2.calificacion == -1 %}
+                        <td>0</td>
+                    {% else %}
+                        <td>{{e2_calificacion}}</td>
+                    {% endif %}
+                </tr>
+                {% endif %}
+
+                {% if e3_no_Emp != 1 %}
+                <tr>
+                    <td>{{e3_no_Emp}}</td>
+                    <td>{{e3_nombre}}</td>
+                    <td>{{e3_puesto}}</td>
+                    {% if e3.calificacion == -1 %}
+                        <td>0</td>
+                    {% else %}
+                        <td>{{e3_calificacion}}</td>
+                    {% endif %}
+                </tr>
+                {% endif %}
+
+                {% if e4_no_Emp != 1 %}
+                <tr>
+                    <td>{{e4_no_Emp}}</td>
+                    <td>{{e4_nombre}}</td>
+                    <td>{{e4_puesto}}</td>
+                    {% if e4.calificacion == -1 %}
+                        <td>0</td>
+                    {% else %}
+                        <td>{{e4_calificacion}}</td>
+                    {% endif %}
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+
+          <div class="evaluacion table-responsive" id="evaluacion">
+            {% comment %} Para ver que numero de evaluacion tiene {{evaluacion.0.id}} {% endcomment %}
+            {% comment %} <input type="hidden" id="numeroEvaluacion" value="{{evaluacion.0.id}}"> {% endcomment %}
+            {% comment %} <h1 class="descOKR "> OKRs - {{sumOKR}}%</h1> {% endcomment %}
+            <h1 class="descOKR "> OKRs</h1>
+            <h1 id="resultadoOKR"></h1>
+            <table id="tablaEvaluacion1" class="tablaEvaluacion1 table table-striped table-responsive table-bordered">
+                <thead>
+                    <tr style= "background-color: #00953a;">
+                        <th colspan="2">OKR</th>
+                        <th colspan="2" class="valorOKR"></th>
+                        <th colspan="2" class="calificacionOKR">Autocalificación: </th>
+                    </tr>
+                    <tr>
+                        <th>Objetivo</th>
+                        <th>Metrica</th>
+                        <th>Valor</th>
+                        <th>Comentarios</th>
+                        <th>Resultados</th>
+                    </tr>
+                </thead>
+  
+                <tbody>
+                    {% for okr in OKR %}
+                    <tr>
+                    
+                    <td> {{ okr.objetivo }} </td>
+                    <td> {{ okr.metrica1 }} </td>
+                    <td> {{ okr.valor }} </td>
+                    <td>
+                        {% for comentario in coment_OKR %}
+                            {% if comentario.id_obj == okr.id_obj%}
+                            {% if comentario.comentarios_emp != "" %}
+                                <span style="color: #295caa;"> Evaluado : </span> {{ comentario.comentarios_emp }}<br>
+                            {% endif %}
+                            {% if comentario.comentarios_jefe != "" %}
+                                <span style="color: #295caa;"> Jefe :</span> {{comentario.comentarios_jefe}}<br>
+                            {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {% for calificacion in coment_OKR %}
+                            {% if calificacion.id_obj == okr.id_obj%}
+                            {% if calificacion.evalua_auto != "" %}
+                                <span style="color: #295caa;"> Evaluado : </span> {{ calificacion.evalua_auto }}<br>
+                            {% endif %}
+                            {% if calificacion.evalua_jefe != "" %}
+                                <span style="color: #295caa;"> Jefe :</span> {{calificacion.evalua_jefe}}<br>
+                            {% endif %}
+                            {% if calificacion.evalua_jefe_jefe != "" %}
+                                <span style="color: #295caa;"> Jefe :</span> {{calificacion.evalua_jefe_jefe}}<br>
+                            {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+                </tr>
+                    {% endfor %}
+
+                </tbody>
+            </table>
+            <h1 class="descKPI "> KPIs</h1>
+            <table id="tablaEvaluacion2" class="tablaEvaluacion2 table table-striped table-responsive table-bordered" >
+                <thead>
+                    <tr style= "background-color: #00953a;">
+                        <th colspan="2">KPI</th>
+                        <th colspan="2" class="valorKPI"></th>
+                        <th colspan="2" class="calificacionKPI">Autocalificación: </th>
+                    </tr>
+                    <tr>
+                        <th>Objetivo</th>
+                        <th>Metrica</th>
+                        <th>Valor</th>
+                        <th>Comentarios</th>
+                        <th>Resultados</th>
+                    </tr>
+                </thead>
+  
+                <tbody>
+                    {% for kpi in KPI %}
+                    <tr>
+                    
+                    <td> {{ kpi.objetivo }} </td>
+                    <td> {{ kpi.metrica1 }} </td>
+                    <td> {{ kpi.valor }} </td>
+                    <td>
+                        {% for comentario in coment_KPI %}
+                            {% if comentario.id_obj == kpi.id_obj%}
+                            {% if comentario.comentarios_emp != "" %}
+                                <span style="color: #295caa;"> Evaluado : </span> {{ comentario.comentarios_emp }}<br>
+                            {% endif %}
+                            {% if comentario.comentarios_jefe != " " %}
+                                <span style="color: #295caa;"> Jefe :</span> {{comentario.comentarios_jefe}}<br>
+                            {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {% for calificacion in coment_KPI %}
+                            {% if calificacion.id_obj == kpi.id_obj%}
+                            {% if calificacion.evalua_auto != "" %}
+                                <span style="color: #295caa;"> Evaluado : </span> {{ calificacion.evalua_auto }}<br>
+                            {% endif %}
+                            {% if calificacion.evalua_jefe != "" %}
+                                <span style="color: #295caa;"> Jefe :</span> {{calificacion.evalua_jefe}}<br>
+                            {% endif %}
+                            {% if calificacion.evalua_jefe_jefe != "" %}
+                                <span style="color: #295caa;"> Jefe :</span> {{calificacion.evalua_jefe_jefe}}<br>
+                            {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+                </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <h1 class="descCL "> Cultura laboral</h1>
+            <table id="tablaEvaluacion3" class="tablaEvaluacion3 table table-striped table-responsive table-bordered" >
+                <thead>
+                    <tr style= "background-color: #00953a;">
+                        <th colspan="2">Cultura laboral</th>
+                        <th colspan="2" class="valorCL"></th>
+                        <th colspan="2" class="calificacionCL">Autocalificación: </th>
+                    </tr>
+                    <tr>
+                        <th>Objetivo</th>
+                        <th>Metrica</th>
+                        <th>Valor</th>
+                        <th>Comentarios</th>
+                        <th>Resultados</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cl in CL %}
+                    <tr>
+                    
+                    <td> {{ cl.objetivo }} </td>
+                    <td> {{ cl.metrica1 }} </td>
+                    <td> {{ cl.valor }} </td>
+                    <td>
+                        {% for comentario in coment_CL %}
+                            {% if comentario.id_obj == cl.id_obj%}
+                            {% if comentario.comentarios_emp != "" %}
+                                <span style="color: #295caa;"> Evaluado : </span> {{ comentario.comentarios_emp }}<br>
+                            {% endif %}
+                            {% if comentario.comentarios_jefe != "" %}
+                                <span style="color: #295caa;"> Jefe :</span> {{comentario.comentarios_jefe}}<br>
+                            {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {% for calificacion in coment_CL %}
+                            {% if calificacion.id_obj == cl.id_obj%}
+                            {% if calificacion.evalua_auto != "" %}
+                                <span style="color: #295caa;"> Evaluado : </span> {{ calificacion.evalua_auto }}<br>
+                            {% endif %}
+                            {% if calificacion.evalua_jefe != "" %}
+                                <span style="color: #295caa;"> Jefe :</span> {{calificacion.evalua_jefe}}<br>
+                            {% endif %}
+                            {% if calificacion.evalua_jefe_jefe != "" %}
+                                <span style="color: #295caa;"> Jefe :</span> {{calificacion.evalua_jefe_jefe}}<br>
+                            {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+                </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+            {% if hayBono %}
+            <h1 class="descBONO "> Bono </h1>
+            <table id="tablaEvaluacion4" class="tablaEvaluacion4 table table-striped table-responsive table-bordered" > 
+                <thead>
+                    <tr style= "background-color: #00953a;">
+                        <th colspan="2">Bono</th>
+                        <th colspan="2" class="valorBONO"></th>
+                        <th colspan="2" class="calificacionBONO">Autocalificación: </th>
+                    </tr>
+                    <tr>
+                        <th>Objetivo</th>
+                        <th>Metrica</th>
+                        <th>Valor</th>
+                        <th>Comentarios</th>
+                        <th>Resultados</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for bono in BONO %}
+                    <tr>
+                    
+                    <td> {{ bono.objetivo }} </td>
+                    <td> {{ bono.metrica1 }} </td>
+                    <td> {{ bono.valor }} </td>
+                    <td>
+                        {% for comentario in coment_BONO %}
+                            {% if comentario.id_obj == bono.id_obj%}
+                            {% if comentario.comentarios_emp != "" %}
+                                <span style="color: #295caa;"> Evaluado : </span> {{ comentario.comentarios_emp }}<br>
+                            {% endif %}
+                            {% if comentario.comentarios_jefe != "" %}
+                                <span style="color: #295caa;"> Jefe :</span> {{comentario.comentarios_jefe}}<br>
+                            {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {% for calificacion in coment_BONO %}
+                            {% if calificacion.id_obj == bono.id_obj%}
+                            {% if calificacion.evalua_auto != "" %}
+                                <span style="color: #295caa;"> Evaluado : </span> {{ calificacion.evalua_auto }}<br>
+                            {% endif %}
+                            {% if calificacion.evalua_jefe != "" %}
+                                <span style="color: #295caa;"> Jefe :</span> {{calificacion.evalua_jefe}}<br>
+                            {% endif %}
+                            {% if calificacion.evalua_jefe_jefe != "" %}
+                                <span style="color: #295caa;"> Jefe :</span> {{calificacion.evalua_jefe_jefe}}<br>
+                            {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+                </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+                
+            </div>
+
+            <br/>
+            <label for="comentariosGenerales">Logros</label>
+            <div class="comentariosGenerales" style="border: 2px solid #00953a; border-radius: 5%; padding: 1%;">
+                {% if c_evaluador1 != "" %}
+                <span style="color: #295caa;"> Autoevaluado: </span> {{logros}}<br>
+                {% endif %}
+            </div>
+
+            <br/>
+            <label for="comentariosGenerales">Comentarios generales</label>
+            <div class="comentariosGenerales" style="border: 2px solid #00953a; border-radius: 5%; padding: 1%;">
+                {% if c_evaluador1 != "" %}
+                <span style="color: #295caa;"> Evaluador 1: </span> {{c_evaluador1}}<br>
+                {% endif %}
+
+                {% if c_evaluador2 != "" %}
+                <span style="color: #295caa;"> Evaluador 2: </span> {{c_evaluador2}}<br>
+                {% endif %}
+
+                {% if c_evaluador3 != "" %}
+                <span style="color: #295caa;"> Evaluador 3: </span> {{c_evaluador3}}<br>
+                {% endif %}
+
+                {% if c_evaluador4 != "" %}
+                <span style="color: #295caa;"> Evaluador 4: </span> {{c_evaluador4}}<br>
+                {% endif %}
+
+                {% if autoevaluado != "" %}
+                <span style="color: #295caa;"> Autoevaluado: </span> {{autoevaluado}}<br>
+                {% endif %}
+
+                {% if calidad != "" %}
+                <span style="color: #295caa;"> Calidad: </span> {{calidad}}<br>
+                {% endif %}
+
+                {% if c_capitalHumano != "" %}
+                <span style="color: #295caa;"> Capital humano: </span> {{c_capitalHumano}}<br>
+                {% endif %}
+
+
+            </div>
+          </div>
+
+
+        </div>
+        
+      </div>
+    </div>
+    {% endblock %}

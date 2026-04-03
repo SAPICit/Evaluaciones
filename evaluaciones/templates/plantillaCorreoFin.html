@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resumen de Evaluación</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .header {
+            background-color: #00953a;
+            color: #ffffff;
+            padding: 20px;
+            text-align: center;
+        }
+        .section-title {
+            background-color: #f8f9fa;
+            color: #343a40;
+            padding: 10px;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        .evaluation-table {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .table th {
+            background-color: #343a40;
+            color: #ffffff;
+        }
+        .comment-box {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Resumen de Evaluación</h1>
+            <p>Tu proceso de evaluación para este mes a finalizado</p>
+        </div>
+
+        <!-- Evaluación por los evaluadores -->
+        <div class="section-title">Resultados de {{empleado.nombre}}</div>
+        <table class="table table-bordered evaluation-table">
+            <thead>
+                <tr>
+                    <th>Fase</th>
+                    <th>Quien califica</th>
+                    <th>Calificación</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Evaluador</td>
+                    <td>{{evaluador1.nombre}} {{evaluador1.apellido_paterno}} {{evaluador1.apellido_materno}}</td>
+                    <td>{{resultados.calificacion_evaluador}}</td>
+                </tr>
+                <!-- Agrega más filas para los otros evaluadores -->
+            </tbody>
+        </table>
+
+        <!-- Comentarios generales -->
+        <div class="section-title">Comentarios Generales</div>
+        <div class="comment-box">
+            {% if comentarios.comentario_evaluador != "" %}
+            <p><strong>Evaluador:</strong> {{comentarios.comentario_evaluador}}</p>
+            {% endif %}
+
+            <!-- Agrega más comentarios -->
+        </div>
+
+        <!-- Footer -->
+        <div class="footer text-center">
+            <p>Gracias por tu participación en el proceso de evaluación.</p>
+            <p>Para ver tus calificaciones de manera detallada ingresa al sistema en la sección de reportes ( <a href="http://evaluacionescsh.cesehsa.com:89/accounts/login/"; text-decoration: underline;">http://evaluacionescsh.cesehsa.com:89/accounts/login/</a> )</p>
+            <p><em>Cualquier duda o aclaración comunicate con Capital Humano</em></p>
+        </div>
+    </div>
+</body>
+</html>

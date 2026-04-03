@@ -1,0 +1,79 @@
+{% extends "plantilla/master.html" %}
+{% load static %}
+
+
+{% block contenido %}
+
+
+
+    {% comment %} <div id="panel" class="panel">
+      <div class="interiorG"> {% endcomment %}
+        <div id="titulo" class="titulo">
+          <h1>Crear ruta de seguimiento</h1>
+        </div>
+        
+        
+        <div class="eva">
+          <form class="formularioRutaEvaluacion" id="formularioRutaEvaluacion" action="{% url 'guardarRutaEvaluacion' %}" method="post">
+            {% csrf_token %}
+            <div class="row g-3">
+            <div class="col-md-4">
+              <label for="evaluador1">Evaluador</label><br />
+              <select required class="form-control" id="evaluador1" name="evaluador1">
+                {% for empleado in empleados %}
+                {% if empleado.no_emp == 1 %}
+                <option value="{{ empleado.no_emp }}" selected>
+                    No asignar evaluador
+                </option>
+                {% else %}
+                <option value="{{ empleado.no_emp }}" {% if empleado.no_emp == 1 %} selected {% endif %}>
+                    {{ empleado.no_emp }} - {{ empleado.nombre }} {{ empleado.apellido_paterno }}
+                </option>
+                {% endif %}
+                {% endfor %}
+              </select><br />
+            </div>
+          </div>
+
+          <div class="nota">
+            <input type="submit" value="Crear ruta" class="btn btn-primary btn-enviar" />
+          </div>
+        </form>
+        
+        <br/>
+        <br/>
+        {% comment %} <h1 class="nota"> Nota: Para no asignar evaluador seleccionar el valor "1 - Manager"</h1> {% endcomment %}
+
+        <table id="tablaSeguimiento" class="tablaSeguimiento table table-striped table-responsive table-bordered">
+          <thead>
+              <tr>
+                  <th>ID</th>
+                  <th>Evaluador</th>
+              </tr>
+          </thead>
+
+          <tbody>
+            {%for ruta in rutas%}
+            <tr>
+                <td>
+                  {{ruta.id}}
+                <!-- Evaluador 1 -->
+                </td>
+                <td>
+                    {% if ruta.evaluador1_id == 1 %}
+                        Sin asignar
+                    {% else %}
+                        {{ ruta.evaluador }}
+                    {% endif %}
+                </td>
+              
+              </tr>
+              {% endfor %}
+        </tbody>
+        
+      </table>
+      </div>
+    </div>
+  </body>
+</html>
+{% endblock %}

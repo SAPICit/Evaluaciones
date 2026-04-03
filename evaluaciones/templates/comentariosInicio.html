@@ -1,0 +1,922 @@
+{% extends "plantilla/master.html" %}
+{% load static %}
+
+
+{% block contenido %}
+    {% comment %} <div id="panel" class="panel">
+      <div class="interiorG"> {% endcomment %}
+        <div id="titulo" class="titulo">
+          <h1>Comentarios iniciales</h1>
+        </div>
+
+        <div class="eva">
+          {% if error == 0 or errorGer == 0 %}
+          {% if evaSegui  or evaSeguirGer%}
+          <label for="numeroEvaluacion">Agregar comentarios a..</label>
+          <select required class="form-control" id="numeroEvaluacion" name="numeroEvaluacion">
+          {%for evS in evaSegui%}
+            <option value="{{ evS.id }}" selected>
+              {{ evS.empleado.nombre }} {{ evS.empleado.apellido_paterno }}
+            </option>
+          {%endfor%}
+          </select><br/>
+          
+          <div class="evaluacion table-responsive" id="evaluacion">
+  
+            <h1 class="descOKR "> OKRs - {{sumOKR}}%</h1>
+            <table id="tablaEvaluacion1" class="tablaEvaluacion1 table table-striped table-responsive table-bordered">
+                <thead>
+                    <tr>
+                        <th>Objetivo</th>
+                        <th>Metrica</th>
+                        <th>Valor</th>
+                        <th>Comentarios</th>
+                    </tr>
+                </thead>
+  
+                <tbody>
+                </tbody>
+            </table>
+  
+            <h1 class="descKPI "> KPIs - {{sumKPI}}%</h1>
+            <table id="tablaEvaluacion2" class="tablaEvaluacion2 table table-striped table-responsive table-bordered" >
+                <thead>
+                    <tr>
+                        <th>Objetivo</th>
+                        <th>Metrica</th>
+                        <th>Valor</th>
+                        <th>Comentarios</th>
+                    </tr>
+                </thead>
+  
+                <tbody>
+                </tbody>
+            </table>
+  
+            <h1 class="descCL "> Cultura laboral - {{sumCL}}%</h1>
+            <table id="tablaEvaluacion3" class="tablaEvaluacion3 table table-striped table-responsive table-bordered" >
+                <thead>
+                    <tr>
+                        <th>Objetivo</th>
+                        <th>Metrica</th>
+                        <th>Comentarios</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+  
+            <h1 class="descBONO "> Bono </h1>
+            <table id="tablaEvaluacion4" class="tablaEvaluacion4 table table-striped table-responsive table-bordered" > 
+                <thead>
+                    <tr>
+                        <th>Objetivo</th>
+                        <th>Metrica</th>
+                        <th>Valor</th>
+                        <th>Comentarios</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+  
+            <h1 class="descRESULTADOS "> Resultados </h1>
+            <table id="tablaEvaluacion5" class="tablaEvaluacion5 table table-striped table-responsive table-bordered" > 
+                <thead>
+                    <tr>
+                        <th>Objetivo</th>
+                        <th>Metrica</th>
+                        <th>Valor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+
+            <div class="comentariosGenerales">
+                <label for="comentariosGenerales">Comentarios generales</label>
+                <textarea class="form-control comentariosGenerales" id="comentariosGenerales" name="comentariosGenerales" rows="3"></textarea>
+            </div>
+            <br/>
+            <button class="btn btn-primary" onclick="guardarComentarios()">Guardar comentarios</button>
+          </div>
+            {% else %}
+            <p>Sin evaluaciones que comentar o fuera de fechas</p>
+          {%endif%}
+
+          {% else %}
+          {% if error == 1%}
+            <p> Fuera de fechas, vuelve cuando capital humano lo indique</p>
+            {% else %}
+            {%if error == 4 %}
+                <p> No tienes ninguna evaluación para comentar </p>
+            {% endif %}
+          {% endif %}
+    {% endif %}
+
+        </div>
+      </div>
+    </div>
+
+    <div id="modalError" class="modalError">
+      <div class="modal-content">
+        <span class="closeError">&times;</span>
+        <img src="{% static 'img/advertencia.png' %}" alt="Imagen" width="35px" height="35px">
+        <p id="modal-messageError"></p>
+      </div>
+    </div>
+  
+  
+    <div id="modalEnviar" class="modalEnviar">
+      <div class="modal-content">
+        <span class="closeEnviar">&times;</span>
+        <img src="{% static 'img/comprobado.png' %}" alt="Imagen" width="35px" height="35px">
+        <p id="modal-messageEnviar"></p>
+      </div>
+    </div>
+
+
+    <script>
+      llenarInicio();
+      $(document).ready(function() {
+        $("#numeroEvaluacion").change(function() {
+          var id = $(this).val();
+          $.ajax({
+            url: '/obtener_datos_evaluacion_comentarios/',
+            data: {
+              'evaluacion_id': id
+            },
+            dataType: 'json',
+            success: function(data) {
+              console.log(data);
+              // Actualiza el contenido de las tablas con los datos recibidos
+
+              //Actualizar tabla de los OKRs
+              var tableOKR = document.querySelector('.tablaEvaluacion1 tbody');
+              var descOKR = document.querySelector('.descOKR');
+              tableOKR.innerHTML = '';
+              if (data.OKR.length > 0) {
+                  // Recorre el arregloOKRs y crea las filas de la tabla
+                  var sOKR=0.0;
+                  
+                  data.OKR.forEach(function(cl) {
+                    var row = document.createElement('tr');
+                    row.innerHTML = `<td>${cl.objetivo}</td><td>${cl.metrica}</td><td>${cl.valor}</td>`;
+                
+                    // Crear una única celda para comentarios y textarea
+                    var commentsAndInputCell = document.createElement('td');
+                
+                    // Crear el textarea
+                    var input = document.createElement('textarea');
+                    input.class = 'form-control';
+                    input.rows = '3';
+                    input.type = 'text';
+                    input.id = cl.id;
+                    input.name = cl.id;
+                    input.className = 'comentarioOKR'; // Clase para aplicar estilos o acceder a él posteriormente
+                    commentsAndInputCell.appendChild(input);
+                
+                    // Crear los comentarios y agregarlos debajo del textarea
+                    var comentariosHeader = document.createElement('div'); // Usamos un 'div' para contener los comentarios
+                    var comentarios = ''; // Variable para almacenar los comentarios
+                
+                    // Recorrer los comentarios y agregar los que correspondan al objetivo
+                    data.coment_OKR.forEach(function(comentario) {
+                        if (comentario.objetivo_id == cl.id) {   
+                            data.empleados.forEach(function(empleado) {
+                                if (empleado.no_emp == comentario.quienComenta_id) {
+                                    comentarios += `<span style="color: #295caa;">${empleado.nombre} ${empleado.apellido_paterno}</span>: `;
+                                }
+                            });
+                            comentarios += `${comentario.comentario}<br>`;
+                        }
+                    });
+                
+                    comentariosHeader.innerHTML = comentarios;
+                    commentsAndInputCell.appendChild(comentariosHeader);
+                
+                    // Añadir la celda con los comentarios y textarea a la fila
+                    row.appendChild(commentsAndInputCell);
+                
+                    // Añadir la fila a la tabla
+                    tableOKR.appendChild(row);
+                    sOKR = sOKR + cl.valor;
+                });
+                
+                  descOKR.innerHTML = 'OKRs - ' + sOKR + '%';
+                  document.querySelector('.tablaEvaluacion1').style.display = 'table';
+              } else {
+                  document.querySelector('.tablaEvaluacion1').style.display = 'none';7
+                  descOKR.innerHTML = '';
+              }
+
+              //Actualizar tabla de los KPIs
+              var tableKPI = document.querySelector('.tablaEvaluacion2 tbody');
+              var descKPI = document.querySelector('.descKPI');
+              tableKPI.innerHTML = '';
+              if (data.KPI.length > 0) {
+                  // Recorre el arregloKPIs y crea las filas de la tabla
+                  var sKPI=0.0;
+                  
+                  data.KPI.forEach(function(cl) {
+                    var row = document.createElement('tr');
+                    row.innerHTML = `<td>${cl.objetivo}</td><td>${cl.metrica}</td><td>${cl.valor}</td>`;
+                
+                    // Crear una única celda para comentarios y textarea
+                    var commentsAndInputCell = document.createElement('td');
+                
+                    // Crear el textarea
+                    var input = document.createElement('textarea');
+                    input.class = 'form-control';
+                    input.rows = '3';
+                    input.type = 'text';
+                    input.id = cl.id;
+                    input.name = cl.id;
+                    input.className = 'comentarioKPI'; // Clase para aplicar estilos o acceder a él posteriormente
+                    commentsAndInputCell.appendChild(input);
+                
+                    // Crear los comentarios y agregarlos debajo del textarea
+                    var comentariosHeader = document.createElement('div'); // Usamos un 'div' para contener los comentarios
+                    var comentarios = ''; // Variable para almacenar los comentarios
+                
+                    // Recorrer los comentarios y agregar los que correspondan al objetivo
+                    data.coment_KPI.forEach(function(comentario) {
+                        if (comentario.objetivo_id == cl.id) {   
+                            data.empleados.forEach(function(empleado) {
+                                if (empleado.no_emp == comentario.quienComenta_id) {
+                                    comentarios += `<span style="color: #295caa;">${empleado.nombre} ${empleado.apellido_paterno}</span>: `;
+                                }
+                            });
+                            comentarios += `${comentario.comentario}<br>`;
+                        }
+                    });
+                
+                    comentariosHeader.innerHTML = comentarios;
+                    commentsAndInputCell.appendChild(comentariosHeader);
+                
+                    // Añadir la celda con los comentarios y textarea a la fila
+                    row.appendChild(commentsAndInputCell);
+                
+                    // Añadir la fila a la tabla
+                    tableKPI.appendChild(row);
+                    sKPI = sKPI + cl.valor;
+                });
+
+                  descKPI.innerHTML = 'KPIs - ' + sKPI + '%';
+                  document.querySelector('.tablaEvaluacion2').style.display = 'table';
+              }
+              else {
+                  document.querySelector('.tablaEvaluacion2').style.display = 'none';
+                  descKPI.innerHTML = '';
+              }
+
+              //Actualizar tabla de la cultura laboral
+              var tableCL = document.querySelector('.tablaEvaluacion3 tbody');
+              var descCL = document.querySelector('.descCL');
+              tableCL.innerHTML = '';
+              if (data.CL.length > 0) {
+                  // Recorre el arregloCL y crea las filas de la tabla
+                  sCL   = 0.0;
+                var obj ="";
+                var met = "";
+                var val= 0.0;
+                id=0;
+
+                data.CL.forEach(function(cl) {
+                    obj += cl.objetivo;
+                    met += cl.metrica;
+                    sCL = cl.valor;
+                    id = cl.id;
+                });
+
+
+                var row = document.createElement('tr');
+                row.innerHTML = `<td>${obj}</td><td>${met}</td>`;
+                tableCL.appendChild(row);
+                    
+                var inputCell = document.createElement('td');
+                // Creación del textarea
+                var textarea = document.createElement('textarea');
+                textarea.className = 'form-control comentarioCL';
+                textarea.id = id;
+                textarea.name = id;
+                textarea.rows = '3';
+                textarea.placeholder = 'Ingrese sus comentarios aquí...';
+
+                // Creación del primer input radio
+                var input2 = document.createElement('input');
+                input2.className = 'form-check-input';
+                input2.type = 'radio';
+                input2.id = id;
+                input2.name = "resultadoCL";
+                input2.value = 10;
+                input2.required = true;
+                
+                // Creación del label para el primer input radio
+                var label2 = document.createElement('label');
+                label2.className = 'form-check-label';
+                label2.htmlFor = id;
+                label2.innerText = "Sí";
+                
+                // Crear un salto de línea o un espacio
+                var br = document.createElement('br');
+                
+                // Creación del segundo input radio
+                var input3 = document.createElement('input');
+                input3.className = 'form-check-input';
+                input3.type = 'radio';
+                input3.id = id;
+                input3.name = "resultadoCL";
+                input3.value = 0;
+                input3.required = true;
+                
+                // Creación del label para el segundo input radio
+                var label3 = document.createElement('label');
+                label3.className = 'form-check-label';
+                label3.htmlFor = id;
+                label3.innerText = "No";
+
+                if (data.departamento != 11)
+                {
+                    input2.disabled = true;
+                    input3.disabled = true;
+                }
+                
+                //CREAR LA VARIABLE DE COMENTARIOS 
+                var comentariosHeader = document.createElement('div'); // Usamos un 'div' para contener los comentarios
+                var comentarios = ''; // Variable para almacenar los comentarios
+                var calificacionesHeader = document.createElement('div');
+                var calificaciones = '';
+                // Recorrer los comentarios y agregar los que correspondan al objetivo
+                data.coment_CL.forEach(function(comentario) {
+                    if (comentario.objetivo_id == id) {   
+                        data.empleados.forEach(function(empleado) {
+                            if (empleado.no_emp == comentario.quienComenta_id) {
+                                comentarios += `<span style="color: #295caa;">${empleado.nombre} ${empleado.apellido_paterno}</span>: `;
+                            }
+                        });
+                        comentarios += `${comentario.comentario}<br>`;
+                    }
+                });
+
+                comentariosHeader.innerHTML = comentarios;
+
+
+                data.cal_CL.forEach(function(calificacion) {
+                    if (calificacion.objetivo_id == id)
+                    {   
+                      data.empleados.forEach(function(empleado) {
+                    if (empleado.no_emp == calificacion.quienCalifica_id )
+                    {
+                    calificaciones += `<span style="color: #295caa;">${empleado.nombre} ${empleado.apellido_paterno}</span>: `;
+                    }
+                    });
+    
+                    if (calificacion.calificacion == 0){
+                    calificaciones += `<span style="color: red;">No</span><br>`;
+                    }else{
+                        if (calificacion.quienCalifica_id == data.no_emp)
+                        {
+                            ssCL += calificacion.calificacion;
+                        }
+                    calificaciones += `<span style="color: green;">Sí</span><br>`;
+                    }
+                    }
+                    }); 
+                calificacionesHeader.innerHTML = calificaciones;
+
+                // Asegúrate de que los elementos se agreguen en el orden correcto
+                inputCell.appendChild(comentariosHeader);  // Primero se agrega el textarea
+                inputCell.appendChild(textarea);  // Primero se agrega el textarea
+                inputCell.appendChild(input2);    // Después se agrega el primer input radio
+                inputCell.appendChild(label2);    // Luego se agrega el label para el primer input
+                inputCell.appendChild(br);
+                inputCell.appendChild(input3);    // Luego se agrega el segundo input radio
+                inputCell.appendChild(label3);    // Finalmente se agrega el label para el segundo input
+                inputCell.appendChild(calificacionesHeader);
+                row.appendChild(inputCell);
+                  descCL.innerHTML = 'Cultura Laboral - ' + sCL + '%' ;
+                  document.querySelector('.tablaEvaluacion3').style.display = 'table';
+              }
+              else {
+                  document.querySelector('.tablaEvaluacion3').style.display = 'none';
+                  descCL.innerHTML = '';
+              }
+
+                //Actualizar tabla del bono extra
+              var tableBONO = document.querySelector('.tablaEvaluacion4 tbody');
+            var descBONO = document.querySelector('.descBONO');
+            tableBONO.innerHTML = '';
+            if (data.BONO.length > 0) {
+                descBONO.innerHTML = 'Bono Extra';
+                // Recorre el arregloBONO y crea las filas de la tabla
+                data.BONO.forEach(function(cl) {
+                    var row = document.createElement('tr');
+                    row.innerHTML = `<td>${cl.objetivo}</td><td>${cl.metrica}</td><td>$${cl.valor}.00</td>`;
+                    
+                    var inputCell = document.createElement('td');
+                    var input = document.createElement('textarea');
+                    input.class= 'form-control';
+                    input.type = 'text';
+                    input.id= cl.id;
+                    input.name= cl.id;
+                    input.rows= '3';
+                    input.className = 'comentarioBONO'; // Clase para el input si necesitas aplicar estilos o acceder a él posteriormente
+                    inputCell.appendChild(input);
+                    var comentariosHeader = document.createElement('div'); // Usamos un 'div' para contener los comentarios
+                    var comentarios = ''; // Variable para almacenar los comentarios
+                
+                    // Recorrer los comentarios y agregar los que correspondan al objetivo
+                    data.coment_BONO.forEach(function(comentario) {
+                        if (comentario.objetivo_id == cl.id) {   
+                            data.empleados.forEach(function(empleado) {
+                                if (empleado.no_emp == comentario.quienComenta_id) {
+                                    comentarios += `<span style="color: #295caa;">${empleado.nombre} ${empleado.apellido_paterno}</span>: `;
+                                }
+                            });
+                            comentarios += `${comentario.comentario}<br>`;
+                        }
+                    });
+                
+                    comentariosHeader.innerHTML = comentarios;
+                    inputCell.appendChild(comentariosHeader) // Primero se agrega el textarea
+                    row.appendChild(inputCell);
+                    tableBONO.appendChild(row);
+                });
+                document.querySelector('.tablaEvaluacion4').style.display = 'table';
+            }
+            else {
+                document.querySelector('.tablaEvaluacion4').style.display = 'none';
+                descBONO.innerHTML = '';
+            }
+            
+
+              //Actualizar tabla de los resultados
+              var tableRESULTADOS = document.querySelector('.tablaEvaluacion5 tbody');
+              var descRESULTADOS = document.querySelector('.descRESULTADOS');
+              tableRESULTADOS.innerHTML = '';
+              if (data.RESULTADOS.length > 0) {
+                  descRESULTADOS.innerHTML = 'Resultados';
+                  // Recorre el arregloRESULTADOS y crea las filas de la tabla
+                  data.RESULTADOS.forEach(function(cl) {
+                      var row = document.createElement('tr');
+                      row.innerHTML = `<td>${cl.objetivo}</td><td>${cl.metrica}</td><td>${cl.valor}</td>`;
+                      tableRESULTADOS.appendChild(row);
+                  });
+                  document.querySelector('.tablaEvaluacion5').style.display = 'table';
+              }
+              else {
+                  document.querySelector('.tablaEvaluacion5').style.display = 'none';
+                  descRESULTADOS.innerHTML = '';
+              }
+
+            }
+          });
+        });
+      });
+
+      function llenarInicio(){
+        var id = $("#numeroEvaluacion").val();
+        $.ajax({
+          url: '/obtener_datos_evaluacion_comentarios/',
+          data: {
+            'evaluacion_id': id
+          },
+          dataType: 'json',
+          success: function(data) {
+            console.log(data);
+            // Actualiza el contenido de las tablas con los datos recibidos
+
+            //Actualizar tabla de los OKRs
+            var tableOKR = document.querySelector('.tablaEvaluacion1 tbody');
+            var descOKR = document.querySelector('.descOKR');
+            tableOKR.innerHTML = '';
+              if (data.OKR.length > 0) {
+                  // Recorre el arregloOKRs y crea las filas de la tabla
+                  var sOKR=0.0;
+                  
+                  data.OKR.forEach(function(cl) {
+                    var row = document.createElement('tr');
+                    row.innerHTML = `<td>${cl.objetivo}</td><td>${cl.metrica}</td><td>${cl.valor}</td>`;
+                
+                    // Crear una única celda para comentarios y textarea
+                    var commentsAndInputCell = document.createElement('td');
+                
+                    // Crear el textarea
+                    var input = document.createElement('textarea');
+                    input.class = 'form-control';
+                    input.rows = '3';
+                    input.type = 'text';
+                    input.id = cl.id;
+                    input.name = cl.id;
+                    input.className = 'comentarioOKR'; // Clase para aplicar estilos o acceder a él posteriormente
+                    commentsAndInputCell.appendChild(input);
+                
+                    // Crear los comentarios y agregarlos debajo del textarea
+                    var comentariosHeader = document.createElement('div'); // Usamos un 'div' para contener los comentarios
+                    var comentarios = ''; // Variable para almacenar los comentarios
+                
+                    // Recorrer los comentarios y agregar los que correspondan al objetivo
+                    data.coment_OKR.forEach(function(comentario) {
+                        if (comentario.objetivo_id == cl.id) {   
+                            data.empleados.forEach(function(empleado) {
+                                if (empleado.no_emp == comentario.quienComenta_id) {
+                                    comentarios += `<span style="color: #295caa;">${empleado.nombre} ${empleado.apellido_paterno}</span>: `;
+                                }
+                            });
+                            comentarios += `${comentario.comentario}<br>`;
+                        }
+                    });
+                
+                    comentariosHeader.innerHTML = comentarios;
+                    commentsAndInputCell.appendChild(comentariosHeader);
+                
+                    // Añadir la celda con los comentarios y textarea a la fila
+                    row.appendChild(commentsAndInputCell);
+                
+                    // Añadir la fila a la tabla
+                    tableOKR.appendChild(row);
+                    sOKR = sOKR + cl.valor;
+                });
+                descOKR.innerHTML = 'OKRs - ' + sOKR + '%';
+                document.querySelector('.tablaEvaluacion1').style.display = 'table';
+            } else {
+                document.querySelector('.tablaEvaluacion1').style.display = 'none';7
+                descOKR.innerHTML = '';
+            }
+
+            //Actualizar tabla de los KPIs
+            var tableKPI = document.querySelector('.tablaEvaluacion2 tbody');
+            var descKPI = document.querySelector('.descKPI');
+            tableKPI.innerHTML = '';
+              if (data.KPI.length > 0) {
+                  // Recorre el arregloKPIs y crea las filas de la tabla
+                  var sKPI=0.0;
+                  
+                  data.KPI.forEach(function(cl) {
+                    var row = document.createElement('tr');
+                    row.innerHTML = `<td>${cl.objetivo}</td><td>${cl.metrica}</td><td>${cl.valor}</td>`;
+                
+                    // Crear una única celda para comentarios y textarea
+                    var commentsAndInputCell = document.createElement('td');
+                
+                    // Crear el textarea
+                    var input = document.createElement('textarea');
+                    input.class = 'form-control';
+                    input.rows = '3';
+                    input.type = 'text';
+                    input.id = cl.id;
+                    input.name = cl.id;
+                    input.className = 'comentarioKPI'; // Clase para aplicar estilos o acceder a él posteriormente
+                    commentsAndInputCell.appendChild(input);
+                
+                    // Crear los comentarios y agregarlos debajo del textarea
+                    var comentariosHeader = document.createElement('div'); // Usamos un 'div' para contener los comentarios
+                    var comentarios = ''; // Variable para almacenar los comentarios
+                
+                    // Recorrer los comentarios y agregar los que correspondan al objetivo
+                    data.coment_KPI.forEach(function(comentario) {
+                        if (comentario.objetivo_id == cl.id) {   
+                            data.empleados.forEach(function(empleado) {
+                                if (empleado.no_emp == comentario.quienComenta_id) {
+                                    comentarios += `<span style="color: #295caa;">${empleado.nombre} ${empleado.apellido_paterno}</span>: `;
+                                }
+                            });
+                            comentarios += `${comentario.comentario}<br>`;
+                        }
+                    });
+                
+                    comentariosHeader.innerHTML = comentarios;
+                    commentsAndInputCell.appendChild(comentariosHeader);
+                
+                    // Añadir la celda con los comentarios y textarea a la fila
+                    row.appendChild(commentsAndInputCell);
+                
+                    // Añadir la fila a la tabla
+                    tableKPI.appendChild(row);
+                    sKPI = sKPI + cl.valor;
+                });
+                descKPI.innerHTML = 'KPIs - ' + sKPI + '%';
+                document.querySelector('.tablaEvaluacion2').style.display = 'table';
+            }
+            else {
+                document.querySelector('.tablaEvaluacion2').style.display = 'none';
+                descKPI.innerHTML = '';
+            }
+
+            //Actualizar tabla de la cultura laboral
+            var tableCL = document.querySelector('.tablaEvaluacion3 tbody');
+            var descCL = document.querySelector('.descCL');
+            tableCL.innerHTML = '';
+            if (data.CL.length > 0) {
+                // Recorre el arregloCL y crea las filas de la tabla
+                sCL   = 0.0;
+                var obj ="";
+                var met = "";
+                var val= 0.0;
+                id=0;
+
+                data.CL.forEach(function(cl) {
+                    obj += cl.objetivo;
+                    met += cl.metrica;
+                    sCL = cl.valor;
+                    id = cl.id;
+                });
+
+
+                var row = document.createElement('tr');
+                row.innerHTML = `<td>${obj}</td><td>${met}</td>`;
+                tableCL.appendChild(row);
+                    
+                var inputCell = document.createElement('td');
+                var textarea = document.createElement('textarea');
+                textarea.className = 'form-control comentarioCL';
+                textarea.id = id;
+                textarea.name = id;
+                textarea.rows = '3';
+                textarea.placeholder = 'Ingrese sus comentarios aquí...';
+                
+                // Creación del primer input radio
+                var input2 = document.createElement('input');
+                input2.className = 'form-check-input';
+                input2.type = 'radio';
+                input2.id = id;
+                input2.name = "resultadoCL";
+                input2.value = 10;
+                input2.required = true;
+                
+                // Creación del label para el primer input radio
+                var label2 = document.createElement('label');
+                label2.className = 'form-check-label';
+                label2.htmlFor = id;
+                label2.innerText = "Sí";
+                
+                // Crear un salto de línea o un espacio
+                var br = document.createElement('br');
+                
+                // Creación del segundo input radio
+                var input3 = document.createElement('input');
+                input3.className = 'form-check-input';
+                input3.type = 'radio';
+                input3.id = id;
+                input3.name = "resultadoCL";
+                input3.value = 0;
+                input3.required = true;
+                
+                // Creación del label para el segundo input radio
+                var label3 = document.createElement('label');
+                label3.className = 'form-check-label';
+                label3.htmlFor = id;
+                label3.innerText = "No";
+
+                if (data.departamento != 11)
+                {
+                    input2.disabled = true;
+                    input3.disabled = true;
+                }
+                
+                //CREAR LA VARIABLE DE COMENTARIOS 
+                var comentariosHeader = document.createElement('div'); // Usamos un 'div' para contener los comentarios
+                var comentarios = ''; // Variable para almacenar los comentarios
+
+                var calificacionesHeader = document.createElement('div'); // Usamos un 'div' para contener los calificaciones
+                var calificaciones = ''; // Variable para almacenar los calificaciones
+                
+                    // Recorrer los comentarios y agregar los que correspondan al objetivo
+                    data.coment_CL.forEach(function(comentario) {
+                        if (comentario.objetivo_id == id) {   
+                            data.empleados.forEach(function(empleado) {
+                                if (empleado.no_emp == comentario.quienComenta_id) {
+                                    comentarios += `<span style="color: #295caa;">${empleado.nombre} ${empleado.apellido_paterno}</span>: `;
+                                }
+                            });
+                            comentarios += `${comentario.comentario}<br>`;
+                        }
+                    });
+                
+                    comentariosHeader.innerHTML = comentarios;
+
+                    data.cal_CL.forEach(function(calificacion) {
+                        if (calificacion.objetivo_id == id)
+                        {   
+                          data.empleados.forEach(function(empleado) {
+                        if (empleado.no_emp == calificacion.quienCalifica_id )
+                        {
+                        calificaciones += `<span style="color: #295caa;">${empleado.nombre} ${empleado.apellido_paterno}</span>: `;
+                        }
+                        });
+        
+                        if (calificacion.calificacion == 0){
+                        calificaciones += `<span style="color: red;">No</span><br>`;
+                        }else{
+                            if (calificacion.quienCalifica_id == data.no_emp)
+                            {
+                                ssCL += calificacion.calificacion;
+                            }
+                        calificaciones += `<span style="color: green;">Sí</span><br>`;
+                        }
+                        }
+                        }); 
+                    calificacionesHeader.innerHTML = calificaciones;
+                // Asegúrate de que los elementos se agreguen en el orden correcto
+                inputCell.appendChild(comentariosHeader);  // Primero se agrega el textarea
+                inputCell.appendChild(textarea);  // Primero se agrega el textarea
+                inputCell.appendChild(input2);    // Después se agrega el primer input radio
+                inputCell.appendChild(label2);    // Luego se agrega el label para el primer input
+                inputCell.appendChild(br);
+                inputCell.appendChild(input3);    // Luego se agrega el segundo input radio
+                inputCell.appendChild(label3);    // Finalmente se agrega el label para el segundo input
+                inputCell.appendChild(calificacionesHeader);
+                row.appendChild(inputCell);
+
+
+                
+                descCL.innerHTML = 'Cultura Laboral - ' + sCL + '%' ;
+                document.querySelector('.tablaEvaluacion3').style.display = 'table';
+            }
+            else {
+                document.querySelector('.tablaEvaluacion3').style.display = 'none';
+                descCL.innerHTML = '';
+            }
+
+            //Actualizar tabla del bono extra
+            var tableBONO = document.querySelector('.tablaEvaluacion4 tbody');
+            var descBONO = document.querySelector('.descBONO');
+            tableBONO.innerHTML = '';
+            if (data.BONO.length > 0) {
+                descBONO.innerHTML = 'Bono Extra';
+                // Recorre el arregloBONO y crea las filas de la tabla
+                data.BONO.forEach(function(cl) {
+                    var row = document.createElement('tr');
+                    row.innerHTML = `<td>${cl.objetivo}</td><td>${cl.metrica}</td><td>$${cl.valor}.00</td>`;
+                    
+                    var inputCell = document.createElement('td');
+                    var input = document.createElement('textarea');
+                    input.class= 'form-control';
+                    input.type = 'text';
+                    input.id= cl.id;
+                    input.name= cl.id;
+                    input.rows= '3';
+                    input.className = 'comentarioBONO'; // Clase para el input si necesitas aplicar estilos o acceder a él posteriormente
+                    inputCell.appendChild(input);
+
+                    var comentariosHeader = document.createElement('div'); // Usamos un 'div' para contener los comentarios
+                    var comentarios = ''; // Variable para almacenar los comentarios
+                
+                    // Recorrer los comentarios y agregar los que correspondan al objetivo
+                    data.coment_BONO.forEach(function(comentario) {
+                        if (comentario.objetivo_id == cl.id) {   
+                            data.empleados.forEach(function(empleado) {
+                                if (empleado.no_emp == comentario.quienComenta_id) {
+                                    comentarios += `<span style="color: #295caa;">${empleado.nombre} ${empleado.apellido_paterno}</span>: `;
+                                }
+                            });
+                            comentarios += `${comentario.comentario}<br>`;
+                        }
+                    });
+                
+                    comentariosHeader.innerHTML = comentarios;
+                    inputCell.appendChild(comentariosHeader) // Primero se agrega el textarea 
+                    row.appendChild(inputCell);
+                    tableBONO.appendChild(row);
+                });
+                document.querySelector('.tablaEvaluacion4').style.display = 'table';
+            }
+            else {
+                document.querySelector('.tablaEvaluacion4').style.display = 'none';
+                descBONO.innerHTML = '';
+            }
+            
+            //Actualizar tabla de los resultados
+            var tableRESULTADOS = document.querySelector('.tablaEvaluacion5 tbody');
+            var descRESULTADOS = document.querySelector('.descRESULTADOS');
+            tableRESULTADOS.innerHTML = '';
+            if (data.RESULTADOS.length > 0) {
+                descRESULTADOS.innerHTML = 'Resultados';
+                // Recorre el arregloRESULTADOS y crea las filas de la tabla
+                data.RESULTADOS.forEach(function(cl) {
+                    var row = document.createElement('tr');
+                    row.innerHTML = `<td>${cl.objetivo}</td><td>${cl.metrica}</td><td>${cl.valor}</td>`;
+                    tableRESULTADOS.appendChild(row);
+                });
+                document.querySelector('.tablaEvaluacion5').style.display = 'table';
+            }
+            else {
+                document.querySelector('.tablaEvaluacion5').style.display = 'none';
+                descRESULTADOS.innerHTML = '';
+            }
+            
+          }
+        });
+      }
+
+      function guardarComentarios() {
+        var comentarios = [];
+        $('.comentarioOKR, .comentarioKPI, .comentarioCL, .comentarioBONO').each(function() {
+            var id = $(this).attr('id');
+            var comentario = $(this).val();
+            if (comentario.trim() !== '') {
+                comentarios.push({ id: id, comentario: comentario });
+            }
+        });
+
+        var comentariosGenerales = [];
+        $('.comentariosGenerales').each(function() {
+            var comentario = $(this).val();
+            if (comentario.trim() !== '') {
+                comentariosGenerales.push({ id: 0, comentario: comentario });
+            }
+        }
+        );
+
+
+        var resultadoCL = [];
+
+        if ($("input[name='resultadoCL']:checked").length > 0)
+        {
+           resultadoCL.push({
+                id: $("input[name='resultadoCL']:checked").attr("id"),  // Obtiene el ID del input seleccionado
+                value: $("input[name='resultadoCL']:checked").val()     // Obtiene el valor del input seleccionado
+            }); 
+        }
+            
+
+        console.log(comentarios);
+        if (comentarios.length > 0 || comentariosGenerales.length > 0 || resultadoCL.length > 0) {
+          numeroEvaluacion = $("#numeroEvaluacion").val();
+           {% comment %} numEva = evaluacion[0].id; {% endcomment %}
+            $.ajax({
+                url: '/guardar_comentarios_iniciales/',
+                method: 'POST',
+                data: { 
+                  comentarios: JSON.stringify(comentarios),
+                  numeroEvaluacion: numeroEvaluacion,
+                  comentariosGenerales: JSON.stringify(comentariosGenerales),
+                  resultadoCL: JSON.stringify(resultadoCL),
+                  csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    console.log(response);
+                    showModalEnviar("Información guardada.");
+                },
+                error: function(xhr, status, error) {
+                    console.error(error);
+                }
+            });
+        } else {
+            console.log('No hay nada que guardar.');
+            showModalError("No hay nada que guardar.");
+        }
+    }
+
+
+    // Obtener el modal de errores
+  var modal = document.getElementById("modalError");
+  var modalEnviar = document.getElementById("modalEnviar");
+
+  // Obtener el botón que cierra el modal
+  var spanError = document.getElementsByClassName("closeError")[0];
+  var spanEnviar = document.getElementsByClassName("closeEnviar")[0];
+
+  // Función para mostrar el modal con un mensaje específico
+  function showModalError(message) {
+  document.getElementById("modal-messageError").innerText = message;
+  modal.style.display = "block";
+  }
+
+  function showModalEnviar(message) {
+  document.getElementById("modal-messageEnviar").innerText = message;
+  modalEnviar.style.display = "block";
+  }
+
+
+  spanError.onclick = function() {
+  modal.style.display = "none";
+  }
+
+  window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+    }
+
+
+  spanEnviar.onclick = function() {
+      var url = '/comentariosInicio/';
+      window.location.href = url;
+
+  }
+
+  window.onclick = function(event) {
+      if (event.target == modalEnviar) {
+          
+          var url = '/comentariosInicio/';
+      window.location.href = url;
+      }
+  }
+
+    </script>
+
+  </body>
+</html>
+{% endblock %}
