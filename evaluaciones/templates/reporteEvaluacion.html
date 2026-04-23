@@ -91,6 +91,7 @@
                         <th>Evaluador</th>
                         <th>Puesto</th>
                         <th>Calificación</th>
+                        <th>Calificación dada por el lider</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -99,6 +100,13 @@
                         <td>{{seguimiento.evaluador.nombre}} {{seguimiento.evaluador.apellido_paterno}} {{seguimiento.evaluador.apellido_materno}}</td>
                         <td>{{seguimiento.evaluador.puesto}} - {{seguimiento.evaluador.departamento}}</td>
                         <td>{{resultados.calificacion_evaluador}}</td>
+                        <td>
+                            {% if evaCalificacion and evaCalificacion.calificacion != resultados.calificacion_evaluador %}
+                                {{ evaCalificacion.calificacion }}
+                            {% else %}
+                                Sin asignar
+                            {% endif %}
+                        </td>
                     </tr>
                     
                 </tbody>

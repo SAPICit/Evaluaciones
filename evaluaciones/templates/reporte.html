@@ -8,11 +8,16 @@
 
     {% comment %} <div id="panel" class="panel">
       <div class="interiorG"> {% endcomment %}
-        <div id="titulo" class="titulo">
+        <div id="titulo" class="titulo" style="display: flex; justify-content: space-between; align-items: center; padding-right: 20px;">
           <h1>Reporte OKR</h1>
+          <button class="btn btn-success" 
+            style="background-color: #28a745; border: none; padding: 8px; border-radius: 5px; cursor: pointer;" 
+            onclick="exportarExcel()">
+            <img src="{% static 'img/excel.png' %}" alt="Excel" style="width: 35px; height: 35px;">
+          </button>
          </div>
          <div class="eva">
-           <table class="tablaReportes table table-striped table-responsive table-bordered">
+           <table id="tablaReporteOKR" class="tablaReportes table table-striped table-responsive table-bordered">
              <thead>
                <tr style="text-align: center;">
                  {% if no_emp%}
@@ -51,6 +56,7 @@
                  {% if director %}
                    <th> Director </th>
                  {% endif %}
+                 <th>Calificación dada por el lider</th>
                  {% if bempleado %}
                    <th> Bono empleado </th>
                  {% endif %}
@@ -138,6 +144,7 @@
                    {% if director %}
                      <td> - </td>
                    {% endif %} 
+                   <td> - </td>
                     {% else %} 
                      {% if calificaciones %}
                        {% for cal in calificaciones %}
@@ -162,8 +169,15 @@
                          {% endif %}
                          {% endif %}
                        {% endfor %}
-                     {% endif %}
-                    {% endif %} 
+                      {% endif %}
+                      <td>
+                          {% if dat.eva_calificacion %}
+                              {{ dat.eva_calificacion.calificacion }}
+                          {% else %}
+                              Sin asignar
+                          {% endif %}
+                      </td>
+                     {% endif %} 
                    {% if bempleado %}
                      <td>
                      {% comment %} {% for bono in calificaciones_objetivos %}   
@@ -255,7 +269,7 @@
      <div id="titulo" class="titulo">
       <h1>Reporte Areas efectividad</h1>
      </div>
-       <table class="tablaReportes table table-striped table-responsive table-bordered">
+       <table id="tablaReporteAreas" class="tablaReportes table table-striped table-responsive table-bordered">
          <thead>
            <tr style="text-align: center;">
              {% if no_emp%}
@@ -279,6 +293,7 @@
              {% if evaluador1 %}
                <th> Calificacion </th>
              {% endif %}
+             <th>Calificación dada por el lider</th>
              {% if evaluadores %}
              <th> Evaluador </th>
              {% endif %}
@@ -343,18 +358,20 @@
                {% endif %}
 
                 {% if dat.estado_id < 3 %}
-              {% if evaluador1 %}
-                 <td> - </td>
-               {% endif %}
-                {% else %} 
+               {% if evaluador1 %}
+                  <td> - </td>
+                {% endif %}
+                  <td> - </td>
+                 {% else %} 
                  {% if calificacionesAreas %}
                    {% for cal in calificacionesAreas %}
                      {% if cal.evaluacion_id == dat.id %}
                        <td> {% if cal.calificacion_evaluador == -1 %}  {% else %} {{ cal.calificacion_evaluador }} {% endif %} </td>
                      {% endif %}
                    {% endfor %}
+                  {% endif %} 
+                  <td>{{ dat.lider_rating }}</td>
                  {% endif %} 
-                {% endif %} 
 
 
 
@@ -390,6 +407,76 @@
          
 </div>
     
+     <script>
+       // Función para exportar las tablas a Excel
+       function exportarExcel() {
+           // Función interna para copiar y poner verde claro los encabezados de la tabla
+           function estilizarTabla(tableId, titulo) {
+               var tablaOriginal = document.getElementById(tableId);
+               if (!tablaOriginal) return "";
+               
+               // Se clona la tabla original para no alterar el DOM del panel actual
+               var tablaClonada = tablaOriginal.cloneNode(true);
+               
+               // Se le aplica el color verde claro a todos los encabezados
+               // El usuario pidio "buen formato, color verde claro"
+               var headers = tablaClonada.querySelectorAll("th");
+               headers.forEach(function(th) {
+                   th.setAttribute("style", "background-color: #d4edda; color: #155724; font-weight: bold; border: 1px solid #c3e6cb; text-align: center; padding: 5px;");
+               });
+               
+               // Se le agregan bordes sencillos a las celdas para asegurar el formato bonito
+               var cells = tablaClonada.querySelectorAll("td");
+               cells.forEach(function(td) {
+                   td.setAttribute("style", "border: 1px solid #ddd; text-align: center; padding: 5px;");
+               });
+
+               // Remover los enlaces <a> para que el nombre u otros datos se exporten como texto plano y no como hipervínculo
+               var links = tablaClonada.querySelectorAll('a');
+               links.forEach(function(a) {
+                   var textNode = document.createTextNode(a.textContent || a.innerText);
+                   a.parentNode.replaceChild(textNode, a);
+               });
+
+               // Construcción del HTML resultante añadiendo un subtítulo encima de la tabla
+               return "<h2>" + titulo + "</h2>" + tablaClonada.outerHTML + "<br><br>";
+           }
+
+           // Se obtienen los HTML de ambas tablas (OKR y Áreas de efectividad)
+           var htmlCuerpo = estilizarTabla("tablaReporteOKR", "Reporte OKR");
+           htmlCuerpo += estilizarTabla("tablaReporteAreas", "Reporte Áreas de Efectividad");
+
+           if(!htmlCuerpo) {
+               alert("No hay información de reporte disponible para exportar a Excel.");
+               return;
+           }
+
+           // Base de datos URI para decirle al navegador que es de tipo Excel
+           var uri = 'data:application/vnd.ms-excel;base64,';
+           
+           // Template estándar de HTML a XLS con el charset UTF-8 para proteger ñ y acentos
+           var template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="UTF-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body>{table}</body></html>';
+           
+           var base64 = function(s) { return window.btoa(unescape(encodeURIComponent(s))) };
+           var format = function(s, c) { return s.replace(/{(\w+)}/g, function(m, p) { return c[p]; }) };
+
+           var ctx = {worksheet: 'Reportes', table: htmlCuerpo};
+
+           // Armado del enlace de descarga temporal
+           var link = document.createElement("a");
+           link.href = uri + base64(format(template, ctx));
+           
+           // Se forma la fecha completa para identificar el documento
+           var date = new Date();
+           var d = date.getDate() + "-" + (date.getMonth()+1) + "-" + date.getFullYear();
+           link.download = 'Reportes_Completos_' + d + '.xls';
+           
+           // Y se ejecuta un click virtual del documento para detonar su descarga
+           document.body.appendChild(link);
+           link.click();
+           document.body.removeChild(link);
+       }
+     </script>
   </body>
 </html>
 {% endblock %}

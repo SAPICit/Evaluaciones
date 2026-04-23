@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 from os import path
+from dotenv import load_dotenv
+
+load_dotenv('local.env')
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,12 +28,12 @@ def location(*args):
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '^j^0%18)6kv8jvmie++g8dx2@141%g=z7%f$_*5_x2ze=9b3qw'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ['evaluacioneschs.cesehsa.com','*']
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'evaluacioneschs.cesehsa.com').split(',')
 
 
 # Application definition
@@ -94,28 +97,26 @@ WSGI_APPLICATION = 'Proyecto.wsgi.application'
 # }
 
 DATABASES = {
-    'default':{
+    'default': {
         'ENGINE': 'mssql',
-        #'NAME': os.environ.get('NAME','evaluacion3'),
-        'NAME': os.environ.get('NAME','Evaluaciones'),
-        'USER': os.environ.get('USER', 'Tesch'),
-        'PASSWORD': os.environ.get('PASSWORD','B1Admin'),
-        'HOST': os.environ.get('HOST','192.168.1.250'),
-        'PORT': os.environ.get('PORT', ''),
+        'NAME': os.environ.get('DB_NAME', ''),
+        'USER': os.environ.get('DB_USER', ''),
+        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+        'HOST': os.environ.get('DB_HOST', ''),
+        'PORT': os.environ.get('DB_PORT', ''),
         'OPTIONS': {
             'driver': 'ODBC Driver 17 for SQL Server',
         },
     },
     'mysql_db': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'cesehs_cshevaluaciones',
-        'USER': 'remoto',
-        'PASSWORD': 'Cesehsa2010',
-        'HOST': '192.168.1.253',  # o la IP de tu servidor MySQL
-        'PORT': '3306',  # el puerto por defecto para MySQL
+        'NAME': os.environ.get('MYSQL_NAME', ''),
+        'USER': os.environ.get('MYSQL_USER', ''),
+        'PASSWORD': os.environ.get('MYSQL_PASSWORD', ''),
+        'HOST': os.environ.get('MYSQL_HOST', ''),
+        'PORT': os.environ.get('MYSQL_PORT', ''),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -164,9 +165,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 #Para el correo
 # CAMBIAR DESPUES PARA QUE SE MANDEN DESDE EL CORREO DE SAPIC
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
 EMAIL_USE_TLS = True
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'bsistemas@cesehsa.com'
-EMAIL_HOST_PASSWORD = 'csh0501iT_24'
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
