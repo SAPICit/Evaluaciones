@@ -63,6 +63,7 @@
                     <th>Evaluador</th>
                     <th>Fase concluida</th>
                     <th>Calificacion</th>
+                    <th>Calificación dada por el lider</th>
                 </tr>
             </thead>
             <tbody>
@@ -149,12 +150,17 @@
                           {% endif %}
                           {% endif %}
                           <td>
-                            {% for res in resultados %}
-                              {% if res.evaluacion_id == evaluacion.id %}
-                                    {{res.calificacion_evaluador}}
+                              {% if evaluacion.calificacion_calculada != None %}
+                                  {{ evaluacion.calificacion_calculada }}
                               {% endif %}
-                          {% endfor %}
-                        </td>
+                          </td>
+                          <td>
+                              {% if evaluacion.calificacion_lider != None and evaluacion.calificacion_lider != evaluacion.calificacion_calculada %}
+                                  {{ evaluacion.calificacion_lider }}
+                              {% else %}
+                                  Sin asignar
+                              {% endif %}
+                          </td>
                 </tr>
                 {% endif %}
                 {% endfor %}

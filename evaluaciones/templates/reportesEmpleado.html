@@ -77,6 +77,22 @@
 
 
   $(document).ready(function() {
+        {% if db_error %}
+        Toastify({
+            text: "Error de servidor: No se pudo conectar al sistema anterior. Contacte al administrador.",
+            duration: 5000,
+            close: true,
+            gravity: "top",
+            position: "center",
+            style: {
+                border: '2px solid #EF4444',
+                background: "#FEE2E2",
+                color:'#DC2626',
+                fontSize:'14px'
+            }
+        }).showToast();
+        {% endif %}
+
     $("#numEvaluacion").css({
       "background-color": "#00953a",  // Fondo gris oscuro
       "color": "#fff"  // Texto blanco

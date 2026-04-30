@@ -1,3 +1,4 @@
+import logging
 from django.shortcuts import render, redirect
 from .forms import crearEmpleado, EmailAuthenticationForm
 from datetime import datetime
@@ -25,7 +26,8 @@ from django.conf import settings
 import smtplib
 from django.utils.html import strip_tags
 from django.db.models import Subquery
-
+#Importar el modelo EvaCalificaciones
+from evaluaciones.models import EvaCalificaciones
 
 def index(request):
     return redirect(reverse('login'))
@@ -412,13 +414,10 @@ def evaluaciones(request):
     # fechas = Fechas.objects.filter()
     ids_fechas = [fecha.id for fecha in fechas]
     hayResultados = False
-
+    
     try: 
-        
         # Filtrar las evaluaciones utilizando los IDs de las fechas
         evaluaciones = EvaluacionesAreas.objects.filter(fecha_id__in=ids_fechas).order_by('fecha_id','empleado_id').select_related('fecha', 'empleado', 'tipoEvaluacion', 'ruta', 'estado')
-        # for eva in evaluaciones:
-        #     print(eva.id)
         seguimientos = Rutas.objects.all()
         resultados = []
         try:
@@ -426,8 +425,39 @@ def evaluaciones(request):
             hayResultados = True
         except:
             resultados = []
+        """
+        Asigna a cada evaluación:
+        - calificacion_calculada (desde resultados)
+        - calificacion_lider (mes anterior del mismo empleado)
+        Esto para que se muestre en la vista de evaluaciones.html
         
-        evaluaciones = EvaluacionesAreas.objects.filter(id__in=[eva.id for eva in evaluaciones]).annotate(empleado_nombre=F('empleado__nombre')).order_by('fecha_id','empleado_nombre')
+        """
+        resultados_dict = {r.evaluacion_id: r.calificacion_evaluador for r in resultados}
+        
+        evaluaciones = list(EvaluacionesAreas.objects.filter(id__in=[eva.id for eva in evaluaciones]).annotate(empleado_nombre=F('empleado__nombre')).order_by('fecha_id','empleado_nombre').select_related('fecha'))
+        
+        todas_fechas_dict = {(f.mes, f.anio): f.id for f in Fechas.objects.all()}
+        eva_cal_dict = {}
+        if evaluaciones:
+            emp_ids = [e.empleado_id for e in evaluaciones]
+            calificaciones_previas = EvaCalificaciones.objects.filter(no_emp_id__in=emp_ids)
+            eva_cal_dict = {(e.no_emp_id, e.fecha_id): e.calificacion for e in calificaciones_previas}
+            
+        for evaluacion in evaluaciones:
+            mes_evaluado = evaluacion.fecha.mes - 1
+            anio_evaluado = evaluacion.fecha.anio
+            if mes_evaluado == 0:
+                mes_evaluado = 12
+                anio_evaluado -= 1
+            # Asignar calificación del líder (si existe fecha anterior)    
+            fecha_anterior_id = todas_fechas_dict.get((mes_evaluado, anio_evaluado))
+            
+            calificacion_lider = eva_cal_dict.get((evaluacion.empleado_id, fecha_anterior_id))
+            calificacion_calculada = resultados_dict.get(evaluacion.id)
+            
+            evaluacion.calificacion_calculada = calificacion_calculada
+            evaluacion.calificacion_lider = calificacion_lider
+
     except:
         evaluaciones = []
         seguimientos = []
@@ -446,9 +476,9 @@ def evaluaciones(request):
         fecha3 = Fechas.objects.get(id=ids_fechas[2])   
     except:
         fecha3 = []
+            
     
-    
-    return render(request, 'evaluaciones.html', {'empleados': empleados, 'fases': fases, 'evaluaciones': evaluaciones, 'seguimientos': seguimientos, 'fechas': fechas, 'fecha1': fecha1, 'fecha2': fecha2, 'fecha3': fecha3, 'resultados': resultados})
+    return render(request, 'evaluaciones.html', {'empleados': empleados, 'fases': fases, 'evaluaciones': evaluaciones, 'seguimientos': seguimientos, 'fechas': fechas, 'fecha1': fecha1, 'fecha2': fecha2, 'fecha3': fecha3, 'resultados': resultados, 'evaCalificacion': None})
 
   
 #Creo que no lo ocupo y ocupo el de abajo
@@ -2121,7 +2151,11 @@ def personaEvaluar (request):
     #Es para saber si la autoevaluacion ya fue contestada o no
     seguimiento= Rutas.objects.get(id=evaluacion.ruta_id)
     # comentariosGenerales = ComentariosGenerales.objects.get(evaluacion_id=evaluacion.id)
-    # resultados = CalificacionesGenerales.objects.get(evaluacion_id=evaluacion.id)
+    #Obtiene la calificación general del empleado
+    try:
+        resultados = CalificacionesGenerales.objects.get(evaluacion_id=evaluacion.id)
+    except:
+        resultados = None
     obj = Areas.objects.filter(tipoEvaluacion_id=evaluacion.tipoEvaluacion_id)
     obj = Areas.objects.filter(tipoEvaluacion_id=evaluacion.tipoEvaluacion_id).prefetch_related('comentariosareas_set', 'calificacionesareas_set','porcentajes_set')
 
@@ -2132,7 +2166,38 @@ def personaEvaluar (request):
     sumAreas = obj.filter(apartado_id=6).aggregate(total_areas=Sum('valor'))['total_areas']
     sumCL = obj.filter(apartado_id=7).values_list('valor', flat=True).first()
     sumCalidad = obj.filter(apartado_id=8).values_list('valor', flat=True).first()
-            
+    # --- Lógica para obtener el periodo de evaluación anterior ---
+    # Resta un mes a la fecha de la evaluación actual.
+    mes_evaluado = evaluacion.fecha.mes - 1
+    anio_evaluado = evaluacion.fecha.anio
+    # Si el mes actual es enero (1), el periodo anterior es diciembre (12) del año pasado.
+    if mes_evaluado == 0:
+        mes_evaluado = 12
+        anio_evaluado -= 1
+
+    # Busca el ID de la fecha correspondiente al periodo anterior.
+    # Usa .filter().order_by('-id').first() para obtener siempre la versión más reciente
+    # y evitar errores de 'MultipleObjectsReturned' si existen duplicados en el catálogo de Fechas.
+    fecha_anterior = Fechas.objects.filter(mes=mes_evaluado, anio=anio_evaluado).order_by('-id').first()
+    if fecha_anterior:
+        fecha_buscar_id = fecha_anterior.id
+    else:
+        # Si no se encuentra el periodo anterior, usa la fecha actual como respaldo.
+        fecha_buscar_id = evaluacion.fecha_id
+
+    evaCalificacion = None
+    try:
+        evaCalificacion = EvaCalificaciones.objects.get(
+            no_emp_id=evaluacion.empleado_id,
+            fecha_id=fecha_buscar_id
+        )
+    except EvaCalificaciones.DoesNotExist:
+        evaCalificacion = None
+    except EvaCalificaciones.MultipleObjectsReturned:
+        evaCalificacion = EvaCalificaciones.objects.filter(
+            no_emp_id=evaluacion.empleado_id,
+            fecha_id=fecha_buscar_id
+        ).first()
 
     context ={
         "evaluacion": evaluacion,
@@ -2144,11 +2209,16 @@ def personaEvaluar (request):
         "seguimiento": seguimiento,
         "empleado": empleado,
         "empleadoLogueado": empleadoLogueado,
+        #Obtiene la calificación del empleado asociada al ID de fecha seleccionado
+        "evaCalificacion": evaCalificacion,
+        #Obtiene la calificación general del empleado
+        "resultados": resultados, 
+
     }
-    
+   
     return render(request, 'personaEvaluar.html', context)
 
-
+logger = logging.getLogger(__name__)
 def guardarCalificacion(request):
     if request.method == 'POST':
         comentarios = json.loads(request.POST.get('comentarios'))
@@ -2157,10 +2227,12 @@ def guardarCalificacion(request):
         numEva = request.POST.get('numeroEvaluacion')
         total = request.POST.get('total')
         usuarioLogueado = request.POST.get('usuarioLogueado')
+        # Obtiene la intención del líder sobre aplicar una calificación desde el formulario POST
+        wantsToRate = request.POST.get('deseaCalificar', 'no')
+        # Recupera el valor numérico de la calificación ingresada por el líder
+        leaderRatingRaw = request.POST.get('calificacionLider', '')     
         #Traer la evaluacion de mi base de datos
-        
-        
-        
+
         evaluacion = EvaluacionesAreas.objects.get(id=numEva)
         
         #obtener al empleado logueado
@@ -2191,15 +2263,50 @@ def guardarCalificacion(request):
         
         code=0
         
+        # Verifica si el empleado logueado es el evaluador asignado en la ruta
         if seguimiento.evaluador_id == no_emp:
-            #entro aqui por que el evaluador1_id es igual al empleado logueado
-            resultadoGeneral= CalificacionesGenerales(
-                calificacion_evaluador = total,
-                estatus = 1,
-                evaluacion_id = evaluacion.id,
-            )
-            resultadoGeneral.save()
-            
+                # Registra la calificación general obtenida en el proceso actual
+                CalificacionesGenerales(
+                    calificacion_evaluador=float(total),
+                    estatus=1,
+                    evaluacion_id=evaluacion.id,
+                ).save()
+
+                # Se calcula el mes y año del periodo anterior para guardar el histórico oficial
+                mes_evaluado = evaluacion.fecha.mes - 1
+                anio_evaluado = evaluacion.fecha.anio
+                if mes_evaluado == 0:
+                    mes_evaluado = 12
+                    anio_evaluado -= 1
+
+                try:
+                    # Busca el ID de fecha correspondiente al mes anterior
+                    fecha_anterior = Fechas.objects.filter(mes=mes_evaluado, anio=anio_evaluado).order_by('-id').first()
+                    fecha_guardar_id = fecha_anterior.id if fecha_anterior else None
+
+                    if fecha_guardar_id:
+                            # Determina qué calificación se debe persistir:
+                            if wantsToRate == 'si' and leaderRatingRaw.strip() != '':
+                                # Si el líder activó la opción y proporcionó un valor manual, se usa ese
+                                calificacion_a_guardar = float(leaderRatingRaw)
+                            else:
+                                # Caso contrario, se usa el total calculado automáticamente por el sistema
+                                calificacion_a_guardar = float(total)
+
+                            # Guarda o actualiza la calificación oficial del periodo anterior
+                            EvaCalificaciones.objects.update_or_create(
+                                no_emp_id=evaluacion.empleado_id,
+                                fecha_id=fecha_guardar_id,
+                                defaults={
+                                    'calificacion': calificacion_a_guardar,
+                                    'fecha_registro': datetime.now(),
+                                }
+                            )
+                except Exception as e:
+                    # Captura y registra cualquier error durante el guardado de la calificación final
+                    logger.error(f"Error al procesar la calificación final: {e}", exc_info=True)
+                    raise
+
         if len(comentariosGenerales) != 0:
             comentario=ComentariosGenerales(
             comentario_evaluador = comentariosGenerales[0]['comentario'],
@@ -2252,7 +2359,8 @@ def guardarAvance(request):
         numEva = request.POST.get('numeroEvaluacion')
         total = request.POST.get('total')
         usuarioLogueado = request.POST.get('usuarioLogueado')
-        #Traer la evaluacion de mi base de datos
+        wantsToRate = request.POST.get('deseaCalificar', 'no')
+        leaderRatingRaw = request.POST.get('calificacionLider', '')
         
         
         
@@ -2285,7 +2393,7 @@ def guardarAvance(request):
         seguimiento = Rutas.objects.get(id=evaluacion.ruta_id)
         
         code=0
-        
+
         # NO GUARDA CALIFICACION FINAAAAL 
         # if seguimiento.evaluador_id == no_emp:
         #     #entro aqui por que el evaluador1_id es igual al empleado logueado
@@ -2295,7 +2403,58 @@ def guardarAvance(request):
         #         evaluacion_id = evaluacion.id,
         #     )
         #     resultadoGeneral.save()
-            
+
+        # Guardar calificacion del lider (avance parcial) SOLO si el líder decide asignarla
+        if int(seguimiento.evaluador_id) == int(no_emp):
+            if wantsToRate == 'si' and leaderRatingRaw.strip() != '':
+                mes_evaluado = evaluacion.fecha.mes - 1
+                anio_evaluado = evaluacion.fecha.anio
+                if mes_evaluado == 0:
+                    mes_evaluado = 12
+                    anio_evaluado -= 1
+
+                try:
+                    fecha_anterior = Fechas.objects.filter(mes=mes_evaluado, anio=anio_evaluado).order_by('-id').first()
+                    if fecha_anterior:
+                        fecha_guardar_id = fecha_anterior.id
+                    else:
+                        fecha_guardar_id = evaluacion.fecha_id
+
+                    EvaCalificaciones.objects.update_or_create(
+                        no_emp_id=evaluacion.empleado_id,
+                        fecha_id=fecha_guardar_id,
+                        defaults={
+                            'calificacion': float(leaderRatingRaw),
+                            'fecha_registro': datetime.now(),
+                        }
+                    )
+                except Exception as e:
+                    logger.error(f"Error al procesar la calificación final: {e}", exc_info=True)
+                    raise
+
+            else:
+                # El líder seleccionó "No" o borró el campo → eliminar calificación previa si existe
+                try:
+                    mes_evaluado = evaluacion.fecha.mes - 1
+                    anio_evaluado = evaluacion.fecha.anio
+                    if mes_evaluado == 0:
+                        mes_evaluado = 12
+                        anio_evaluado -= 1
+
+                    fecha_anterior = Fechas.objects.filter(mes=mes_evaluado, anio=anio_evaluado).order_by('-id').first()
+                    fecha_borrar_id = fecha_anterior.id if fecha_anterior else evaluacion.fecha_id
+
+                    deleted, _ = EvaCalificaciones.objects.filter(
+                        no_emp_id=evaluacion.empleado_id,
+                        fecha_id=fecha_borrar_id,
+                    ).delete()
+                    if deleted:
+                        logger.info(f"ELIMINADO: calificacion del lider para no_emp={evaluacion.empleado_id}, fecha_id={fecha_borrar_id}")
+                except Exception as e:               
+                    logger.error(f"ERROR al eliminar calificacion del lider: {e}", exc_info=True)
+                    raise
+
+
         if len(comentariosGenerales) != 0:
             comentario=ComentariosGenerales(
             comentario_evaluador = comentariosGenerales[0]['comentario'],
@@ -2363,12 +2522,27 @@ def reportesEmpleado (request):
     # Si es 0 significa que no hay evaluaciones en el anterior sistema
     
     anteriorSistema = 0
-    try :
-        evaluacionesAnteriores = EvaluacionesAntiguos.objects.using('mysql_db').filter(no_emp=empleado.no_emp, anio_evaluacion=2024)
-        anteriorSistema = 1
-    except:
-        evaluacionesAnteriores = []
+    evaluacionesAnteriores = []
+    db_error = False
+    
+    #Muestra notificaciones de error si no se puede conectar a la base de datos mysql
+    try:
+        evaluacionesAnteriores = list(
+            EvaluacionesAntiguos.objects.using('mysql_db').filter(
+                no_emp=empleado.no_emp,
+                anio_evaluacion=2024
+            )
+        )
+        anteriorSistema = 1 if evaluacionesAnteriores else 0
+
+    except Exception as e:
         anteriorSistema = 0
+        evaluacionesAnteriores = []
+        db_error = True  # activa la alerta en el template
+    except BaseException:
+        anteriorSistema = 0
+        evaluacionesAnteriores = []
+        db_error = True  # fallback para errores no estándar de conexión
     
     fechas = Fechas.objects.all()
     
@@ -2378,6 +2552,7 @@ def reportesEmpleado (request):
         "evaluacionesAnteriores": evaluacionesAnteriores,
         "anteriorSistema": anteriorSistema,
         "fechas": fechas,
+        "db_error": db_error,
     }
     
     return render(request, 'reportesEmpleado.html', context)
@@ -2950,8 +3125,63 @@ def generarReporte(request):
             # for bono in bonos:
             #     print("campo1:", bono[0], "campo2:", bono[1])
                   
+           
             datos = Evaluaciones.objects.filter(id__in=[dat.id for dat in datos]).annotate(empleado_nombre=F('empleado__nombre')).order_by('empleado_nombre')      
-            
+            """
+            Asigna calificaciones de líder a evaluaciones usando el mes anterior.
+
+            - Unifica empleados de múltiples fuentes para evitar consultas duplicadas
+            - Para cada registro:
+                * Obtiene calificación previa del empleado
+                * Compara con calificación calculada (en áreas)
+                * Asigna valor o "Sin asignar" según corresponda
+           """ 
+           
+            todas_fechas_dict = {(f.mes, f.anio): f.id for f in Fechas.objects.all()}
+            eva_cal_dict = {}
+            empleados_ids_set = set()
+            if 'datos' in locals() and datos:
+                empleados_ids_set.update([d.empleado_id for d in datos])
+            if 'datosareas' in locals() and datosareas:
+                empleados_ids_set.update([d.empleado_id for d in datosareas])
+                
+            if empleados_ids_set:
+                calificaciones_previas = EvaCalificaciones.objects.filter(no_emp_id__in=list(empleados_ids_set))
+                eva_cal_dict = {(e.no_emp_id, e.fecha_id): e for e in calificaciones_previas}
+
+            cal_areas_dict = {}
+            if 'calificacionesAreas' in locals() and calificacionesAreas:
+                for cal in calificacionesAreas:
+                    cal_areas_dict[cal.evaluacion_id] = cal.calificacion_evaluador
+
+            if 'datos' in locals() and datos:
+                datos = list(datos)
+                for dat in datos:
+                    mes_evaluado = dat.fecha.mes - 1
+                    anio_evaluado = dat.fecha.anio
+                    if mes_evaluado == 0:
+                        mes_evaluado = 12
+                        anio_evaluado -= 1
+                    fecha_anterior_id = todas_fechas_dict.get((mes_evaluado, anio_evaluado))
+                    dat.eva_calificacion = eva_cal_dict.get((dat.empleado_id, fecha_anterior_id))
+
+            if 'datosareas' in locals() and datosareas:
+                datosareas = list(datosareas)
+                for dat in datosareas:
+                    mes_evaluado = dat.fecha.mes - 1
+                    anio_evaluado = dat.fecha.anio
+                    if mes_evaluado == 0:
+                        mes_evaluado = 12
+                        anio_evaluado -= 1
+                    fecha_anterior_id = todas_fechas_dict.get((mes_evaluado, anio_evaluado))
+                    cal_lider_obj = eva_cal_dict.get((dat.empleado_id, fecha_anterior_id))
+                    
+                    cal_calculada = cal_areas_dict.get(dat.id)
+                    if cal_lider_obj and cal_lider_obj.calificacion != cal_calculada:
+                        dat.lider_rating = cal_lider_obj.calificacion
+                    else:
+                        dat.lider_rating = "Sin asignar"
+
             context = {
                 'datos': datos,
                 'calificaciones': calificaciones,
@@ -2977,7 +3207,7 @@ def generarReporte(request):
                 'bonosJ': bonosJ,
                 'datosareas': datosareas,
                 'calificacionesAreas': calificacionesAreas,
-                'comentariosAreas': comentariosAreas
+                'comentariosAreas': comentariosAreas,
             }
             
             return render(request, 'reporte.html', context)
@@ -3049,8 +3279,30 @@ def reporteEvaluacion(request,id):
     try:
         sumCalidad = obj.filter(apartado_id=8).values_list('valor', flat=True).first()
     except:
-        sumCalidad = 0       
+        sumCalidad = 0    
+    # Se calcula el mes y año del periodo anterior para obtener el histórico
+    mes_evaluado = evaluacion.fecha.mes - 1
+    anio_evaluado = evaluacion.fecha.anio
+    
+    # Ajuste para el cambio de año: si el mes actual es enero (1), el anterior es diciembre (12) del año pasado
+    if mes_evaluado == 0:
+        mes_evaluado = 12
+        anio_evaluado -= 1
 
+    # Busca el registro en la tabla Fechas que coincida con el mes y año calculados
+    fecha_anterior = Fechas.objects.filter(mes=mes_evaluado, anio=anio_evaluado).order_by('-id').first()
+    fecha_buscar_id = fecha_anterior.id if fecha_anterior else None
+    
+    # Si existe una fecha previa válida, intenta recuperar la calificación manual dada por el líder
+    if fecha_buscar_id:
+        try:
+            evaCalificacion = EvaCalificaciones.objects.get(
+                no_emp_id=evaluacion.empleado_id,
+                fecha_id=fecha_buscar_id
+            )
+        except:
+            # En caso de no existir una calificación registrada para ese periodo, se inicializa como None
+            evaCalificacion = None
     context ={
         "evaluacion": evaluacion,
         "obj": obj,
@@ -3069,6 +3321,7 @@ def reporteEvaluacion(request,id):
         "suma_cal_CL": suma_cal_CL,
         "suma_cal_calidad": suma_cal_calidad,
         "no_emp": no_emp,
+        "evaCalificacion": evaCalificacion, #Calificacion dada por el lider.
     }
     return render(request, 'reporteEvaluacion.html',context)
 

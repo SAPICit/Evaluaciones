@@ -48,6 +48,13 @@ class Usuarios(AbstractUser):
     departamento = models.ForeignKey(Departamentos,on_delete=models.PROTECT)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
+    #Funciónn para obtener el puesto del empleado
+    @property
+    def empleado(self):
+        try:
+            return Empleados.objects.get(no_emp=self.no_emp)
+        except Empleados.DoesNotExist:
+            return None
 
 class Empleados (models.Model):
     no_emp = models.IntegerField(unique=True)
@@ -333,7 +340,25 @@ class Porcentajes(models.Model):
 
     def __str__(self):
         return  str(self.evaluacion) + ' ' + str(self.porcentaje) + ' ' + str(self.estatus)
-    
+#    Modelo que almacena las calificaciones de los empleados por periodo de evaluación.
+#    Garantiza que cada empleado tenga una única calificación por fecha.
+class EvaCalificaciones(models.Model):
+    no_emp = models.ForeignKey(
+        'Empleados',
+        to_field='no_emp',
+        on_delete=models.PROTECT,
+        db_column='no_emp'
+    )
+    fecha = models.ForeignKey(
+        'Fechas',
+        on_delete=models.PROTECT
+    )
+    calificacion = models.FloatField()
+    fecha_registro = models.DateTimeField()
+
+    class Meta:
+        db_table = 'eva_calificaciones'
+        unique_together = ('no_emp', 'fecha')    
 
 # class Calendario (models.Model):
 #     comentariosInicialesInicio = models.DateField()

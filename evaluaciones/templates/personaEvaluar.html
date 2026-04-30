@@ -88,6 +88,8 @@
                         <th>Evaluador</th>
                         <th>Puesto</th>
                         <th>Calificacion</th>
+                        <th>Calificacion dada por el lider</th>
+
                     </tr>
                 </thead>
                 <tbody>
@@ -104,6 +106,13 @@
                         <td>{{resultados.calificacion_evaluador}}</td>
                         {% endif %}
                         {% endif %}
+                        <td>
+                            {% if evaCalificacion %}
+                                {{ evaCalificacion.calificacion }}
+                            {% else %}
+                                Sin asignar
+                            {% endif %}
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -495,6 +504,20 @@
                 <h6><span style= "color: #295caa;">Calidad: </span> {{comentariosGenerales.comentario_calidad}}</h6>
                 {% endif %} {% endcomment %}
                 <textarea class="form-control comentariosGenerales" id="comentariosGenerales" name="comentariosGenerales" rows="3"></textarea>
+                 <!--Select para agregar calificación adicional-->
+                <div class="form-group mb-3">
+                    <label for="leaderRatingSelect">¿Deseas dar calificación adicional?</label>
+                    <select class="form-control" id="leaderRatingSelect" onchange="toggleLeaderRating()">
+                        <option value="no" {% if not evaCalificacion %}selected{% endif %}>No</option>
+                        <option value="si" {% if evaCalificacion %}selected{% endif %}>Sí</option>
+                    </select>
+                </div>
+                <div id="leaderRatingContainer" style="display: {% if evaCalificacion %}block{% else %}none{% endif %};" class="form-group">
+                    <label for="leaderRatingInput">Ingrese la calificación adicional</label>
+                    <input type="number" class="form-control" id="leaderRatingInput" name="leaderRating"
+                           value="{% if evaCalificacion %}{{ evaCalificacion.calificacion }}{% endif %}">
+                </div>
+
             </div>
             <br/>
             <button id="btnEnviar" class="btn btn-primary btn-enviar nota" onclick="guardarCalificacion()" btn-enviar>Finalizar evaluacion</button>
@@ -716,6 +739,19 @@
         }
 
     } else {
+        // Validación de la calificación adicional del líder
+        var deseaCalificar = document.getElementById('leaderRatingSelect').value;
+        var calificacionLider = document.getElementById('leaderRatingInput').value;
+        if (deseaCalificar === 'no') {
+            calificacionLider = '';
+        }
+
+        // Si el líder desea calificar pero el campo está vacío, se muestra un error
+        if (deseaCalificar === 'si' && calificacionLider.trim() === '') {
+            showModalError("Ingresa la calificación adicional o selecciona 'No'.");
+            boton.disabled = false;
+            return;
+        }
         numeroEvaluacion = $("#numeroEvaluacion").val();
         usuarioLogueado= {{empleadoLogueado.no_emp}};
         $.ajax({
@@ -729,6 +765,9 @@
               comentariosGenerales: JSON.stringify(comentariosGenerales),
               respuestas: JSON.stringify(respuestas),
               usuarioLogueado: usuarioLogueado,
+              // Datos de calificación adicional del líder para el guardado final
+              calificacionLider: calificacionLider,
+              deseaCalificar: deseaCalificar,
               csrfmiddlewaretoken: '{{ csrf_token }}'
             },
             success: function(response) {
@@ -806,6 +845,12 @@
     var contestadas=0;
     var total = 0;
     var calificacion = 0;
+    var deseaCalificar = document.getElementById('leaderRatingSelect').value;
+    var calificacionLider = document.getElementById('leaderRatingInput').value;
+
+    if (deseaCalificar === 'no') {
+        calificacionLider = '';
+    }
 
     $('input[type=radio]:checked').each(function() {
         var id = $(this).attr('name');
@@ -840,6 +885,9 @@
               comentariosGenerales: JSON.stringify(comentariosGenerales),
               respuestas: JSON.stringify(respuestas),
               usuarioLogueado: usuarioLogueado,
+              // Datos de calificación adicional del líder para el guardado de avance
+              calificacionLider: calificacionLider,
+              deseaCalificar: deseaCalificar,
               csrfmiddlewaretoken: '{{ csrf_token }}'
             },
             success: function(response) {
@@ -866,6 +914,25 @@
         console.log(respuestas);
 
     }
+    
+     
+    /**
+     * Alterna la visibilidad del contenedor de calificación del líder dependiendo de la selección.
+     * Si se selecciona 'no', oculta la sección y limpia el valor del input.
+     */
+    function toggleLeaderRating() {
+        var select = document.getElementById('leaderRatingSelect').value;
+        var input = document.getElementById('leaderRatingInput');
+        var container = document.getElementById('leaderRatingContainer');
+
+        if (select === 'si') {
+            container.style.display = 'block';
+        } else {
+            container.style.display = 'none';
+            input.value = ''; 
+        }
+    }
+
 
 
       </script>

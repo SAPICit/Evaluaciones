@@ -5,31 +5,46 @@
 
     <ul>
       <li class="opcionImg">
-        <img src={% static 'img/usuario.png' %} alt="Imagen" width="35px" height="35px">
-        {% if request.user.is_authenticated %}
-          <a href="{% url 'informacion' %}">{{ user.first_name }} {{user.last_name}}</a>
-        {% else %}
-          <a href="">No usuario</a>
-        {% endif %}
+        <div style="
+          width: 40px; height: 40px;
+          border-radius: 50%;
+          background-color: #00953a;
+          display: flex; align-items: center; justify-content: center;
+          font-weight: bold; font-size: 14px; color: white;
+          flex-shrink: 0;
+        ">
+          {{ user.first_name|slice:":1" }}{{ user.last_name|slice:":1" }}
+        </div>
+
+        <div style="display: flex; flex-direction: column;">
+          {% if request.user.is_authenticated %}
+            <a href="{% url 'informacion' %}">{{ user.first_name }} {{ user.last_name }}</a>
+            {% if user.empleado %}
+              <span style="font-size: 0.85em; color: #a0aec0;">{{ user.empleado.puesto.nombre }}</span>
+            {% endif %}
+          {% else %}
+            <a href="">No usuario</a>
+          {% endif %}
+        </div>
       </li>
       <br />
 
       <div class="separacion"></div>
-        <li class="opcionImg">
-            <img src={% static 'img/tareas.png' %} alt="Imagen" width="35px" height="35px">
+        <li class="opcionImg {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+            <img src="{% static 'img/Panel3.png' %}" alt="Panel" width="25px" height="25px">
             <a href="{% url 'dashboard' %}">Panel</a>
         </li>
-      <li class="opcion">
-        
-      </li>
+
       {% comment %} <li class="opcion autoevaluacio">
         <a href="{% url 'autoevaluacion' %}">Autoevaluación</a>
       </li> {% endcomment %}
-      <li class="opcion misEvaluaciones">
+      <li class="opcion misEvaluaciones {% if request.resolver_match.url_name == 'reportesEmpleado' %}active{% endif %}">
+        <img src={% static 'img/Reporte.png' %} alt="Imagen" width="25px" height="25px">
         <a href="{% url 'reportesEmpleado' %}"> Reportes</a>
       </li>
       {% comment %} {% if %} {% endcomment %}
-      <li class="opcion porEvaluar" style= "display: none;">
+      <li class="opcion porEvaluar {% if request.resolver_match.url_name == 'porEvaluar' %}active{% endif %}" style= "display: none;">
+        <img src={% static 'img/calificar.png' %} alt="Imagen" width="25px" height="25px">
         <a href="{% url 'porEvaluar' %}">Calificar</a>
       </li>
       {% comment %} {% endif %} {% endcomment %}
@@ -40,14 +55,13 @@
       <br />
 
       <div class="separacion capitalHumano" style= "display: none;"></div>
-      <li class="opcionImg apartadoEmp" style= "display: none;">
-        <img src={% static 'img/usuarios.png' %} alt="Imagen" width="35px" height="35px">
+      <li class="opcionImg apartadoEmp {% if request.resolver_match.url_name == 'listaEmpleados' %}active{% endif %}" style= "display: none;">
+        <img src={% static 'img/empleados.png' %} alt="Imagen" width="25px" height="25px">
         <a href="{% url 'listaEmpleados' %}">Empleados</a>
       </li>
-      <li class="opcion">
-        
-      </li>
-      <li class="opcion apartadoEvaluaciones1" style= "display: none;">
+
+      <li class="opcion apartadoEvaluaciones1 {% if request.resolver_match.url_name == 'evaluaciones' %}active{% endif %}" style= "display: none;">
+        <img src={% static 'img/evaluaciones.png' %} alt="Imagen" width="25px" height="25px">
         <a href="{% url 'evaluaciones' %}" >Evaluaciones</a>
         <div class ="apartadoEvaluaciones">
           <ul class="submenu" id="submenuEvaluaciones">
@@ -58,10 +72,12 @@
         </ul>
         </div>
       </li>
-      <li class="opcion informes" style= "display: none;">
+      <li class="opcion informes {% if request.resolver_match.url_name == 'reportesGenerales' %}active{% endif %}" style= "display: none;">
+        <img src={% static 'img/informes.png' %} alt="Imagen" width="25px" height="25px">
         <a href="{% url 'reportesGenerales' %}">Informes</a>
       </li>
-      <li class="opcion calendario" style= "display: none;">
+      <li class="opcion calendario {% if request.resolver_match.url_name == 'calendario' %}active{% endif %}" style= "display: none;">
+        <img src={% static 'img/calendario.png' %} alt="Imagen" width="25px" height="25px">
         <a href="{% url 'calendario' %}">Calendario</a>
       </li>
       <br />
@@ -71,7 +87,7 @@
       <li class="cerrarSesion">
         {% if request.user.is_authenticated %}
         <a href="{% url 'salir' %}">Cerrar sesión</a>
-        <img src={% static 'img/salida.png' %} alt="Imagen" width="35px" height="35px">
+        <img src={% static 'img/cerrar.png' %} alt="Imagen" width="25px" height="25px">
         {% else %}
           <a href="{% url 'login' %}">Iniciar sesión</a>
         {% endif %}
@@ -127,23 +143,23 @@
         } {% endcomment %}
 
         if (data.empleado.departamento == 11 || data.empleado.no_emp == 101 || data.empleado.departamento == 39) {
-          evaluaciones1[0].style.display = 'block';
-          comentarios[0].style.display = 'block';
+          evaluaciones1[0].style.display = 'flex';
+          comentarios[0].style.display = 'flex';
         }
 
         if(data.empleado.departamento == 11 || data.empleado.departamento == 39)
         {
-          empleados[0].style.display = 'block';
-          calendario[0].style.display = 'block';
-          evaluaciones[0].style.display = 'block';
+          empleados[0].style.display = 'flex';
+          calendario[0].style.display = 'flex';
+          evaluaciones[0].style.display = 'flex';
         }
 
         if (data.empleado.rango == 1 || data.empleado.rango == 2 || data.empleado.rango == 3 || data.empleado.rango == 5 || data.empleado.rango == 6) {
-          capitalHumano2[0].style.display = 'block';
-          capitalHumano[0].style.display = 'block';
-          porEvaluar[0].style.display = 'block';
-          comentarios[0].style.display = 'block';
-          informes[0].style.display = 'block';
+          capitalHumano2[0].style.display = 'flex';
+          capitalHumano[0].style.display = 'flex';
+          porEvaluar[0].style.display = 'flex';
+          comentarios[0].style.display = 'flex';
+          informes[0].style.display = 'flex';
         }
         
 
@@ -162,4 +178,3 @@
     });
   });
   </script>
-
