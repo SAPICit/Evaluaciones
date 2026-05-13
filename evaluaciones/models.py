@@ -20,7 +20,6 @@ class Rangos (models.Model):
     
 
 class Departamentos (models.Model):
-    id = models.AutoField(primary_key=True)
     nombre = models.TextField()
     estatus = models.SmallIntegerField()
 
