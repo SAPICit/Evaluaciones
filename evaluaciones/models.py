@@ -20,6 +20,7 @@ class Rangos (models.Model):
     
 
 class Departamentos (models.Model):
+    id = models.AutoField(primary_key=True)
     nombre = models.TextField()
     estatus = models.SmallIntegerField()
 
@@ -233,7 +234,9 @@ class CalendarioFijo (models.Model):
 class TiposEvaluaciones(models.Model):
     estatus = models.IntegerField()
     descripcion = models.TextField()
-
+    creador = models.ForeignKey('Empleados', to_field='no_emp',related_name='creador', on_delete=models.PROTECT, null=True, blank=True)
+    fechaCreacion =models.DateTimeField(null=True,blank=True)
+    departamento = models.ForeignKey( Departamentos,on_delete=models.PROTECT,null=True,blank=True)
     def __str__(self):
         return str(self.descripcion) + ' ' + str(self.estatus)
     
