@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
-
+from django.contrib.auth.models import Group
 
 
 
@@ -20,6 +20,7 @@ class Rangos (models.Model):
     
 
 class Departamentos (models.Model):
+    id = models.AutoField(primary_key=True)
     nombre = models.TextField()
     estatus = models.SmallIntegerField()
 
@@ -56,7 +57,16 @@ class Usuarios(AbstractUser):
         except Empleados.DoesNotExist:
             return None
 
+class RolesUsers(models.Model):
+    id = models.AutoField(primary_key=True)
+    name_rol      = models.CharField(verbose_name="Rol", max_length=200, null=True)
+    grupos          = models.ManyToManyField(Group, blank=True)
+    def __str__(self):
+        return self.name_rol
+
+
 class Empleados (models.Model):
+    id = models.AutoField(primary_key=True)
     no_emp = models.IntegerField(unique=True)
     nombre = models.TextField()
     apellido_paterno = models.TextField()
@@ -69,9 +79,12 @@ class Empleados (models.Model):
     estatus = models.SmallIntegerField()
     division = models.ForeignKey(Divisiones,on_delete=models.PROTECT)
     sucursal = models.ForeignKey(Sucursales,on_delete=models.PROTECT)
+    rol_user = models.ManyToManyField(RolesUsers, related_name='Rol', blank=True)
+    
     def __str__(self):
         return self.nombre + ' ' + self.apellido_paterno 
     
+
 
 class Fechas(models.Model):
     mes = models.IntegerField()
@@ -228,14 +241,13 @@ class CalendarioFijo (models.Model):
         return str(self.comentariosInicialesInicio) + ' ' + str(self.comentariosInicialesFin) + ' ' + str(self.empleadosInicio) + ' ' + str(self.empleadosFin) + ' '   + str(self.tipo) + ' ' + str(self.status)
 
 
-
-   
 class TiposEvaluaciones(models.Model):
     estatus = models.IntegerField()
     descripcion = models.TextField()
-    creador = models.ForeignKey('Empleados', to_field='no_emp',related_name='creador', on_delete=models.PROTECT, null=True, blank=True)
+    creador = models.ForeignKey('Empleados', to_field='no_emp',related_name='creador', on_delete=models.PROTECT,null=True,blank=True)
     fechaCreacion =models.DateTimeField(null=True,blank=True)
-    departamento = models.ForeignKey( Departamentos,on_delete=models.PROTECT,null=True,blank=True)
+    departamento=models.ForeignKey(Departamentos, on_delete=models.PROTECT, null=True, blank=True, db_column='departamento_id')
+
     def __str__(self):
         return str(self.descripcion) + ' ' + str(self.estatus)
     
