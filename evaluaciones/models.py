@@ -240,17 +240,26 @@ class CalendarioFijo (models.Model):
     def __str__(self):
         return str(self.comentariosInicialesInicio) + ' ' + str(self.comentariosInicialesFin) + ' ' + str(self.empleadosInicio) + ' ' + str(self.empleadosFin) + ' '   + str(self.tipo) + ' ' + str(self.status)
 
+#Modelo para mapear los estatus de las evaluaciones LZ 21/5/26
+class EstatusEvaluaciones(models.Model):
+    id = models.AutoField(primary_key=True)
+    nombre = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.nombre
 
 class TiposEvaluaciones(models.Model):
-    estatus = models.IntegerField()
+    estatus = models.ForeignKey(EstatusEvaluaciones,on_delete=models.PROTECT,null=True,blank=True,default=1)  
     descripcion = models.TextField()
     creador = models.ForeignKey('Empleados', to_field='no_emp',related_name='creador', on_delete=models.PROTECT,null=True,blank=True)
-    fechaCreacion =models.DateTimeField(null=True,blank=True)
+    fechaCreacion = models.DateTimeField(null=True,blank=True)
     departamento=models.ForeignKey(Departamentos, on_delete=models.PROTECT, null=True, blank=True, db_column='departamento_id')
+    nombre = models.TextField(default='Evaluacion')
+    ultimaModificacion = models.DateTimeField(null=True,blank=True)
+    dirigidoA = models.CharField(max_length=50,verbose_name='Dirigido a',default='NA') 
 
     def __str__(self):
         return str(self.descripcion) + ' ' + str(self.estatus)
-    
 
 class Areas(models.Model):
     area = models.TextField()
@@ -260,10 +269,13 @@ class Areas(models.Model):
     apartado = models.ForeignKey('Apartados', on_delete=models.PROTECT)
     tipoEvaluacion = models.ForeignKey('TiposEvaluaciones', on_delete=models.PROTECT)
     estatus = models.IntegerField()
+    numero = models.IntegerField(default=0)
 
     def __str__(self):
         return self.area + ' ' + self.metodo + ' ' + str(self.valor) + ' ' + str(self.apartado)  
-    
+
+
+
 class Rutas(models.Model):
     evaluador = models.ForeignKey('Empleados', to_field='no_emp',related_name='evaluador', on_delete=models.PROTECT)
     estatus = models.IntegerField() 
@@ -281,6 +293,7 @@ class Estados (models.Model):
 
 
 class EvaluacionesAreas (models.Model):
+    id = models.AutoField(primary_key=True)
     fecha = models.ForeignKey('Fechas', on_delete=models.PROTECT)
     empleado = models.ForeignKey('Empleados', to_field='no_emp', on_delete=models.PROTECT)
     tipoEvaluacion = models.ForeignKey('TiposEvaluaciones', on_delete=models.PROTECT)
@@ -291,6 +304,17 @@ class EvaluacionesAreas (models.Model):
     def __str__(self):
         return str(self.fecha) + ' ' + str(self.empleado) + ' ' + str(self.estatus) 
 
+#Modelo para registrar el total de los apartados por evaluacion LZ 21/5/26
+class PorcentajesApartados(models.Model):
+    evaluacion = models.ForeignKey('EvaluacionesAreas', on_delete=models.PROTECT)
+    apartado = models.CharField(max_length=50)
+    totalApartado = models.FloatField()
+
+#Modelo para registrar el historial del total de los apartados por evaluacion LZ 21/5/26
+class PorcentajesApartadosHistorial(models.Model):
+    evaluacion = models.ForeignKey('EvaluacionesAreas', on_delete=models.PROTECT)
+    apartado = models.CharField(max_length=50)
+    totalApartado = models.FloatField()
 
 class CalificacionesGenerales(models.Model):
     evaluacion = models.ForeignKey('EvaluacionesAreas', on_delete=models.PROTECT)
@@ -354,6 +378,7 @@ class Porcentajes(models.Model):
 
     def __str__(self):
         return  str(self.evaluacion) + ' ' + str(self.porcentaje) + ' ' + str(self.estatus)
+
 #    Modelo que almacena las calificaciones de los empleados por periodo de evaluación.
 #    Garantiza que cada empleado tenga una única calificación por fecha.
 class EvaCalificaciones(models.Model):
