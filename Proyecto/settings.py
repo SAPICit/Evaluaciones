@@ -74,7 +74,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'Proyecto.context_processors.user_rol',
                 'Proyecto.context_processors.user_groups',
-                'Proyecto.context_processors.empleado_info',
+                'Proyecto.context_processors.employee_info',
             ],
         },
     },

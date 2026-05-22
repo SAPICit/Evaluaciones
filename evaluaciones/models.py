@@ -87,6 +87,7 @@ class Empleados (models.Model):
 
 
 class Fechas(models.Model):
+    id = models.AutoField(primary_key=True)
     mes = models.IntegerField()
     anio = models.IntegerField()
     version = models.IntegerField()
@@ -95,6 +96,7 @@ class Fechas(models.Model):
         return str(self.mes) + '/' + str(self.anio) + ' V' + str(self.version)
 
 class Apartados(models.Model):
+    id = models.AutoField(primary_key=True)
     nombre = models.TextField()
     valor = models.FloatField()
     estatus = models.IntegerField()
@@ -261,6 +263,19 @@ class TiposEvaluaciones(models.Model):
     def __str__(self):
         return str(self.descripcion) + ' ' + str(self.estatus)
 
+class TiposEvaluacionesHistorial(models.Model):
+    estatus = models.ForeignKey(EstatusEvaluaciones,on_delete=models.PROTECT,null=True,blank=True,default=1)  
+    descripcion = models.TextField()
+    creador = models.ForeignKey('Empleados', to_field='no_emp',related_name='creadorHistorial', on_delete=models.PROTECT,null=True,blank=True)
+    fechaCreacion = models.DateTimeField(null=True,blank=True)
+    departamento=models.ForeignKey(Departamentos, on_delete=models.PROTECT, null=True, blank=True, db_column='departamento_id')
+    nombre = models.TextField(default='Evaluacion')
+    ultimaModificacion = models.DateTimeField(null=True,blank=True)
+    dirigidoA = models.CharField(max_length=50,verbose_name='Dirigido a',default='NA') 
+
+    def __str__(self):
+        return str(self.descripcion) + ' ' + str(self.estatus)
+
 class Areas(models.Model):
     area = models.TextField()
     metodo = models.TextField()
@@ -274,6 +289,19 @@ class Areas(models.Model):
     def __str__(self):
         return self.area + ' ' + self.metodo + ' ' + str(self.valor) + ' ' + str(self.apartado)  
 
+
+class AreasHistorial(models.Model):
+    area = models.TextField()
+    metodo = models.TextField()
+    objetivo = models.TextField()
+    valor = models.FloatField()
+    apartado = models.ForeignKey('Apartados', on_delete=models.PROTECT)
+    tipoEvaluacion = models.ForeignKey('TiposEvaluacionesHistorial', on_delete=models.PROTECT)
+    estatus = models.IntegerField()
+    numero = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.area + ' ' + self.metodo + ' ' + str(self.valor) + ' ' + str(self.apartado)  
 
 
 class Rutas(models.Model):
