@@ -1,0 +1,181 @@
+{% extends "plantilla/master.html" %}
+{% load static %}
+
+
+{% block contenido %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+    <style type="text/tailwindcss">
+        .btn_style{
+            @apply rounded p-2 !text-[14px];
+        }
+
+        p{
+            margin-bottom: 0 !important;
+        }
+
+        .status_base{
+            @apply rounded px-2 py-1 border-2 text-wrap text-center;
+        }
+
+        .status_red{
+            @apply border-[#EF4444] bg-[#FEE2E2] text-[#DC2626];
+        }
+
+        .status_yellow{
+            @apply border-[#FACC15] bg-[#FFFDE7] text-[#AF7800];
+        }
+
+        .status_green{
+            @apply border-[#22C55E] bg-[#E6FFED] text-[#16A34A];
+        }
+
+        .btn_option_tab{
+            @apply border-[2px] border-gray-400 rounded p-1 hover:bg-white;
+        }
+
+    </style>
+
+    <div class="flex justify-end">
+        <p class="text-white bg-[#12284c] py-4 px-2 text-[30px] rounded-l-lg">Crear evaluación</p>
+    </div>
+
+    <br>
+
+    
+    <form method="POST">
+        <div class="flex flex-col gap-2 bg-white rounded p-2 mr-4">
+        {% csrf_token %}
+        <div class="sticky top-0 bg-gray-200 flex justify-end gap-2 p-2 w-full rounded z-50">
+            <button type="submit" class="btn_style bg-green-600 text-white">Publicar</button>
+            <a href="{% url 'Administration:MyEvaluations' %}" class="btn_style !bg-red-500 text-white !no-underline">Cancelar</a>
+        </div>
+
+    
+        <div class="flex justify-between items-end border-b-[2px] border-gray-300 pb-1 px-1">
+            <p class="text-[16px]">Información de evaluación</p>
+        </div>
+        
+        {{ TiposEvaluaciones_formset.management_form }}
+        <div class="bg-zinc-100 p-2 rounded">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
+                {% for form in TiposEvaluaciones_formset %}
+                <div class="flex flex-col gap-2 !text-[14px]">
+                    {{ form.descripcion.label }}
+                    {{ form.descripcion }}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <br>
+        {% include 'components/dynamic_form_evaluation.html' with title='Áreas de efectividad' formset=AreasEfectividad_formset prefix='AreasEfectividad' %}
+        <br>
+        {% include 'components/dynamic_form_evaluation.html' with title='Calidad Operativa' formset=CalidadOperativa_formset prefix='CalidadOperativa' %}
+        <br>
+        {% include 'components/dynamic_form_evaluation.html' with title='Cultura Laboral' formset=CulturaLaboral_formset prefix='CulturaLaboral' %}
+
+    </form>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function () {
+
+            const addButtons = document.querySelectorAll(
+                '.add-form-btn'
+            );
+
+            addButtons.forEach(button => {
+
+                button.addEventListener('click', function () {
+
+                    const prefix = this.dataset.prefix;
+
+                    addForm(prefix);
+
+                });
+
+            });
+
+        });
+
+
+        
+    function addForm(prefix) {
+
+        const totalForms = document.getElementById(
+            `id_${prefix}-TOTAL_FORMS`
+        );
+
+        const currentCount = parseInt(
+            totalForms.value
+        );
+
+        const container = document.getElementById(
+            `${prefix}-container`
+        );
+
+        // agarrar template
+        const template = document.getElementById(
+            `${prefix}-empty-form`
+        );
+
+        // clonar HTML template
+        let templateHTML = template.innerHTML;
+
+        // reemplazar __prefix__
+        templateHTML = templateHTML.replace(
+            /__prefix__/g,
+            currentCount
+        );
+
+        // insertar
+        container.insertAdjacentHTML(
+            'beforeend',
+            templateHTML
+        );
+
+        // actualizar TOTAL_FORMS
+        totalForms.value = currentCount + 1;
+    }
+
+        document.addEventListener('click', function (e) {
+
+            const removeButton = e.target.closest(
+                '.remove-form-btn'
+            );
+
+            if (!removeButton) return;
+
+            const form = removeButton.closest(
+                '.dynamic-form'
+            );
+
+            if (!form) return;
+
+            const deleteInput = form.querySelector(
+                'input[type="checkbox"][name$="-DELETE"]'
+            );
+
+            // form existente en DB
+            if (deleteInput) {
+
+                deleteInput.checked = true;
+
+                form.style.display = 'none';
+
+            } else {
+
+                // form nuevo
+                form.remove();
+
+            }
+
+            });
+
+
+</script>
+{% endblock %}

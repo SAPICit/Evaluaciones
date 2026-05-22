@@ -1,0 +1,70 @@
+{% extends "plantilla/master.html" %}
+{% load static %}
+
+
+{% block contenido %}
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://unpkg.com/tabulator-tables@6.4.0/dist/css/tabulator.min.css" rel="stylesheet">
+    <script type="text/javascript" src="https://unpkg.com/tabulator-tables@6.4.0/dist/js/tabulator.min.js"></script>
+    <link href="https://unpkg.com/tabulator-tables@6.3.0/dist/css/tabulator_bootstrap5.min.css" rel="stylesheet">
+
+    <style type="text/tailwindcss">
+        .btn_style{
+            @apply rounded p-2 text-[12px];
+        }
+        p{
+            margin-bottom: 0 !important;
+        }
+    </style>
+
+
+        <div class="flex justify-end">
+            <p class="text-white bg-[#12284c] py-4 px-2 text-[30px] rounded-l-lg">Gestión de evaluaciones</p>
+        </div>
+        <p class="text-[16px] font-semibold my-2">Evaluaciones</p>
+        <div id="tab_evaluations" class="text-[12px]"></div>
+        
+
+        <div class="flex justify-between my-2 items-end">
+            <p class="text-[16px] font-semibold">Rutas de evaluación</p>
+            <button class="btn_style bg-green-600 text-white">Crear ruta</button>
+        </div>
+        <div id="tab_route" class="text-[12px]"></div>
+
+
+        <script>
+            var tab_evaluations = new Tabulator("#tab_evaluations", {
+                height:"300px",
+                layout:"fitColumns",
+                columns:[
+                        { title: "#", formatter: "rownum", width: 60 },
+                        { title:"Nombre", field:"name"},
+                        { title:"Descripción", field:"description"},
+                        { title:"Departamento", field:"description"},
+                        { title:"Creada por", field:"create_for"},
+                        { title:"Fecha de creación", field:"date_creation"},
+                        { title:"Estatus", field:"status"},
+                        { title:"", field:"options"},
+                ]}
+            );
+
+            var tab_route = new Tabulator("#tab_route", {
+                height:"300px",
+                layout:"fitColumns",
+                columns:[
+                        { title: "#", formatter: "rownum", width: 60 },
+                        { title:"Evaluador", field:"name"},
+                        { title:"Departamento", field:"description"},
+                        { title:"Estatus", field:"status"},
+                        { title:"", field:"options"},
+                ]}
+            );
+
+
+
+        </script>
+
+    
+
+
+{% endblock %}
