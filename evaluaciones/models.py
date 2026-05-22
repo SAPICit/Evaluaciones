@@ -4,8 +4,6 @@ from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import Group
 
 
-
-
 class Puestos (models.Model):
     nombre = models.TextField()
     estatus = models.SmallIntegerField()
@@ -291,6 +289,7 @@ class Areas(models.Model):
 
 
 class AreasHistorial(models.Model):
+    id = models.AutoField(primary_key=True)
     area = models.TextField()
     metodo = models.TextField()
     objetivo = models.TextField()
@@ -366,7 +365,7 @@ class ComentariosGenerales(models.Model):
 
 
 class PorcentajesAreas (models.Model):
-    area = models.ForeignKey('Areas', on_delete=models.PROTECT)
+    area = models.ForeignKey('AreasHistorial', on_delete=models.PROTECT)
     evaluacion = models.ForeignKey('EvaluacionesAreas', on_delete=models.PROTECT)
     fecha = models.ForeignKey('Fechas', on_delete=models.PROTECT)
     porcentaje = models.FloatField()
@@ -377,7 +376,7 @@ class PorcentajesAreas (models.Model):
     
     
 class CalificacionesAreas (models.Model):
-    area = models.ForeignKey('Areas', on_delete=models.PROTECT)
+    area = models.ForeignKey('AreasHistorial', on_delete=models.PROTECT)
     evaluacion = models.ForeignKey('EvaluacionesAreas', on_delete=models.PROTECT)
     fecha = models.ForeignKey('Fechas', on_delete=models.PROTECT)
     calificacion = models.FloatField()
@@ -388,7 +387,7 @@ class CalificacionesAreas (models.Model):
         return str (self.area) +  ' ' + str(self.fecha) + ' ' + str(self.calificacion) + ' '  + str(self.fechaCalificacion) + ' ' + str(self.estatus)
     
 class ComentariosAreas(models.Model):
-    area = models.ForeignKey('Areas', on_delete=models.PROTECT)
+    area = models.ForeignKey('AreasHistorial', on_delete=models.PROTECT)
     evaluacion = models.ForeignKey('EvaluacionesAreas', on_delete=models.PROTECT)
     fecha = models.ForeignKey('Fechas', on_delete=models.PROTECT)
     comentario = models.TextField()
@@ -397,9 +396,9 @@ class ComentariosAreas(models.Model):
 
     def __str__(self):
         return str(self.area) + ' ' + str(self.fecha) + ' ' + str(self.comentario) + ' ' + str(self.fechaComentario) + ' ' + str(self.estatus)
-    
+  
 class Porcentajes(models.Model):
-    area = models.ForeignKey('Areas', on_delete=models.PROTECT)
+    area = models.ForeignKey('AreasHistorial', on_delete=models.PROTECT)
     evaluacion = models.ForeignKey('EvaluacionesAreas', on_delete=models.PROTECT)
     porcentaje = models.TextField()
     estatus = models.IntegerField()

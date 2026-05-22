@@ -2,7 +2,7 @@ import logging
 from django.shortcuts import render, redirect
 from .forms import crearEmpleado, EmailAuthenticationForm
 from datetime import datetime
-from evaluaciones.models import Empleados, Puestos, Rangos, Usuarios, TiposEvaluaciones, Departamentos, Fechas,Rutas,Evaluaciones, Divisiones, Sucursales, Objetivos,CalificacionesGenerales,ComentariosAreas, CalificacionesAreas,ComentariosGenerales, NumerosEvaluaciones, Areas, Apartados, Seguimiento, Fases, ComentariosObjetivos, Comentarios, CalificacionesObjetivos, Resultados,Calendario, CalendarioFijo, EvaluacionesAreas
+from evaluaciones.models import Empleados,TiposEvaluacionesHistorial,AreasHistorial, Puestos, Rangos, Usuarios, TiposEvaluaciones, Departamentos, Fechas,Rutas,Evaluaciones, Divisiones, Sucursales, Objetivos,CalificacionesGenerales,ComentariosAreas, CalificacionesAreas,ComentariosGenerales, NumerosEvaluaciones, Areas, Apartados, Seguimiento, Fases, ComentariosObjetivos, Comentarios, CalificacionesObjetivos, Resultados,Calendario, CalendarioFijo, EvaluacionesAreas
 from .models_mysql import Empleado,EvaluacionesAntiguos,RutaEvalua,ObjetivosAntiguos,ApartadosMes, ApartadosAntiguos, Quejas, Evaluaobjetivos, Empleado
 from django.contrib.auth.models import User
 from django.urls import reverse
@@ -3247,8 +3247,8 @@ def reporteEvaluacion(request,id):
     except:
         comentariosGenerales = []
         
-    obj = Areas.objects.filter(tipoEvaluacion_id=evaluacion.tipoEvaluacion_id)
-    obj = Areas.objects.filter(tipoEvaluacion_id=evaluacion.tipoEvaluacion_id).prefetch_related('comentariosareas_set', 'calificacionesareas_set','porcentajes_set')
+    obj = AreasHistorial.objects.filter(tipoEvaluacion_id=evaluacion.tipoEvaluacion_id)
+    obj = AreasHistorial.objects.filter(tipoEvaluacion_id=evaluacion.tipoEvaluacion_id).prefetch_related('comentariosareas_set', 'calificacionesareas_set','porcentajes_set')
     
     cal_Areas = CalificacionesAreas.objects.filter(evaluacion_id=evaluacion.id, area__apartado_id=6)
     cal_CL = CalificacionesAreas.objects.filter(evaluacion_id=evaluacion.id, area__apartado_id=7)
