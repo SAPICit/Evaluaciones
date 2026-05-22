@@ -3,8 +3,10 @@ from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import Group
 
-
-
+dirigido_a=[
+    ("Empleado", "Empleado"),
+    ("Líder", "Líder")
+]
 
 class Puestos (models.Model):
     nombre = models.TextField()
@@ -258,7 +260,7 @@ class TiposEvaluaciones(models.Model):
     departamento=models.ForeignKey(Departamentos, on_delete=models.PROTECT, null=True, blank=True, db_column='departamento_id')
     nombre = models.TextField(default='Evaluacion')
     ultimaModificacion = models.DateTimeField(null=True,blank=True)
-    dirigidoA = models.CharField(max_length=50,verbose_name='Dirigido a',default='NA') 
+    dirigidoA = models.CharField(max_length=50,verbose_name='Dirigido a',default='NA', choices=dirigido_a) 
 
     def __str__(self):
         return str(self.descripcion) + ' ' + str(self.estatus)
@@ -271,7 +273,7 @@ class TiposEvaluacionesHistorial(models.Model):
     departamento=models.ForeignKey(Departamentos, on_delete=models.PROTECT, null=True, blank=True, db_column='departamento_id')
     nombre = models.TextField(default='Evaluacion')
     ultimaModificacion = models.DateTimeField(null=True,blank=True)
-    dirigidoA = models.CharField(max_length=50,verbose_name='Dirigido a',default='NA') 
+    dirigidoA = models.CharField(max_length=50,verbose_name='Dirigido a',default='NA', choices=dirigido_a) 
 
     def __str__(self):
         return str(self.descripcion) + ' ' + str(self.estatus)
@@ -291,6 +293,7 @@ class Areas(models.Model):
 
 
 class AreasHistorial(models.Model):
+    id = models.AutoField(primary_key=True)
     area = models.TextField()
     metodo = models.TextField()
     objetivo = models.TextField()
@@ -366,7 +369,7 @@ class ComentariosGenerales(models.Model):
 
 
 class PorcentajesAreas (models.Model):
-    area = models.ForeignKey('Areas', on_delete=models.PROTECT)
+    area = models.ForeignKey('AreasHistorial', on_delete=models.PROTECT)
     evaluacion = models.ForeignKey('EvaluacionesAreas', on_delete=models.PROTECT)
     fecha = models.ForeignKey('Fechas', on_delete=models.PROTECT)
     porcentaje = models.FloatField()
@@ -377,7 +380,7 @@ class PorcentajesAreas (models.Model):
     
     
 class CalificacionesAreas (models.Model):
-    area = models.ForeignKey('Areas', on_delete=models.PROTECT)
+    area = models.ForeignKey('AreasHistorial', on_delete=models.PROTECT)
     evaluacion = models.ForeignKey('EvaluacionesAreas', on_delete=models.PROTECT)
     fecha = models.ForeignKey('Fechas', on_delete=models.PROTECT)
     calificacion = models.FloatField()
@@ -388,7 +391,7 @@ class CalificacionesAreas (models.Model):
         return str (self.area) +  ' ' + str(self.fecha) + ' ' + str(self.calificacion) + ' '  + str(self.fechaCalificacion) + ' ' + str(self.estatus)
     
 class ComentariosAreas(models.Model):
-    area = models.ForeignKey('Areas', on_delete=models.PROTECT)
+    area = models.ForeignKey('AreasHistorial', on_delete=models.PROTECT)
     evaluacion = models.ForeignKey('EvaluacionesAreas', on_delete=models.PROTECT)
     fecha = models.ForeignKey('Fechas', on_delete=models.PROTECT)
     comentario = models.TextField()
@@ -397,9 +400,9 @@ class ComentariosAreas(models.Model):
 
     def __str__(self):
         return str(self.area) + ' ' + str(self.fecha) + ' ' + str(self.comentario) + ' ' + str(self.fechaComentario) + ' ' + str(self.estatus)
-    
+  
 class Porcentajes(models.Model):
-    area = models.ForeignKey('Areas', on_delete=models.PROTECT)
+    area = models.ForeignKey('AreasHistorial', on_delete=models.PROTECT)
     evaluacion = models.ForeignKey('EvaluacionesAreas', on_delete=models.PROTECT)
     porcentaje = models.TextField()
     estatus = models.IntegerField()
