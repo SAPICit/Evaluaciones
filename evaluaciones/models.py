@@ -3,6 +3,10 @@ from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import Group
 
+dirigido_a=[
+    ("Empleado", "Empleado"),
+    ("Líder", "Líder")
+]
 
 class Puestos (models.Model):
     nombre = models.TextField()
@@ -256,7 +260,7 @@ class TiposEvaluaciones(models.Model):
     departamento=models.ForeignKey(Departamentos, on_delete=models.PROTECT, null=True, blank=True, db_column='departamento_id')
     nombre = models.TextField(default='Evaluacion')
     ultimaModificacion = models.DateTimeField(null=True,blank=True)
-    dirigidoA = models.CharField(max_length=50,verbose_name='Dirigido a',default='NA') 
+    dirigidoA = models.CharField(max_length=50,verbose_name='Dirigido a',default='NA', choices=dirigido_a) 
 
     def __str__(self):
         return str(self.descripcion) + ' ' + str(self.estatus)
@@ -269,7 +273,7 @@ class TiposEvaluacionesHistorial(models.Model):
     departamento=models.ForeignKey(Departamentos, on_delete=models.PROTECT, null=True, blank=True, db_column='departamento_id')
     nombre = models.TextField(default='Evaluacion')
     ultimaModificacion = models.DateTimeField(null=True,blank=True)
-    dirigidoA = models.CharField(max_length=50,verbose_name='Dirigido a',default='NA') 
+    dirigidoA = models.CharField(max_length=50,verbose_name='Dirigido a',default='NA', choices=dirigido_a) 
 
     def __str__(self):
         return str(self.descripcion) + ' ' + str(self.estatus)
