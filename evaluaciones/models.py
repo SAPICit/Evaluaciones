@@ -327,7 +327,7 @@ class EvaluacionesAreas (models.Model):
     id = models.AutoField(primary_key=True)
     fecha = models.ForeignKey('Fechas', on_delete=models.PROTECT)
     empleado = models.ForeignKey('Empleados', to_field='no_emp', on_delete=models.PROTECT)
-    tipoEvaluacion = models.ForeignKey('TiposEvaluaciones', on_delete=models.PROTECT)
+    tipoEvaluacion = models.ForeignKey('TiposEvaluacionesHistorial', on_delete=models.PROTECT)
     ruta = models.ForeignKey('Rutas', on_delete=models.PROTECT)
     estado = models.ForeignKey('Estados', on_delete=models.PROTECT)
     estatus = models.IntegerField()
