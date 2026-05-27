@@ -253,6 +253,7 @@ class EstatusEvaluaciones(models.Model):
         return self.nombre
 
 class TiposEvaluaciones(models.Model):
+    id = models.AutoField(primary_key=True)
     estatus = models.ForeignKey(EstatusEvaluaciones,on_delete=models.PROTECT,null=True,blank=True,default=1)  
     descripcion = models.TextField()
     creador = models.ForeignKey('Empleados', to_field='no_emp',related_name='creador', on_delete=models.PROTECT,null=True,blank=True)
@@ -266,6 +267,7 @@ class TiposEvaluaciones(models.Model):
         return str(self.descripcion) + ' ' + str(self.estatus)
 
 class TiposEvaluacionesHistorial(models.Model):
+    id = models.AutoField(primary_key=True)
     estatus = models.ForeignKey(EstatusEvaluaciones,on_delete=models.PROTECT,null=True,blank=True,default=1)  
     descripcion = models.TextField()
     creador = models.ForeignKey('Empleados', to_field='no_emp',related_name='creadorHistorial', on_delete=models.PROTECT,null=True,blank=True)
@@ -337,13 +339,13 @@ class EvaluacionesAreas (models.Model):
 
 #Modelo para registrar el total de los apartados por evaluacion LZ 21/5/26
 class PorcentajesApartados(models.Model):
-    evaluacion = models.ForeignKey('EvaluacionesAreas', on_delete=models.PROTECT)
+    evaluacion = models.ForeignKey('TiposEvaluaciones', on_delete=models.PROTECT)
     apartado = models.CharField(max_length=50)
     totalApartado = models.FloatField()
 
 #Modelo para registrar el historial del total de los apartados por evaluacion LZ 21/5/26
 class PorcentajesApartadosHistorial(models.Model):
-    evaluacion = models.ForeignKey('EvaluacionesAreas', on_delete=models.PROTECT)
+    evaluacion = models.ForeignKey('TiposEvaluacionesHistorial', on_delete=models.PROTECT)
     apartado = models.CharField(max_length=50)
     totalApartado = models.FloatField()
 
