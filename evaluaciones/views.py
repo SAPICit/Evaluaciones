@@ -997,7 +997,7 @@ def obtener_datos_evaluaciones(request):
     
 
 
-#Cuando se asigna una Evaluacion a un empleado, aqui se guarda el registro y la informacion en las tablas de historial
+#Cuando se asigna una Evaluacion a un empleado, aquí se guarda el registro y la información en las tablas de historial
 #LZ 26/5/26
 @login_required
 @user_passes_test(lambda u: u.departamento_id == 11 or  u.departamento_id == 39, login_url='/informacion/')
