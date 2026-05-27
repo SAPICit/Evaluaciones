@@ -63,7 +63,6 @@ def dashboard(request):
     año = fechaActual.year
     try:
         fecha = Fechas.objects.latest('id')
-       # fecha = Fechas.objects.get(id=2026)
     except:
         fecha = []
     try :
@@ -97,6 +96,40 @@ def dashboard(request):
                             estado_id = 1
                         )
                         ev.save()
+
+                        tipoEvaluacion = TiposEvaluacionesHistorial.objects.get(id=evaluacion.tipoEvaluacion_id,)
+
+                        evaluacionHistorial = TiposEvaluacionesHistorial(
+                            descripcion= tipoEvaluacion.descripcion,
+                            fechaCreacion=tipoEvaluacion.fechaCreacion,
+                            nombre=tipoEvaluacion.nombre,
+                            ultimaModificacion=tipoEvaluacion.ultimaModificacion,
+                            dirigidoA= tipoEvaluacion.dirigidoA,
+                            creador_id = tipoEvaluacion. creador_id,
+                            departamento_id=tipoEvaluacion.departamento_id,
+                            estatus_id=tipoEvaluacion.estatus_id
+                        )
+
+                        evaluacionHistorial.save()
+                        evaluacionCreada = evaluacionHistorial
+                        areas = Areas.objects.filter(tipoEvaluacion_id=tipoEvaluacion.id)
+                        for a in areas:
+                            areaNueva = AreasHistorial(
+                                area=a.area,
+                                metodo= a.metodo,
+                                objetivo= a.objetivo,
+                                valor= a.valor,
+                                numero= a.numero,
+                                apartado_id= a.apartado_id,
+                                tipoEvaluacion_id=evaluacionCreada.id,
+                                estatus=a.estatus
+                            )
+                            areaNueva.save()
+
+                        ev.tipoEvaluacion_id = evaluacionCreada.id 
+                        evaluacion.save()
+
+
         else:
             fecha = Fechas(
                     mes = mes,
@@ -514,17 +547,19 @@ def crearEvaluacion2(request):
 def asignarEvaluacion(request):
     fecha = Fechas.objects.latest('id')
     empleados = Empleados.objects.filter(estatus=1).order_by('nombre')
-    numeroEvaluacion = NumerosEvaluaciones.objects.all()
-    objetivos=Objetivos.objects.all()
+    numeroEvaluacion = TiposEvaluaciones.objects.all()
+    objetivos=Areas.objects.all()
     apartados = Apartados.objects.all()
-    seguimientos = Seguimiento.objects.all()
+    seguimientos = Rutas.objects.all()
     rut = Seguimiento.objects.latest('id')
     eva = NumerosEvaluaciones.objects.latest('id')
+    evaluacionesA = TiposEvaluaciones.objects.latest('id')
     obj = Objetivos.objects.filter(numeroEvaluacion_id = eva.id)
+    areas = Areas.objects.filter(tipoEvaluacion_id = evaluacionesA.id)
 
-    sumOKR = obj.filter(apartado_id=1).aggregate(total_okr=Sum('valor'))['total_okr']
-    sumKPI = obj.filter(apartado_id=2).aggregate(total_kpi=Sum('valor'))['total_kpi']
-    sumCL = obj.filter(apartado_id=3).values_list('valor', flat=True).first()
+    sumOKR = areas.filter(apartado_id=6).aggregate(total_okr=Sum('valor'))['total_okr']
+    sumKPI = areas.filter(apartado_id=8).aggregate(total_kpi=Sum('valor'))['total_kpi']
+    sumCL = areas.filter(apartado_id=7).values_list('valor', flat=True).first()
     siHayBono = False
     siHayResultados = False
     
@@ -550,7 +585,8 @@ def asignarEvaluacion(request):
         'sumCL': sumCL,
         'siHayBono': siHayBono,
         'siHayResultados': siHayResultados,
-        'fechas': fechas
+        'fechas': fechas,
+        'areas': areas
     }
     return render(request, 'asignarEvaluacion.html',context)
 
@@ -564,11 +600,11 @@ def obtener_datos_evaluacion(request):
         # Convierte el ID de la evaluación a entero
         evaluacion_id = int(evaluacion_id)
         
-        evaluaciones= NumerosEvaluaciones.objects.get(id=evaluacion_id)
-        
-        datos_OKR = Objetivos.objects.filter(numeroEvaluacion=evaluacion_id, estatus=1, apartado_id=1) 
-        datos_KPI = Objetivos.objects.filter(numeroEvaluacion=evaluacion_id, estatus=1, apartado_id=2)
-        datos_CL = Objetivos.objects.filter(numeroEvaluacion=evaluacion_id, estatus=1, apartado_id=3)
+       # evaluaciones= NumerosEvaluaciones.objects.get(id=evaluacion_id)
+        evaluacionesA = TiposEvaluaciones.objects.get(id=evaluacion_id)
+        datos_OKR = Areas.objects.filter(tipoEvaluacion_id=evaluacion_id, estatus=1, apartado_id=6) 
+        datos_KPI = Areas.objects.filter(tipoEvaluacion_id=evaluacion_id, estatus=1, apartado_id=8)
+        datos_CL = Areas.objects.filter(tipoEvaluacion_id=evaluacion_id, estatus=1, apartado_id=7)
         datos_BONO  = Objetivos.objects.filter(numeroEvaluacion=evaluacion_id, estatus=1, apartado_id=4)
         datos_RESULTADOS = Objetivos.objects.filter(numeroEvaluacion=evaluacion_id, estatus=1, apartado_id=5)
 
@@ -585,7 +621,7 @@ def obtener_datos_evaluacion(request):
             'sumaOKR': sumaOKR,
             'sumaKPI': sumaKPI,
             'sumaCL': sumaCL,
-            'estatus': evaluaciones.estatus
+            'estatus': evaluacionesA.estatus_id
         }
         return JsonResponse(data)
 
@@ -941,9 +977,9 @@ def obtener_datos_evaluaciones(request):
         numeroEvaluacion = request.GET.get('numeroEvaluacion_id')
         
         empleado = Empleados.objects.get(no_emp=empleado_id)    
-        evaluaciones = Evaluaciones.objects.filter(empleado_id=empleado_id)
-        objetivos = Objetivos.objects.filter(numeroEvaluacion_id=numeroEvaluacion)
-        eva = NumerosEvaluaciones.objects.get(id=numeroEvaluacion)
+        evaluaciones = EvaluacionesAreas.objects.filter(empleado_id=empleado_id)
+        objetivos = Areas.objects.filter(tipoEvaluacion_id=numeroEvaluacion)
+        eva = TiposEvaluaciones.objects.get(id=numeroEvaluacion)
         estatus = eva.estatus
         
         bandera = 0
@@ -953,19 +989,6 @@ def obtener_datos_evaluaciones(request):
                 if evaluacion.fecha_id == fecha_id:
                     bandera = 1
                     break
-
-        for objetivo in objetivos:
-            if objetivo.apartado_id == 4 and empleado.departamento_id not in [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24]:
-                bandera = 2
-                if (empleado.rango_id != 4):
-                    bandera = 3
-                    
-        if estatus == 2:
-            if empleado.departamento_id != 13:
-                bandera = 0
-        else:
-            if empleado.departamento_id == 13:
-                bandera = 0
                 
         data = {
             'bandera': bandera
@@ -974,47 +997,61 @@ def obtener_datos_evaluaciones(request):
     
 
 
-
-#Cuando se asigna una evaluacion a un empleado aqui se guarda la información, es para llenar la tabla de evaluaciones
+#Cuando se asigna una Evaluacion a un empleado, aquí se guarda el registro y la información en las tablas de historial
+#LZ 26/5/26
 @login_required
 @user_passes_test(lambda u: u.departamento_id == 11 or  u.departamento_id == 39, login_url='/informacion/')
 def guardarEvaluacionMensual (request):
     empleado_id = int(request.POST['empleado'])
     numeroEvaluacion_id = int(request.POST['numeroEvaluacion'])
-    seguimiento_id = int(request.POST['seguimiento'])
+    ruta_id = int(request.POST['seguimiento'])
     fecha = Fechas.objects.latest('id')
     fechass = int(request.POST['fechas'])
     fecha = Fechas.objects.get(id=fechass)
     fechaActivacion = datetime.now()
     estatus = 0
 
-    evaluacion = Evaluaciones(
-        fecha_id=fecha.id,
-        empleado_id=empleado_id,
-        numeroEvaluacion_id=numeroEvaluacion_id,
-        seguimiento_id=seguimiento_id,
-        fechaActivacion=fechaActivacion,
-        estatus=estatus,
-        fase_id=1
+    evaluacion= EvaluacionesAreas(
+        estatus = 1,
+        empleado_id= empleado_id,
+        estado_id=1,
+        fecha_id= fecha.id,
+        ruta_id= ruta_id,
+        tipoEvaluacion_id= numeroEvaluacion_id
     )
+
     evaluacion.save()
+    tipoEvaluacion = TiposEvaluaciones.objects.get(id=numeroEvaluacion_id)
 
-    eva = Evaluaciones.objects.latest('id')
-
-    comentarios = Comentarios(
-        evaluacion_id=eva.id,
-        comentario_autoevaluado="",
-        comentario_evaluador1="",
-        comentario_evaluador2="",
-        comentario_evaluador3="",
-        comentario_evaluador4="",
-        comentario_capitalHumano="",
-        comentario_director="",
-        logros="",
-        estatus=1
+    evaluacionHistorial = TiposEvaluacionesHistorial(
+        descripcion= tipoEvaluacion.descripcion,
+        fechaCreacion=tipoEvaluacion.fechaCreacion,
+        nombre=tipoEvaluacion.nombre,
+        ultimaModificacion=tipoEvaluacion.ultimaModificacion,
+        dirigidoA= tipoEvaluacion.dirigidoA,
+        creador_id = tipoEvaluacion. creador_id,
+        departamento_id=tipoEvaluacion.departamento_id,
+        estatus_id=tipoEvaluacion.estatus_id
     )
 
-    comentarios.save()
+    evaluacionHistorial.save()
+    evaluacionCreada = evaluacionHistorial
+    areas = Areas.objects.filter(tipoEvaluacion_id=tipoEvaluacion.id)
+    for a in areas:
+        areaNueva = AreasHistorial(
+            area=a.area,
+            metodo= a.metodo,
+            objetivo= a.objetivo,
+            valor= a.valor,
+            numero= a.numero,
+            apartado_id= a.apartado_id,
+            tipoEvaluacion_id=evaluacionCreada.id,
+            estatus=a.estatus
+        )
+        areaNueva.save()
+
+    evaluacion.tipoEvaluacion_id = evaluacionCreada.id 
+    evaluacion.save()
 
     return redirect(reverse('evaluaciones'))
 
@@ -1059,7 +1096,36 @@ def obtener_datos_evaluaciones_editada(request):
 
             evaluacion = EvaluacionesAreas.objects.get(id=eva_id)
             evaluacion.ruta_id= ruta
-            evaluacion.tipoEvaluacion_id = numeroEvaluacion 
+            
+            #Aqui debo de guardar el historial
+            tipoEvaluacion = TiposEvaluaciones.objects.get(id=numeroEvaluacion)
+
+            evaluacionHistorial = TiposEvaluacionesHistorial(
+                descripcion= tipoEvaluacion.descripcion,
+                fechaCreacion=tipoEvaluacion.fechaCreacion,
+                nombre=tipoEvaluacion.nombre,
+                ultimaModificacion=tipoEvaluacion.ultimaModificacion,
+                dirigidoA= tipoEvaluacion.dirigidoA,
+                creador_id = tipoEvaluacion. creador_id,
+                departamento_id=tipoEvaluacion.departamento_id,
+                estatus_id=tipoEvaluacion.estatus_id
+            )
+            evaluacionHistorial.save()
+            evaluacionCreada = evaluacionHistorial
+            areas = Areas.objects.filter(tipoEvaluacion_id=tipoEvaluacion.id)
+            for a in areas:
+                areaNueva = AreasHistorial(
+                    area=a.area,
+                    metodo= a.metodo,
+                    objetivo= a.objetivo,
+                    valor= a.valor,
+                    numero= a.numero,
+                    apartado_id= a.apartado_id,
+                    tipoEvaluacion_id=evaluacionCreada.id,
+                    estatus=a.estatus
+                )
+                areaNueva.save()
+            evaluacion.tipoEvaluacion_id = evaluacionCreada.id 
             evaluacion.save()
             bandera = 0
         
@@ -1141,7 +1207,7 @@ def editarEvaluacionAsignada(request,id):
     
     eva = EvaluacionesAreas.objects.get(id=idd)
     fechh = Fechas.objects.get(id=eva.fecha_id)
-    numEva= TiposEvaluaciones.objects.get(id=eva.tipoEvaluacion_id)
+    numEva= TiposEvaluacionesHistorial.objects.get(id=eva.tipoEvaluacion_id)
     obj = Areas.objects.filter(tipoEvaluacion_id=eva.tipoEvaluacion_id)
     emp = Empleados.objects.get(no_emp= eva.empleado_id)
     rut = Rutas.objects.get(id=eva.ruta_id)
@@ -2146,7 +2212,7 @@ def personaEvaluar (request):
     no_emp = usuario.no_emp
 
     #empleado logueado
-    empleadoLogueado= Empleados.objects.get(no_emp=no_emp)
+    empleadoLogueado = Empleados.objects.get(no_emp=no_emp)
     
     #Es para saber si la autoevaluacion ya fue contestada o no
     seguimiento= Rutas.objects.get(id=evaluacion.ruta_id)
@@ -2156,8 +2222,8 @@ def personaEvaluar (request):
         resultados = CalificacionesGenerales.objects.get(evaluacion_id=evaluacion.id)
     except:
         resultados = None
-    obj = Areas.objects.filter(tipoEvaluacion_id=evaluacion.tipoEvaluacion_id)
-    obj = Areas.objects.filter(tipoEvaluacion_id=evaluacion.tipoEvaluacion_id).prefetch_related('comentariosareas_set', 'calificacionesareas_set','porcentajes_set')
+    obj = AreasHistorial.objects.filter(tipoEvaluacion_id=evaluacion.tipoEvaluacion_id)
+    obj = AreasHistorial.objects.filter(tipoEvaluacion_id=evaluacion.tipoEvaluacion_id).prefetch_related('comentariosareas_set', 'calificacionesareas_set','porcentajes_set')
 
     for area in obj:
         area.tiene_calificacion = area.calificacionesareas_set.filter(evaluacion_id=evaluacion.id).exists()
