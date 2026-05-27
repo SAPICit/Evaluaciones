@@ -1,0 +1,27 @@
+<div class="modal fade" id="settings-{{ prefix }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Configuración de {{ title }}</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+
+                {{ formset.management_form }}
+                {% for form in formset %}
+                    {{ form.apartado.label_tag }}
+                    {{ form.apartado }}
+                    <br>
+                    {{ form.totalApartado.label_tag }}
+                    <div class="flex gap-2 items-center">
+                        {{ form.totalApartado }}
+                        <p>%</p>
+                    </div>
+                    
+                {% endfor %}
+
+            </div>
+        </div>
+    </div>
+</div>

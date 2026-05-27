@@ -5,10 +5,13 @@
 {% block contenido %}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
+
 
     <style type="text/tailwindcss">
         .btn_style{
-            @apply rounded p-2 !text-[14px];
+            @apply rounded p-2 !text-[14px] disabled:opacity-50;
         }
 
         p{
@@ -47,9 +50,14 @@
     <form method="POST">
         <div class="flex flex-col gap-2 bg-white rounded p-2 mr-4">
         {% csrf_token %}
-        <div class="sticky top-0 bg-gray-200 flex justify-end gap-2 p-2 w-full rounded z-50">
-            <button type="submit" class="btn_style bg-green-600 text-white">Publicar</button>
-            <a href="{% url 'Administration:MyEvaluations' %}" class="btn_style !bg-red-500 text-white !no-underline">Cancelar</a>
+
+        <div class="sticky top-0 bg-gray-200 flex justify-between gap-2 p-2 w-full rounded z-50">
+            <button type="submit" class="btn_style bg-blue-600 text-white">Guardar como borrador</button>
+            <div>
+               <button id="send_evaluation" type="submit" class="btn_style bg-green-600 text-white">Publicar</button>
+                <a href="{% url 'Administration:MyEvaluations' %}" class="btn_style !bg-red-500 text-white !no-underline">Cancelar</a> 
+            </div>
+            
         </div>
 
     
@@ -59,11 +67,21 @@
         
         {{ TiposEvaluaciones_formset.management_form }}
         <div class="bg-zinc-100 p-2 rounded">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
+            <div class="flex flex-col lg:flex-row gap-2">
                 {% for form in TiposEvaluaciones_formset %}
-                <div class="flex flex-col gap-2 !text-[14px]">
+                <div class="flex flex-col gap-2 !text-[14px] w-full">
+                    {{ form.nombre.label }}
+                    {{ form.nombre }}
+                </div>
+
+                <div class="flex flex-col gap-2 !text-[14px] w-full">
                     {{ form.descripcion.label }}
                     {{ form.descripcion }}
+                </div>
+
+                <div class="flex flex-col gap-2 !text-[14px] w-full">
+                    {{ form.dirigidoA.label }}
+                    {{ form.dirigidoA }}
                 </div>
                 {% endfor %}
             </div>
@@ -76,72 +94,72 @@
         <br>
         {% include 'components/dynamic_form_evaluation.html' with title='Cultura Laboral' formset=CulturaLaboral_formset prefix='CulturaLaboral' %}
 
+
+        {% include 'components/modal_settings.html' with title='Áreas de efectividad' formset=AreasEfectividadPorcentaje_formset prefix='AreasEfectividad' %}
+        {% include 'components/modal_settings.html' with title='Calidad Operativa' formset=CalidadOperativaPorcentaje_formset prefix='CalidadOperativa' %}
+        {% include 'components/modal_settings.html' with title='Cultura Laboral' formset=CulturaLaboralPorcentaje_formset prefix='CulturaLaboral' %}
+
     </form>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
     <script>
 
+        // Asignación a botones de función para agregar un formulario de un apartado. OC 26/05/2026
         document.addEventListener('DOMContentLoaded', function () {
-
             const addButtons = document.querySelectorAll(
                 '.add-form-btn'
             );
 
             addButtons.forEach(button => {
-
                 button.addEventListener('click', function () {
-
                     const prefix = this.dataset.prefix;
-
                     addForm(prefix);
-
                 });
-
             });
-
         });
-
-
         
-    function addForm(prefix) {
+        // Función para agregar formulario. OC 26/05/2026
+        function addForm(prefix) {
 
-        const totalForms = document.getElementById(
-            `id_${prefix}-TOTAL_FORMS`
-        );
+            const totalForms = document.getElementById(
+                `id_${prefix}-TOTAL_FORMS`
+            );
 
-        const currentCount = parseInt(
-            totalForms.value
-        );
+            const currentCount = parseInt(
+                totalForms.value
+            );
 
-        const container = document.getElementById(
-            `${prefix}-container`
-        );
+            const container = document.getElementById(
+                `${prefix}-container`
+            );
 
-        // agarrar template
-        const template = document.getElementById(
-            `${prefix}-empty-form`
-        );
+            // agarrar template
+            const template = document.getElementById(
+                `${prefix}-empty-form`
+            );
 
-        // clonar HTML template
-        let templateHTML = template.innerHTML;
+            // clonar HTML template
+            let templateHTML = template.innerHTML;
 
-        // reemplazar __prefix__
-        templateHTML = templateHTML.replace(
-            /__prefix__/g,
-            currentCount
-        );
+            // reemplazar __prefix__
+            templateHTML = templateHTML.replace(
+                /__prefix__/g,
+                currentCount
+            );
 
-        // insertar
-        container.insertAdjacentHTML(
-            'beforeend',
-            templateHTML
-        );
+            // insertar
+            container.insertAdjacentHTML(
+                'beforeend',
+                templateHTML
+            );
 
-        // actualizar TOTAL_FORMS
-        totalForms.value = currentCount + 1;
-    }
+            // actualizar TOTAL_FORMS
+            totalForms.value = currentCount + 1;
+            updateOrder(container);
+        }
 
+        // Función para eliminar un formulario. OC 26/05/2026
         document.addEventListener('click', function (e) {
 
             const removeButton = e.target.closest(
@@ -155,6 +173,9 @@
             );
 
             if (!form) return;
+
+            // Container padre
+            const container = form.parentElement;
 
             const deleteInput = form.querySelector(
                 'input[type="checkbox"][name$="-DELETE"]'
@@ -174,8 +195,96 @@
 
             }
 
+            // Recalcular orden
+            updateOrder(container);
+        });
+
+        // Función para actualizar porcentaje de cada apartado al cargar el sitio. OC 26/05/2026
+        document.addEventListener("DOMContentLoaded", function () {
+            ReloadPercentages();
+        });
+
+        // Función para actualizar porcentaje de cada apartado. OC 26/05/2026
+        function ReloadPercentages(change=false) {
+
+            var percentage_area_efect = parseFloat(
+                document.getElementById('id_AreasEfectividadPorcentaje-0-totalApartado').value
+            ) || 0;
+
+            var percentage_cal_ope = parseFloat(
+                document.getElementById('id_CalidadOperativaPorcentaje-0-totalApartado').value
+            ) || 0;
+
+            var percentage_cul_lab = parseFloat(
+                document.getElementById('id_CulturaLaboralPorcentaje-0-totalApartado').value
+            ) || 0;
+
+            document.getElementById('percentage-AreasEfectividad').innerHTML =`${percentage_area_efect}%`;
+            document.getElementById('percentage-CalidadOperativa').innerHTML =`${percentage_cal_ope}%`;
+            document.getElementById('percentage-CulturaLaboral').innerHTML =`${percentage_cul_lab}%`;
+
+            var total = percentage_area_efect + percentage_cal_ope + percentage_cul_lab;
+
+            var notyf = new Notyf({duration: 5000});
+
+            if (change) {
+                notyf.success('Porcentaje actualizado.'); 
+            }
+            if (total != 100) {
+                if (total>100) {
+                    notyf.error('El sumatoria de porcentajes excede el 100%, la evaluación de puede guardar como borrador.'); 
+                }else{
+                    notyf.error('La sumatoria de porcentajes es diferente a 100%, solo se puede guardar como borrador.'); 
+                }
+                document.getElementById('send_evaluation').disabled=true;
+            }else{
+                document.getElementById('send_evaluation').disabled=false;
+            }
+            
+        }
+
+        // Crear elementos para ordenamiento de formularios. OC 26/05/2026
+        document.addEventListener('DOMContentLoaded', function () {
+
+            const containers = document.querySelectorAll(
+                '[id$="-container"]'
+            );
+
+            containers.forEach(container => {
+
+                Sortable.create(container, {
+                    animation: 150,
+                    handle: '.drag-handle',
+                    onEnd: function () {
+                        updateOrder(container);
+                    }
+                });
+
+                // inicial
+                updateOrder(container);
+            });
+        });
+
+        // Función para reordenar los formularios de los apartados. OC 26/05/2026
+        function updateOrder(container) {
+
+            const forms = container.querySelectorAll(
+                '.dynamic-form'
+            );
+
+            forms.forEach((form, index) => {
+
+                const numeroInput = form.querySelector(
+                    'input[name$="-numero"]'
+                );
+
+                if (numeroInput) {
+                    numeroInput.value = index + 1;
+                }
+
             });
 
+        }
 
-</script>
+    </script>
 {% endblock %}

@@ -250,6 +250,11 @@ class EstatusEvaluaciones(models.Model):
     def __str__(self):
         return self.nombre
 
+DIRIGIDOA_CHOICES=(
+    ('Lider','Líder'),
+    ('Colaborador','Colaborador'),
+)
+
 class TiposEvaluaciones(models.Model):
     estatus = models.ForeignKey(EstatusEvaluaciones,on_delete=models.PROTECT,null=True,blank=True,default=1)  
     descripcion = models.TextField()
@@ -258,7 +263,7 @@ class TiposEvaluaciones(models.Model):
     departamento=models.ForeignKey(Departamentos, on_delete=models.PROTECT, null=True, blank=True, db_column='departamento_id')
     nombre = models.TextField(default='Evaluacion')
     ultimaModificacion = models.DateTimeField(null=True,blank=True)
-    dirigidoA = models.CharField(max_length=50,verbose_name='Dirigido a',default='NA') 
+    dirigidoA = models.CharField(verbose_name='Dirigido a',choices=DIRIGIDOA_CHOICES, max_length=50,default='NA') 
 
     def __str__(self):
         return str(self.descripcion) + ' ' + str(self.estatus)
@@ -271,7 +276,7 @@ class TiposEvaluacionesHistorial(models.Model):
     departamento=models.ForeignKey(Departamentos, on_delete=models.PROTECT, null=True, blank=True, db_column='departamento_id')
     nombre = models.TextField(default='Evaluacion')
     ultimaModificacion = models.DateTimeField(null=True,blank=True)
-    dirigidoA = models.CharField(max_length=50,verbose_name='Dirigido a',default='NA') 
+    dirigidoA = models.CharField(verbose_name='Dirigido a',choices=DIRIGIDOA_CHOICES,max_length=50,default='NA') 
 
     def __str__(self):
         return str(self.descripcion) + ' ' + str(self.estatus)
@@ -332,10 +337,16 @@ class EvaluacionesAreas (models.Model):
     def __str__(self):
         return str(self.fecha) + ' ' + str(self.empleado) + ' ' + str(self.estatus) 
 
+MODULE_CHOICES=(
+    ('AreasEfectividad','Áreas Efectividad'),
+    ('CalidadOperativa','Calidad Operativa'),
+    ('CulturaLaboral','Cultura Laboral'),
+)
+
 #Modelo para registrar el total de los apartados por evaluacion LZ 21/5/26
 class PorcentajesApartados(models.Model):
     evaluacion = models.ForeignKey('EvaluacionesAreas', on_delete=models.PROTECT)
-    apartado = models.CharField(max_length=50)
+    apartado = models.CharField(choices=MODULE_CHOICES, max_length=100)
     totalApartado = models.FloatField()
 
 #Modelo para registrar el historial del total de los apartados por evaluacion LZ 21/5/26
